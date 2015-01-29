@@ -18,7 +18,7 @@ coverage
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
-dist/
+dist/examples
 
 # Dependency directory
 # Commenting this out is preferred by some people, see
@@ -33,3 +33,4 @@ node_modules
 
 # Sass cache
 .sass-cache/
+src/lib/core-layout.templates.js

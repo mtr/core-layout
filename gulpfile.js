@@ -11,6 +11,8 @@ var _ = require('lodash'),
     gulp = require('gulp'),
     gutil = require('gulp-util'),
     header = require('gulp-header'),
+    htmlify = require('gulp-angular-htmlify'),
+    htmlmin = require('gulp-htmlmin'),
     jshint = require('gulp-jshint'),
     gulpNgAnnotate = require('gulp-ng-annotate'),
     browserifyNgAnnotate = require('browserify-ngannotate'),
@@ -18,12 +20,13 @@ var _ = require('lodash'),
     path = require('path'),
     preprocessify = require('preprocessify'),
     prettyBytes = require('pretty-bytes'),
-    //process = require('process'),
+//process = require('process'),
     remember = require('gulp-remember'),
     rename = require('gulp-rename'),
     sass = require('gulp-ruby-sass'),
     source = require('vinyl-source-stream'),
     sourcemaps = require('gulp-sourcemaps'),
+    templateCache = require('gulp-angular-templatecache'),
     uglify = require('gulp-uglify'),
     watchify = require('watchify'),
     libBundleName = 'core-layout.js',
@@ -33,6 +36,8 @@ var _ = require('lodash'),
     paths = {
         lib: {
             src: path.join('src/lib', libBundleName),
+            templates: 'src/lib/core-layout.templates.js',
+            html: path.join('src/lib', '*.html'),
             dest: 'dist/lib/',
             index: {
                 src: './src/examples/index.html',
@@ -50,6 +55,11 @@ var _ = require('lodash'),
                     assets: './node_modules/bootstrap-sass/assets/',
                     sass: './node_modules/bootstrap-sass/assets/stylesheets/'
                 }
+            },
+            templateCache: {
+                module: 'coreLayout.templates',
+                name: 'core-layout.templates.js',
+                dest: 'src/lib'
             }
         },
         examples: {
@@ -97,12 +107,40 @@ function _getNow() {
     return new Date();
 }
 
-gulp.task('lib', function () {
+gulp.task('cache-angular-templates', function () {
+    /* The returned stream is a hint to tell it when the task is done.
+     Either take in a callback and call it when you're done or return a
+     promise or stream that the engine should wait to resolve or end
+     respectively.   If not, the watchify task would start running before
+     this one is finished. */
+    return gulp.src(paths.lib.html)
+        .pipe(htmlmin({
+            collapseWhitespace: true,
+            removeComments: true
+        }))
+        .pipe(htmlify())
+        .pipe(templateCache({
+            filename: paths.lib.templateCache.name,
+            module: paths.lib.templateCache.module,
+            standalone: true,
+            root: 'views',
+            //moduleSystem: 'browserify',
+            templateHeader: "(function (module, window) {" +
+            "'use strict'; var angular = require('angular'); " +
+            "module.exports = angular.module('<%= module %>'<%= standalone %>)" +
+            ".run(['$templateCache', function($templateCache) { ",
+            templateFooter: "}]); })(module, window);"
+        }))
+        .pipe(gulp.dest(paths.lib.templateCache.dest));
+});
+
+gulp.task('lib', ['cache-angular-templates'], function () {
     var now = _getNow();
 
-    return gulp.src(paths.lib.src)
+    return gulp.src([paths.lib.templates, paths.lib.src])
         .pipe(cached('lib'))            // Only pass through changed files.
         .pipe(jshint())
+        .pipe(concat(libBundleName)) // Do things that require all files.
         .pipe(header('/**\n' +
         ' * @license <%= pkg.name %> v<%= pkg.version %>, <%= now %>\n' +
         ' * (c) <%= years %> <%= pkg.author.name %> <<%= pkg.author.email %>>\n' +
@@ -114,7 +152,6 @@ gulp.task('lib', function () {
         }))
         .pipe(footer('\n'))
         .pipe(remember('lib'))          // Add back all files to the stream.
-        .pipe(concat(libBundleName)) // Do things that require all files.
         .pipe(gulpNgAnnotate())
         .pipe(gulp.dest(paths.lib.dest))
         .pipe(uglify({
@@ -128,7 +165,7 @@ gulp.task('lib', function () {
 });
 
 gulp.task('watch', function () {
-    var watcher = gulp.watch(paths.lib.src, ['lib']);
+    var watcher = gulp.watch([paths.lib.src, paths.lib.html], ['lib']);
 
     watcher.on('change', function _srcChanged(event) {
         if (event.type === 'deleted') {
