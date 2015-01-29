@@ -126,7 +126,7 @@ gulp.task('cache-angular-templates', function () {
             root: 'views',
             //moduleSystem: 'browserify',
             templateHeader: "(function (module, window) {" +
-            "'use strict'; var angular = require('angular'); " +
+            "'use strict'; " +
             "module.exports = angular.module('<%= module %>'<%= standalone %>)" +
             ".run(['$templateCache', function($templateCache) { ",
             templateFooter: "}]); })(module, window);"
