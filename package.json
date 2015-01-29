@@ -31,11 +31,10 @@
   "homepage": "https://github.com/mtr/core-layout",
   "dependencies": {
     "angular": ">=1.2",
-    "iscroll": "^5.1.3"
+    "iscroll": "^5.1.3",
+    "angular-iscroll": "git://github.com/mtr/angular-iscroll"
   },
   "devDependencies": {
-    "angular-iscroll": "git://github.com/mtr/angular-iscroll",
-    "angular-messages": "^1.3.9",
     "angular-ui-router": "^0.2.13",
     "bootstrap-sass": "^3.3.1",
     "browser-sync": "^1.9.0",
@@ -70,8 +69,6 @@
   "browser": {
     "angular": "./node_modules/angular/angular.js",
     "angular-iscroll": "./node_modules/angular-iscroll/dist/lib/angular-iscroll.js",
-    "angular-messages": "./node_modules/angular-messages/angular-messages.js",
-    "bootstrap": "./node_modules/bootstrap-sass/assets/javascripts/bootstrap.js",
     "iscroll": "./node_modules/iscroll/build/iscroll.js",
     "jquery": "./node_modules/jquery/dist/jquery.js",
     "ui.router": "./node_modules/angular-ui-router/release/angular-ui-router.js"
@@ -86,12 +83,9 @@
       "depends": "jquery:jQuery",
       "exports": "angular"
     },
-    "angular-messages": {
+    "angular-iscroll": {
       "depends": "angular",
-      "exports": "angular.module('ngMessages')"
-    },
-    "bootstrap": {
-      "depends": "jquery:jQuery"
+      "exports": "angular.module('angular-iscroll')"
     },
     "ui.router": {
       "depends": "angular",

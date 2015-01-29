@@ -114,7 +114,7 @@ gulp.task('lib', function () {
         }))
         .pipe(footer('\n'))
         .pipe(remember('lib'))          // Add back all files to the stream.
-        .pipe(concat('angular-iscroll.js')) // Do things that require all files.
+        .pipe(concat(libBundleName)) // Do things that require all files.
         .pipe(gulpNgAnnotate())
         .pipe(gulp.dest(paths.lib.dest))
         .pipe(uglify({
@@ -195,7 +195,7 @@ gulp.task('views', ['demo-views'], function () {
 });
 
 function decorateBundler(meta) {
-    function bundle() {
+    meta.bundle = function bundle() {
         gutil.log("Starting '" + gutil.colors.cyan("browserify-rebundle (" +
         paths.js.bundleName + ")") + "' ...");
 
@@ -219,7 +219,7 @@ function decorateBundler(meta) {
             pkg: pkg
         }))
         .transform(browserifyNgAnnotate)
-        .on('update', bundle)
+        .on('update', meta.bundle)
         .on('bytes', function (bytes) {
             meta.stats.bytes = bytes;
         })
@@ -235,7 +235,7 @@ function decorateBundler(meta) {
         });
 
     gulp.task('rebundle-' + meta.name, function () {
-        return bundle();
+        return meta.bundle();
     });
 }
 
@@ -269,7 +269,7 @@ gulp.task('examples', [
     'style',
     'views',
     'watch-examples'
-], bundle);
+], examplesMeta.bundle);
 
 gulp.task('deploy', function () {
     return gulp.src('./dist/**/*')
