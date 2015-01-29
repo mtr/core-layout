@@ -107,6 +107,11 @@ function _getNow() {
     return new Date();
 }
 
+gulp.task('scss', function () {
+    return gulp.src('src/lib/_*.scss')
+        .pipe(gulp.dest('dist/lib/scss'));
+});
+
 gulp.task('cache-angular-templates', function () {
     /* The returned stream is a hint to tell it when the task is done.
      Either take in a callback and call it when you're done or return a
@@ -167,6 +172,8 @@ gulp.task('lib', ['cache-angular-templates'], function () {
 gulp.task('watch', function () {
     var watcher = gulp.watch([paths.lib.src, paths.lib.html], ['lib']);
 
+    gulp.watch(['src/lib/_*.scss'], ['scss']);
+
     watcher.on('change', function _srcChanged(event) {
         if (event.type === 'deleted') {
             delete cached.caches.lib[event.path];
@@ -175,7 +182,7 @@ gulp.task('watch', function () {
     });
 });
 
-gulp.task('default', ['lib']);
+gulp.task('default', ['scss', 'cache-angular-templates', 'lib']);
 
 
 gulp.task('browser-sync', function () {
