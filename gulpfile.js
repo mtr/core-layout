@@ -109,7 +109,7 @@ function _getNow() {
 
 gulp.task('scss', function () {
     return gulp.src('src/lib/_*.scss')
-        .pipe(gulp.dest('dist/lib/scss'));
+        .pipe(gulp.dest('dist/scss'));
 });
 
 gulp.task('cache-angular-templates', function () {
