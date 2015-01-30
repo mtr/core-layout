@@ -1,3 +1,8 @@
+// Allow global 'use strict' and undefined require.
+// jshint -W097
+// jshint -W117
+'use strict';
+
 var _ = require('lodash'),
     browserify = require('browserify'),
     browserSync = require('browser-sync'),
