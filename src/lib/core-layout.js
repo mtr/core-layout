@@ -199,7 +199,7 @@
     }
 
     return angular
-        .module('coreLayout', [angularIScroll.name, 'coreLayout.templates'])
+        .module('coreLayout', [angularIscroll.name, 'coreLayout.templates'])
         .factory('coreLayoutService', CoreLayoutService)
         .directive('coreLayout', coreLayout)
         .directive('coreLayoutClose', coreLayoutClose);
