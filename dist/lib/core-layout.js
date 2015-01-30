@@ -1,5 +1,5 @@
 /**
- * @license core-layout v0.5.0, 2015-01-30T10:57:32+0100
+ * @license core-layout v0.6.0, 2015-01-30T12:42:21+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -21,7 +21,7 @@
             root.angularIscroll,
             root.lodash);
     }
-}(this, function (angular, angularIScroll, _) {
+}(this, function (angular, angularIscroll, _) {
     'use strict';
 
     /* @ngInject */

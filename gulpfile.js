@@ -210,7 +210,7 @@ gulp.task('bootstrap-assets', function () {
 
 gulp.task('style', ['bootstrap-assets' /*, 'wrap-vendor-css'*/], function () {
     return sass(paths.examples.style.src, {
-        loadPath: [paths.examples.style.bootstrap.sass],
+        loadPath: [paths.examples.style.bootstrap.sass, './src/lib/'],
         compass: true,
         sourcemap: true,
         style: 'compact'
@@ -241,12 +241,12 @@ gulp.task('views', ['demo-views'], function () {
 function decorateBundler(meta) {
     meta.bundle = function bundle() {
         gutil.log("Starting '" + gutil.colors.cyan("browserify-rebundle (" +
-        paths.js.bundleName + ")") + "' ...");
+        meta.paths.js.bundleName + ")") + "' ...");
 
         return meta.bundler.bundle()
             // log errors if they happen
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-            .pipe(source(paths.js.bundleName))
+            .pipe(source(meta.paths.js.bundleName))
             // Optional, remove if you don't want sourcemaps.
             .pipe(buffer())
             .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
@@ -275,7 +275,7 @@ function decorateBundler(meta) {
                 gutil.colors.magenta((meta.stats.time / 1000).toFixed(2) + " s"));
             gutil.log('Browserify bundled',
                 gutil.colors.cyan(prettyBytes(meta.stats.bytes)), 'into',
-                gutil.colors.magenta(paths.js.bundleName));
+                gutil.colors.magenta(meta.paths.js.bundleName));
         });
 
     gulp.task('rebundle-' + meta.name, function () {
@@ -293,7 +293,7 @@ var libMeta = {
         name: 'examples',
         bundler: examplesBundler,
         paths: paths.examples,
-        state: examplesBrowserifyStats
+        stats: examplesBrowserifyStats
     };
 
 decorateBundler(libMeta);

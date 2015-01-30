@@ -2,7 +2,10 @@
 
 var angular = require('angular');
 
+console.log('angular', angular);
+
 require('bootstrap');
+require('angular-messages');
 
 /* @ngInject */
 function config($urlRouterProvider) {
@@ -17,12 +20,19 @@ function MyAppController(iScrollService, coreLayoutService) {
     vm.layout = coreLayoutService.state;
 }
 
+console.log("require('angular-ui-router').name", require('angular-ui-router'));
+console.log("require('../lib/core-layout.js').name", require('../lib/core-layout.js').name);
+console.log("require('angular-messages').name", require('angular-messages'));
+console.log("require('./components/header/header.js').name", require('./components/header/header.js').name);
+console.log("require('./components/version/version.js').name", require('./components/version/version.js').name);
+console.log("require('./demos/demos.js').name", require('./demos/demos.js').name);
+console.log("require('./home/home.js').name", require('./home/home.js').name);
+
 angular
     .module('myApp', [
-        require('ui.router').name,
-        require('core-layout').name,
-        require('angular-messages').name,
-        require('./components/core-layout/core-layout.js').name,
+        require('angular-ui-router'),
+        require('../../dist/lib/core-layout.js').name,
+        'ngMessages',
         require('./components/header/header.js').name,
         require('./components/version/version.js').name,
         require('./demos/demos.js').name,
