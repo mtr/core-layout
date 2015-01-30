@@ -32,10 +32,10 @@ function config($stateProvider) {
             abstract: true,
             views: {
                 'modal-header@': {
-                    templateUrl: 'components/core-layout/core-layout.modal.header.html'
+                    templateUrl: 'home/modal.header.html'
                 },
                 'modal-footer@': {
-                    templateUrl: 'components/core-layout/core-layout.modal.footer.html'
+                    templateUrl: 'home/modal.footer.html'
                 }
             },
             onEnter: /* @ngInject */ function _openModal(coreLayoutService) {
