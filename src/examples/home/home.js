@@ -1,6 +1,6 @@
 'use strict';
 
-var angular = require('angular');
+var angular = require('angular-x');
 
 /* @ngInject */
 function HomeController($scope, $log, iScrollService) {

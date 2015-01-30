@@ -71,7 +71,8 @@
     "watchify": "^2.2.1"
   },
   "browser": {
-    "angular": "./node_modules/angular/angular.js",
+    "//": "angular-x is the AngularJS package required by 'examples'.",
+    "angular-x": "./node_modules/angular/angular.js",
     "angular-messages": "./node_modules/angular-messages/angular-messages.js",
     "bootstrap": "./node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"
   },
@@ -81,7 +82,7 @@
     ]
   },
   "browserify-shim": {
-    "angular": {
+    "angular-x": {
       "depends": "jquery:jQuery",
       "exports": "angular"
     },
