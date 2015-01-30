@@ -308,7 +308,8 @@ gulp.task('watch-examples', function () {
     gulp.watch(paths.examples.index.src, ['views']);
     gulp.watch(path.join(paths.examples.src, '**/*.html'), ['demo-views']);
     gulp.watch([paths.examples.style.src,
-        path.join(paths.examples.src, '**/*.scss')], ['style']);
+        path.join(paths.examples.src, '**/*.scss'),
+    'dist/scss/*.scss'], ['style']);
 });
 
 gulp.task('examples', [

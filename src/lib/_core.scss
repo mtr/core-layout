@@ -54,35 +54,3 @@
     }
   }
 }
-
-.cl-modal-box {
-  .core-layout {
-    > .cl-header, > .cl-footer {
-      z-index: $cl-modal-header-z-index;
-    }
-    > .cl-footer {
-      height: $cl-modal-footer-height;
-    }
-  }
-}
-
-.iscroll-off {
-  .cl-modal-box {
-    .core-layout {
-      > .cl-contents {
-        margin-top: $cl-modal-header-height;
-        margin-bottom: $cl-modal-footer-height;
-      }
-    }
-  }
-}
-.iscroll-on {
-  .cl-modal-box {
-    .core-layout {
-      > .cl-contents {
-        top: $cl-modal-header-height;
-        bottom: $cl-modal-footer-height;
-      }
-    }
-  }
-}
