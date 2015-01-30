@@ -15,7 +15,7 @@
             root.angularIscroll,
             root.lodash);
     }
-}(this, function (angular, angularIScroll, _) {
+}(this, function (angular, angularIscroll, _) {
     'use strict';
 
     /* @ngInject */
