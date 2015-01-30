@@ -1,5 +1,5 @@
 /**
- * @license core-layout v0.6.1, 2015-01-30T12:36:29+0100
+ * @license core-layout v0.6.2, 2015-01-30T12:36:58+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -208,7 +208,7 @@
     coreLayoutClose.$inject = ["$state", "coreLayoutService"];
 
     return angular
-        .module('coreLayout', [angularIscroll.name, 'coreLayout.templates'])
+        .module('coreLayout', [angularIScroll.name, 'coreLayout.templates'])
         .factory('coreLayoutService', CoreLayoutService)
         .directive('coreLayout', coreLayout)
         .directive('coreLayoutClose', coreLayoutClose);
