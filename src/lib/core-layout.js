@@ -1,8 +1,9 @@
 (function (module, window) {
     'use strict';
 
-    var _ = require('lodash');
-
+    var angular = require('angular'),
+        _ = require('lodash');
+    
     /* @ngInject */
     function CoreLayoutService($rootScope, iScrollService) {
         var _state = {

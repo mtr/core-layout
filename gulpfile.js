@@ -254,7 +254,7 @@ function decorateBundler(meta) {
             //
             .pipe(gulp.dest(meta.paths.js.dest))
             .pipe(browserSync.reload({stream: true}));
-    }
+    };
 
 // Add any other browserify options or transforms here.
     meta.bundler
