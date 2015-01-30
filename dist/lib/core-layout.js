@@ -1,13 +1,28 @@
 /**
- * @license core-layout v0.5.0, 2015-01-29T22:40:26+0100
+ * @license core-layout v0.5.0, 2015-01-30T10:57:32+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
 (function (module, window) {'use strict'; module.exports = angular.module('coreLayout.templates', []).run(['$templateCache', function($templateCache) { $templateCache.put("views/core-layout.html","<div class=\"cl-header\" ui-view=\"{{::names.header}}\"></div><div class=\"cl-contents\" ui-view=\"{{::names.contents}}\"></div><div class=\"cl-footer\" ui-view=\"{{::names.footer}}\"></div>");}]); })(module, window);
-(function (module, window) {
+(function (root, factory) {
+    // Using the Universal Module Definition pattern from
+    // https://github.com/umdjs/umd/blob/master/returnExports.js
+    if (typeof define === 'function' && define.amd) {
+        define(['angular', 'angular-iscroll', 'lodash'], factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory(
+            require('angular'),
+            require('angular-iscroll'),
+            require('lodash'));
+    } else {
+        // Browser globals (root is window)
+        root.coreLayout = factory(
+            root.angular,
+            root.angularIscroll,
+            root.lodash);
+    }
+}(this, function (angular, angularIScroll, _) {
     'use strict';
-
-    var _ = require('lodash');
 
     /* @ngInject */
     function CoreLayoutService($rootScope, iScrollService) {
@@ -192,11 +207,10 @@
     }
     coreLayoutClose.$inject = ["$state", "coreLayoutService"];
 
-    module.exports = angular
-        .module('coreLayout', ['angular-iscroll', 'coreLayout.templates'])
+    return angular
+        .module('coreLayout', [angularIscroll.name, 'coreLayout.templates'])
         .factory('coreLayoutService', CoreLayoutService)
         .directive('coreLayout', coreLayout)
         .directive('coreLayoutClose', coreLayoutClose);
-
-})(module, window);
+}));
 

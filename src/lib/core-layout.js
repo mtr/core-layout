@@ -1,9 +1,23 @@
-(function (module, window) {
+(function (root, factory) {
+    // Using the Universal Module Definition pattern from
+    // https://github.com/umdjs/umd/blob/master/returnExports.js
+    if (typeof define === 'function' && define.amd) {
+        define(['angular', 'angular-iscroll', 'lodash'], factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory(
+            require('angular'),
+            require('angular-iscroll'),
+            require('lodash'));
+    } else {
+        // Browser globals (root is window)
+        root.coreLayout = factory(
+            root.angular,
+            root.angularIscroll,
+            root.lodash);
+    }
+}(this, function (angular, angularIScroll, _) {
     'use strict';
 
-    var angular = require('angular'),
-        _ = require('lodash');
-    
     /* @ngInject */
     function CoreLayoutService($rootScope, iScrollService) {
         var _state = {
@@ -184,10 +198,9 @@
         };
     }
 
-    module.exports = angular
-        .module('coreLayout', ['angular-iscroll', 'coreLayout.templates'])
+    return angular
+        .module('coreLayout', [angularIscroll.name, 'coreLayout.templates'])
         .factory('coreLayoutService', CoreLayoutService)
         .directive('coreLayout', coreLayout)
         .directive('coreLayoutClose', coreLayoutClose);
-
-})(module, window);
+}));
