@@ -1,3 +1,8 @@
+// Allow global 'use strict' and undefined require.
+// jshint -W097
+// jshint -W117
+'use strict';
+
 var _ = require('lodash'),
     browserify = require('browserify'),
     browserSync = require('browser-sync'),
@@ -128,7 +133,6 @@ gulp.task('cache-angular-templates', function () {
             filename: paths.lib.templateCache.name,
             module: paths.lib.templateCache.module,
             standalone: true,
-            root: 'views',
             //moduleSystem: 'browserify',
             templateHeader: "(function (module, window) {" +
             "'use strict'; " +
