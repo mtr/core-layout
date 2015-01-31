@@ -1,41 +1,41 @@
 @import "core-variables";
-@import "core-modal";
 @import "core-responsive";
+@import "core-modal";
 
-.core-layout {
-  > .cl-header, > .cl-contents, > .cl-footer {
-    left: 0;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-  }
+.cl-header,
+.cl-contents,
+.cl-footer {
+  left: 0;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
 
-  > .cl-header {
-    top: 0;
-  }
-  > .cl-header, > .cl-footer {
-    z-index: $cl-header-z-index;
-  }
-  > .cl-footer {
-    bottom: 0;
-    height: $cl-footer-height;
-  }
+.cl-header {
+  top: 0;
+}
+.cl-header,
+.cl-footer {
+  z-index: $cl-header-z-index;
+}
+.cl-footer {
+  bottom: 0;
+  height: $cl-footer-height;
+}
+
+.cl-contents {
+  overflow: auto;
+  top: $cl-header-height;
+  bottom: $cl-footer-height;
 }
 
 .iscroll-off {
-  .core-layout {
-    > .cl-header, > .cl-footer {
-      position: fixed;
-    }
-    > .cl-contents {
-      position: relative;
-      margin-top: $cl-header-height;
-      margin-bottom: $cl-footer-height;
-//      position: absolute;
-//      overflow: auto;
-//      top: $cl-header-height;
-//      bottom: $cl-footer-height;
-    }
+  .cl-header,
+  .cl-footer {
+    position: fixed;
+  }
+  .cl-contents {
+    position: absolute;
   }
 }
 
@@ -44,16 +44,10 @@
     overflow: hidden;
   }
 
-  .core-layout {
-    > .cl-header, > .cl-contents, > .cl-footer {
-      position: absolute;
-      overflow: hidden;
-    }
-
-    > .cl-contents {
-      overflow: auto;
-      top: $cl-header-height;
-      bottom: $cl-footer-height;
-    }
+  .cl-header,
+  .cl-contents,
+  .cl-footer {
+    position: absolute;
+    overflow: hidden;
   }
 }

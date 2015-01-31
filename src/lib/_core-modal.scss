@@ -2,27 +2,15 @@
   .cl-header, .cl-footer {
     z-index: $cl-modal-header-z-index;
   }
+  .cl-header {
+    height: $cl-modal-header-height;
+  }
+  .cl-contents {
+    top: $cl-modal-header-height;
+    bottom: $cl-modal-footer-height;
+  }
   .cl-footer {
     height: $cl-modal-footer-height;
-  }
-}
-
-.iscroll-off {
-  .cl-modal-box {
-    .cl-contents {
-      margin-top: $cl-modal-header-height;
-      margin-bottom: $cl-modal-footer-height;
-    }
-
-  }
-}
-
-.iscroll-on {
-  .cl-modal-box {
-    .cl-contents {
-      top: $cl-modal-header-height;
-      bottom: $cl-modal-footer-height;
-    }
   }
 }
 
@@ -58,130 +46,28 @@
     // The following, alternative method didn't work in Safari:
     //transform: translate(-50%, -50%);
   }
-
-  .cl-contents {
-    overflow-y: auto;
-  }
 }
 
-@function cl-generate-combo-visibility-selectors($visibility, $sizes) {
-  $selectors: ();
-  @each $size in $sizes {
-    $selectors: join($selectors,
-            unquote('.cl-header-#{$visibility}-#{$size}.cl-footer-#{$visibility}-#{$size}'), comma);
-  }
-  @debug $selectors;
-  @return $selectors;
-}
-
-@mixin cl-modal-box-hidden-all($sizes, $box-height, $visibility: hidden) {
-  #{cl-generate-visibility-selectors(header, $visibility, $sizes)} {
-    > .cl-header {
-      display: none !important;
-      -moz-foo: a;
-    }
-  }
-  #{cl-generate-visibility-selectors(footer, $visibility, $sizes)} {
-    > .cl-footer {
-      display: none !important;
-      -moz-foo: b;
-    }
-  }
-
-  #{cl-generate-visibility-selectors(header, $visibility, $sizes)} {
-    > .cl-contents {
-      height: $box-height - $cl-modal-footer-height;
-      -moz-foo: c;
-    }
-  }
-  #{cl-generate-visibility-selectors(footer, $visibility, $sizes)} {
-    > .cl-contents {
-      height: $box-height - $cl-modal-header-height;
-      -moz-foo: d;
-    }
-  }
-
-  #{cl-generate-combo-visibility-selectors($visibility, $sizes)} {
-    > .cl-contents {
-      height: $box-height;
-      -moz-foo: e;
-    }
-  }
-}
-
-@mixin cl-modal-content-visible-all($size, $box-height) {
-  .cl-header, .cl-header-visible-#{$size} > .cl-header {
-    height: $cl-modal-header-height !important;
-  }
-  .cl-footer, .cl-footer-visible-#{$size} > .cl-footer {
-    height: $cl-modal-footer-height !important;
-  }
-  .cl-contents {
-    height: $box-height - ($cl-modal-header-height + $cl-modal-footer-height) !important;
-  }
-}
-
-@mixin cl-modal-box-hidden-iscroll-off($sizes, $visibility: hidden) {
+.iscroll-off {
   .cl-modal-box {
-    .cl-header, .cl-footer {
+    .cl-header, .cl-contents, .cl-footer {
       position: absolute;
     }
-    #{cl-generate-visibility-selectors(header, $visibility, $sizes)} {
-      > .cl-contents {
-        margin-top: 0;
-      }
-
+    .cl-header, .cl-footer {
+      overflow: hidden;
     }
-    #{cl-generate-visibility-selectors(footer, $visibility, $sizes)} {
-      > .cl-contents {
-        margin-bottom: 0;
-      }
+    .cl-contents {
+      overflow: auto;
     }
-  }
-}
-
-@mixin cl-modal-box-hidden-iscroll-on($sizes, $visibility: hidden) {
-  .cl-modal-box {
-    #{cl-generate-visibility-selectors(header, $visibility, $sizes)} {
-      > .cl-contents {
-        top: 0;
-      }
-    }
-
-    #{cl-generate-visibility-selectors(footer, $visibility, $sizes)} {
-      > .cl-contents {
-        bottom: 0;
-      }
-    }
-  }
-}
-
-@mixin cl-modal-box-hidden-iscroll-dependent($hidden-size, $visibility: hidden) {
-  .iscroll-off {
-    @include cl-modal-box-hidden-iscroll-off($hidden-size, $visibility);
-  }
-  .iscroll-on {
-    @include cl-modal-box-hidden-iscroll-on($hidden-size, $visibility);
   }
 }
 
 @mixin cl-modal-box-def($size, $box-width, $box-height) {
-  // Reset -> hidden in complementary sizes in the current @media context.
-  $complementary-sizes: cl-remove($size, $cl-responsive-sizes);
-
   .cl-modal-box {
-
-    @include cl-modal-box-hidden-all($complementary-sizes, $box-height, visible);
-    @include cl-modal-box-hidden-iscroll-dependent($complementary-sizes, visible);
-
     width: $box-width;
     height: $box-height;
     margin: (- $box-height / 2) 0 0 (- $box-width / 2);
-    @include cl-modal-content-visible-all($size, $box-height);
-    @include cl-modal-box-hidden-all($size, $box-height);
-
   }
-  @include cl-modal-box-hidden-iscroll-dependent(sm);
 }
 
 @media (min-width: $cl-screen-sm-min) and (max-width: $cl-screen-sm-max) {
@@ -189,15 +75,11 @@
           $cl-modal-box-height-sm);
 }
 
-//@media (min-width: $cl-screen-md-min) and (max-width: $cl-screen-md-max) {
-//  width: $cl-modal-box-width-md;
-//  height: $cl-modal-box-height-md;
-//  @include cl-modal-content-size(md, $cl-modal-box-height-md);
-//  margin: (- $cl-modal-box-height-md/2) 0 0 (- $cl-modal-box-width-md/2);
-//}
-//@media (min-width: $cl-screen-lg-min) {
-//  width: $cl-modal-box-width-lg;
-//  height: $cl-modal-box-height-lg;
-//  @include cl-modal-content-size(lg, $cl-modal-box-height-lg);
-//  margin: (- $cl-modal-box-height-lg/2) 0 0 (- $cl-modal-box-width-lg/2);
-//}
+@media (min-width: $cl-screen-md-min) and (max-width: $cl-screen-md-max) {
+  @include cl-modal-box-def(md, $cl-modal-box-width-md,
+          $cl-modal-box-height-md);
+}
+@media (min-width: $cl-screen-lg-min) {
+  @include cl-modal-box-def(lg, $cl-modal-box-width-lg,
+          $cl-modal-box-height-lg);
+}
