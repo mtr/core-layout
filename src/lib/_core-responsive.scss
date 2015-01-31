@@ -80,14 +80,8 @@ $modal-header-height, $modal-footer-height) {
 }
 
 @mixin default-invisible($sizes) {
-  $header-selectors: ();
-  $footer-selectors: ();
-  @each $size in $sizes {
-    $header-selectors: join($header-selectors,
-            unquote('.cl-header-visible-#{$size}'), comma);
-    $footer-selectors: join($footer-selectors,
-            unquote('.cl-footer-visible-#{$size}'), comma);
-  }
+  $header-selectors: cl-generate-visibility-selectors(header, visible, $sizes);
+  $footer-selectors: cl-generate-visibility-selectors(footer, visible, $sizes);
 
   #{$header-selectors} {
     > .cl-header {
