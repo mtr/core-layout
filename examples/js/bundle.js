@@ -3,8 +3,6 @@
 
 var angular = require('angular-x');
 
-console.log('angular', angular);
-
 require('bootstrap');
 require('angular-messages');
 
@@ -23,19 +21,12 @@ function MyAppController(iScrollService, coreLayoutService) {
 }
 MyAppController.$inject = ["iScrollService", "coreLayoutService"];
 
-console.log("require('angular-ui-router').name", require('angular-ui-router'));
-console.log("require('../lib/core-layout.js').name", require('../lib/core-layout.js').name);
-console.log("require('angular-messages').name", require('angular-messages'));
-console.log("require('./components/header/header.js').name", require('./components/header/header.js').name);
-console.log("require('./components/version/version.js').name", require('./components/version/version.js').name);
-console.log("require('./demos/demos.js').name", require('./demos/demos.js').name);
-console.log("require('./home/home.js').name", require('./home/home.js').name);
-
 angular
     .module('myApp', [
         require('angular-ui-router'),
         require('../../dist/lib/core-layout.js').name,
         'ngMessages',
+        require('./components/drawer/drawer.js').name,
         require('./components/header/header.js').name,
         require('./components/version/version.js').name,
         require('./demos/demos.js').name,
@@ -46,9 +37,9 @@ angular
 
 module.exports = angular.module('myApp');
 
-},{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","../lib/core-layout.js":"/home/mtr/projects/core-layout/src/lib/core-layout.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
+},{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v1.0.0, 2015-01-31T15:05:04+0100
+ * @license core-layout v1.0.0, 2015-01-31T23:42:24+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -73,11 +64,34 @@ module.exports = angular.module('myApp');
 }(this, function (angular, angularIscroll, _) {
     'use strict';
 
+    function createCompounder(callback) {
+        return function (string) {
+            var index = -1,
+                array = words(deburr(string)),
+                length = array.length,
+                result = '';
+
+            while (++index < length) {
+                result = callback(result, array[index], index);
+            }
+            return result;
+        };
+    }
+
+    if (_.VERSION.split('.')[0] < 3) {
+        // Let's support lodash < 3.x for a while.
+        _.camelCase = createCompounder(function (result, word, index) {
+            word = word.toLowerCase();
+            return index ? (result + word.charAt(0).toUpperCase() +
+            word.slice(1)) : word;
+        });
+    }
+
     /* @ngInject */
-    function CoreLayoutService($rootScope, iScrollService) {
+    function CoreLayoutService($rootScope, $log, iScrollService) {
         var _state = {
             /**
-             * Different state variables are assigned by core-layout directive
+             * Different state variables get assigned by core-layout directive
              * instances.
              **/
         };
@@ -116,7 +130,7 @@ module.exports = angular.module('myApp');
             layoutChanged: _layoutChanged
         };
     }
-    CoreLayoutService.$inject = ["$rootScope", "iScrollService"];
+    CoreLayoutService.$inject = ["$rootScope", "$log", "iScrollService"];
 
     var defaultsDeep = _.partialRight(_.merge, function deep(value, other) {
         return _.merge(value, other, deep);
@@ -163,8 +177,8 @@ module.exports = angular.module('myApp');
             },
             cache = {};
 
-        function _addWatcher(attrs, name, area, visibility) {
-            var group = name + '.' + area + '.' + visibility;
+        function _addWatcher(attrs, ccName, area, visibility) {
+            var group = ccName + '.' + area + '.' + visibility;
 
             $rootScope.$watchCollection('coreLayout.' + group,
                 function _updateClasses(newValue) {
@@ -192,7 +206,7 @@ module.exports = angular.module('myApp');
                     });
 
                     if (layoutChanged) {
-                        coreLayoutService.layoutChanged(name);
+                        coreLayoutService.layoutChanged(ccName);
                     }
 
                     cache[group] = sizes;
@@ -201,7 +215,8 @@ module.exports = angular.module('myApp');
 
         function _link(scope, element, attrs) {
             var options = defaultsDeep({}, scope.options, defaults),
-                name = options.name;
+                name = options.name,
+                ccName = _.camelCase(name);
 
             delete options.name;
 
@@ -211,15 +226,15 @@ module.exports = angular.module('myApp');
                 footer: name + '-footer'
             };
 
-            coreLayoutService.state[name] = options;
+            coreLayoutService.state[ccName] = options;
 
             attrs.$addClass('core-layout');
 
             var deregistrators = [
-                _addWatcher(attrs, name, 'header', 'visible'),
-                _addWatcher(attrs, name, 'header', 'hidden'),
-                _addWatcher(attrs, name, 'footer', 'visible'),
-                _addWatcher(attrs, name, 'footer', 'hidden')
+                _addWatcher(attrs, ccName, 'header', 'visible'),
+                _addWatcher(attrs, ccName, 'header', 'hidden'),
+                _addWatcher(attrs, ccName, 'footer', 'visible'),
+                _addWatcher(attrs, ccName, 'footer', 'hidden')
             ];
 
             scope.$on('$destroy', function _deregister() {
@@ -55566,7 +55581,34 @@ return jQuery;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"/home/mtr/projects/core-layout/src/examples/components/header/header.controller.js":[function(require,module,exports){
+},{}],"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js":[function(require,module,exports){
+'use strict';
+
+var angular = require('angular-x');
+
+/* @ngInject */
+function DrawerController($scope, $log, iScrollService) {
+    var _index = {};
+
+    function _getRows(count) {
+        if (! _index.hasOwnProperty(count)) {
+            _index[count] = new Array(count);
+        }
+        return _index[count];
+    }
+
+    $scope.iScrollState = iScrollService.state;
+    $scope.toggleIScroll = iScrollService.toggle;
+
+    $scope.getRows = _getRows;
+}
+DrawerController.$inject = ["$scope", "$log", "iScrollService"];
+
+module.exports = angular.module('myApp.drawer', [])
+    //.config(config)
+    .controller('DrawerController', DrawerController);
+
+},{"angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/components/header/header.controller.js":[function(require,module,exports){
 'use strict';
 
 var angular = require('angular-x');
@@ -55620,11 +55662,8 @@ module.exports = angular.module('myApp.header', [
 var angular = require('angular-x');
 
 /* @ngInject */
-function currentVersion($log, version, buildTimestamp) {
+function currentVersion(version, buildTimestamp) {
     function _link(scope, element, attrs) {
-        $log.debug('directiveDefinition.name', directiveDefinition.name);
-        $log.debug('attrs[directiveDefinition.name]', attrs[directiveDefinition.name]);
-
         element.text(attrs[directiveDefinition.name] === 'full' ?
         version + ' (' + buildTimestamp + ')' : version);
     }
@@ -55635,7 +55674,7 @@ function currentVersion($log, version, buildTimestamp) {
 
     return directiveDefinition;
 }
-currentVersion.$inject = ["$log", "version", "buildTimestamp"];
+currentVersion.$inject = ["version", "buildTimestamp"];
 
 module.exports = angular.module('myApp.version.directive', [])
     .directive('currentVersion', currentVersion);
@@ -55649,8 +55688,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '0.6.2')
-    .value('buildTimestamp', '2015-01-30T22:31:09+0100');
+    .value('version', '1.0.0')
+    .value('buildTimestamp', '2015-01-31T23:27:48+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
@@ -55811,6 +55850,10 @@ function config($stateProvider) {
         .state('home', {
             url: '/',
             views: {
+                'left-drawer-contents@': {
+                    templateUrl: 'components/drawer/left-drawer.html',
+                    controller: 'DrawerController'
+                },
                 'main-header@': {
                     templateUrl: 'components/header/header.html',
                     controller: 'HeaderController'
@@ -55888,218 +55931,7 @@ module.exports = angular.module('myApp.home', [])
     .config(config)
     .controller('HomeController', HomeController);
 
-},{"angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/lib/core-layout.js":[function(require,module,exports){
-(function (root, factory) {
-    // Using the Universal Module Definition pattern from
-    // https://github.com/umdjs/umd/blob/master/returnExports.js
-    if (typeof define === 'function' && define.amd) {
-        define(['angular', 'angular-iscroll', 'lodash'], factory);
-    } else if (typeof exports === 'object') {
-        module.exports = factory(
-            require('angular'),
-            require('angular-iscroll'),
-            require('lodash'));
-    } else {
-        // Browser globals (root is window)
-        root.coreLayout = factory(
-            root.angular,
-            root.angularIscroll,
-            root.lodash);
-    }
-}(this, function (angular, angularIscroll, _) {
-    'use strict';
-
-    /* @ngInject */
-    function CoreLayoutService($rootScope, iScrollService) {
-        var _state = {
-            /**
-             * Different state variables are assigned by core-layout directive
-             * instances.
-             **/
-        };
-
-        function _mergeStateIfProvided(configChanges) {
-            if (angular.isDefined(configChanges)) {
-                _.merge(_state.modal, configChanges);
-            }
-        }
-
-        function _openModal(configChanges) {
-            _mergeStateIfProvided(configChanges);
-            _state.modal.show = true;
-        }
-
-        function _updateModal(configChanges) {
-            _mergeStateIfProvided(configChanges);
-        }
-
-        function _closeModal(configChanges) {
-            _state.modal.show = false;
-            _mergeStateIfProvided(configChanges);
-        }
-
-        function _layoutChanged(name) {
-            iScrollService.refresh(name);
-        }
-
-        $rootScope.coreLayout = _state;
-
-        return {
-            state: _state,
-            openModal: _openModal,
-            updateModal: _updateModal,
-            closeModal: _closeModal,
-            layoutChanged: _layoutChanged
-        };
-    }
-    CoreLayoutService.$inject = ["$rootScope", "iScrollService"];
-
-    var defaultsDeep = _.partialRight(_.merge, function deep(value, other) {
-        return _.merge(value, other, deep);
-    });
-
-    var suffixes = {
-        all: '',
-        xs: '-xs',
-        sm: '-sm',
-        md: '-md',
-        lg: '-lg'
-    };
-
-    function _createSizeSettings(options) {
-        options = options || {};
-        return {
-            all: options.all || false,
-            xs: options.xs || false,
-            sm: options.sm || false,
-            md: options.md || false,
-            lg: options.lg || false
-        };
-    }
-
-    function _trueKeys(result, value, key) {
-        if (value === true) {
-            result.push(key);
-        }
-        return result;
-    }
-
-    /* @ngInject */
-    function coreLayout($rootScope, coreLayoutService) {
-        var defaults = {
-                show: true,
-                header: {
-                    visible: _createSizeSettings(),
-                    hidden: _createSizeSettings()
-                },
-                footer: {
-                    visible: _createSizeSettings(),
-                    hidden: _createSizeSettings()
-                }
-            },
-            cache = {};
-
-        function _addWatcher(attrs, name, area, visibility) {
-            var group = name + '.' + area + '.' + visibility;
-
-            $rootScope.$watchCollection('coreLayout.' + group,
-                function _updateClasses(newValue) {
-                    /**
-                     * In lodash v3.0.0, it should be possible to reduce the
-                     * following _.reduce() statement to
-                     *
-                     *   var sizes = _.invert(newValue, true).true;
-                     *
-                     * by supplying the multiValue flag to _.invert():
-                     **/
-                    var sizes = _.reduce(newValue, _trueKeys, []),
-                        current = cache[group] || [],
-                        classPrefix = 'cl-' + area + '-' + visibility,
-                        layoutChanged = false;
-
-                    _.each(_.difference(sizes, current), function _addClass(size) {
-                        attrs.$addClass(classPrefix + suffixes[size]);
-                        layoutChanged = true;
-                    });
-
-                    _.each(_.difference(current, sizes), function _removeClass(size) {
-                        attrs.$removeClass(classPrefix + suffixes[size]);
-                        layoutChanged = true;
-                    });
-
-                    if (layoutChanged) {
-                        coreLayoutService.layoutChanged(name);
-                    }
-
-                    cache[group] = sizes;
-                });
-        }
-
-        function _link(scope, element, attrs) {
-            var options = defaultsDeep({}, scope.options, defaults),
-                name = options.name;
-
-            delete options.name;
-
-            scope.names = {
-                header: name + '-header',
-                contents: name + '-contents',
-                footer: name + '-footer'
-            };
-
-            coreLayoutService.state[name] = options;
-
-            attrs.$addClass('core-layout');
-
-            var deregistrators = [
-                _addWatcher(attrs, name, 'header', 'visible'),
-                _addWatcher(attrs, name, 'header', 'hidden'),
-                _addWatcher(attrs, name, 'footer', 'visible'),
-                _addWatcher(attrs, name, 'footer', 'hidden')
-            ];
-
-            scope.$on('$destroy', function _deregister() {
-                _.each(deregistrators, function _deregister(deregistrator) {
-                    deregistrator();
-                })
-            });
-        }
-
-        return {
-            link: _link,
-            scope: {
-                options: '=coreLayout'
-            },
-            templateUrl: 'core-layout.html'
-        };
-    }
-    coreLayout.$inject = ["$rootScope", "coreLayoutService"];
-
-    /* @ngInject */
-    function coreLayoutClose($state, coreLayoutService) {
-        function _link(scope, element) {
-            element.on('click', function _close() {
-                $state.go(coreLayoutService.state[scope.name].closeTargetState);
-            });
-        }
-
-        return {
-            link: _link,
-            scope: {
-                name: '@coreLayoutClose'
-            }
-        };
-    }
-    coreLayoutClose.$inject = ["$state", "coreLayoutService"];
-
-    return angular
-        .module('coreLayout', [angularIscroll.name, 'coreLayout.templates'])
-        .factory('coreLayoutService', CoreLayoutService)
-        .directive('coreLayout', coreLayout)
-        .directive('coreLayoutClose', coreLayoutClose);
-}));
-
-},{"angular":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","angular-iscroll":"/home/mtr/projects/core-layout/node_modules/angular-iscroll/dist/lib/angular-iscroll.js","lodash":"/home/mtr/projects/core-layout/node_modules/lodash/index.js"}]},{},["./src/examples/app.js"])
+},{"angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}]},{},["./src/examples/app.js"])
 
 
 //# sourceMappingURL=bundle.js.map
