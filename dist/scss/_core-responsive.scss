@@ -59,23 +59,23 @@ $modal-header-height, $modal-footer-height) {
     }
   }
 
-  .iscroll-off .cl-modal-box {
-    @include cl-area-visibility('header', $visible-size, 'contents') {
-      margin-top: $modal-header-height;
-    }
-    @include cl-area-visibility('footer', $visible-size, 'contents') {
-      margin-bottom: $modal-footer-height;
-    }
-  }
-
-  .iscroll-on .cl-modal-box {
-    @include cl-area-visibility('header', $visible-size, 'contents') {
-      top: $modal-header-height;
-    }
-    @include cl-area-visibility('footer', $visible-size, 'contents') {
-      bottom: $modal-footer-height;
-    }
-  }
+//  .iscroll-off .cl-modal-box {
+//    @include cl-area-visibility('header', $visible-size, 'contents') {
+//      margin-top: $modal-header-height;
+//    }
+//    @include cl-area-visibility('footer', $visible-size, 'contents') {
+//      margin-bottom: $modal-footer-height;
+//    }
+//  }
+//
+//  .iscroll-on .cl-modal-box {
+//    @include cl-area-visibility('header', $visible-size, 'contents') {
+//      top: $modal-header-height;
+//    }
+//    @include cl-area-visibility('footer', $visible-size, 'contents') {
+//      bottom: $modal-footer-height;
+//    }
+//  }
 
 }
 
