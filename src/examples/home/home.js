@@ -14,6 +14,10 @@ function config($stateProvider) {
         .state('home', {
             url: '/',
             views: {
+                'left-drawer-contents@': {
+                    templateUrl: 'components/drawer/left-drawer.html',
+                    controller: 'DrawerController'
+                },
                 'main-header@': {
                     templateUrl: 'components/header/header.html',
                     controller: 'HeaderController'

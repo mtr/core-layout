@@ -3,11 +3,8 @@
 var angular = require('angular-x');
 
 /* @ngInject */
-function currentVersion($log, version, buildTimestamp) {
+function currentVersion(version, buildTimestamp) {
     function _link(scope, element, attrs) {
-        $log.debug('directiveDefinition.name', directiveDefinition.name);
-        $log.debug('attrs[directiveDefinition.name]', attrs[directiveDefinition.name]);
-
         element.text(attrs[directiveDefinition.name] === 'full' ?
         version + ' (' + buildTimestamp + ')' : version);
     }

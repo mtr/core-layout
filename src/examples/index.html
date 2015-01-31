@@ -19,18 +19,18 @@
       ng-class="{
       'iscroll-on': app.iScrollState.useIScroll,
       'iscroll-off': !app.iScrollState.useIScroll
-      }">
+      }"
+    class="ng-cloak">
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser.
   Please <a href="http://browsehappy.com/">upgrade your browser</a> to
   improve
   your experience.</p>
 <![endif]-->
-<!--!
-<div core-layout="::{name: 'left-menu', header: {visible: {all: false}}, footer: {visible: {all: false}}}"></div>
-<div core-layout="::{name: 'right-menu', header: {visible: {all: false}}, footer: {visible: {all: false}}}"></div>
--->
+
+<div core-layout="::{name: 'left-drawer', show: true, header: {visible: {all: false}}, footer: {visible: {all: false}}}" ng-show="app.layout.leftDrawer.show"></div>
 <div core-layout="::{name: 'main', header: {visible: {all: true}}, footer: {visible: {xs: true}}}"></div>
+<div core-layout="::{name: 'right-drawer', show: false, header: {visible: {all: true}}, footer: {visible: {all: false}}}" ng-show="app.layout.rightDrawer.show"></div>
 <div class="core-layout cl-modal-overlay" ng-show="app.layout.modal.show">
   <div class="cl-modal-box">
     <div core-layout="::{name: 'modal', show: false}"
