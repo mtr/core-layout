@@ -8,8 +8,8 @@ $cl-modal-header-z-index: ($cl-modal-z-index + 999) !default;
 $cl-modal-overlay-color: rgba(0, 0, 0, 0.5) !default;
 $cl-modal-box-bg-color: #fff !default;
 
-$cl-modal-header-height: 56px !default;
-$cl-modal-footer-height: 56px !default;
+$cl-modal-header-height: 90px !default;
+$cl-modal-footer-height: 180px !default;
 
 $cl-responsive-sizes: (xs, sm, md, lg);
 
@@ -33,3 +33,24 @@ $cl-modal-box-width-md: 700px !default;
 $cl-modal-box-height-md: $cl-modal-box-width-md !default;
 $cl-modal-box-width-lg: 700px !default;
 $cl-modal-box-height-lg: $cl-modal-box-width-lg !default;
+
+@function cl-generate-visibility-selectors($area, $visibility, $sizes) {
+  $selectors: ();
+  @each $size in $sizes {
+    $selectors: join($selectors,
+            unquote('.cl-#{$area}-#{$visibility}-#{$size}'), comma);
+  }
+  @return $selectors;
+}
+
+@function cl-remove($target, $list) {
+  $new-list: ();
+  @each $element in $list {
+    @if $element != $target {
+      $new-list: join($new-list, $element, comma);
+    }
+  }
+  @return $new-list;
+}
+
+
