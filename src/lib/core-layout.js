@@ -18,11 +18,34 @@
 }(this, function (angular, angularIscroll, _) {
     'use strict';
 
+    function createCompounder(callback) {
+        return function (string) {
+            var index = -1,
+                array = words(deburr(string)),
+                length = array.length,
+                result = '';
+
+            while (++index < length) {
+                result = callback(result, array[index], index);
+            }
+            return result;
+        };
+    }
+
+    if (_.VERSION.split('.')[0] < 3) {
+        // Let's support lodash < 3.x for a while.
+        _.camelCase = createCompounder(function (result, word, index) {
+            word = word.toLowerCase();
+            return index ? (result + word.charAt(0).toUpperCase() +
+            word.slice(1)) : word;
+        });
+    }
+
     /* @ngInject */
-    function CoreLayoutService($rootScope, iScrollService) {
+    function CoreLayoutService($rootScope, $log, iScrollService) {
         var _state = {
             /**
-             * Different state variables are assigned by core-layout directive
+             * Different state variables get assigned by core-layout directive
              * instances.
              **/
         };
@@ -107,8 +130,8 @@
             },
             cache = {};
 
-        function _addWatcher(attrs, name, area, visibility) {
-            var group = name + '.' + area + '.' + visibility;
+        function _addWatcher(attrs, ccName, area, visibility) {
+            var group = ccName + '.' + area + '.' + visibility;
 
             $rootScope.$watchCollection('coreLayout.' + group,
                 function _updateClasses(newValue) {
@@ -136,7 +159,7 @@
                     });
 
                     if (layoutChanged) {
-                        coreLayoutService.layoutChanged(name);
+                        coreLayoutService.layoutChanged(ccName);
                     }
 
                     cache[group] = sizes;
@@ -145,7 +168,8 @@
 
         function _link(scope, element, attrs) {
             var options = defaultsDeep({}, scope.options, defaults),
-                name = options.name;
+                name = options.name,
+                ccName = _.camelCase(name);
 
             delete options.name;
 
@@ -155,15 +179,15 @@
                 footer: name + '-footer'
             };
 
-            coreLayoutService.state[name] = options;
+            coreLayoutService.state[ccName] = options;
 
             attrs.$addClass('core-layout');
 
             var deregistrators = [
-                _addWatcher(attrs, name, 'header', 'visible'),
-                _addWatcher(attrs, name, 'header', 'hidden'),
-                _addWatcher(attrs, name, 'footer', 'visible'),
-                _addWatcher(attrs, name, 'footer', 'hidden')
+                _addWatcher(attrs, ccName, 'header', 'visible'),
+                _addWatcher(attrs, ccName, 'header', 'hidden'),
+                _addWatcher(attrs, ccName, 'footer', 'visible'),
+                _addWatcher(attrs, ccName, 'footer', 'hidden')
             ];
 
             scope.$on('$destroy', function _deregister() {
