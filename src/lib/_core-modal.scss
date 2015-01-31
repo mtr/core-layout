@@ -79,6 +79,7 @@
   @include cl-modal-box-def(md, $cl-modal-box-width-md,
           $cl-modal-box-height-md);
 }
+
 @media (min-width: $cl-screen-lg-min) {
   @include cl-modal-box-def(lg, $cl-modal-box-width-lg,
           $cl-modal-box-height-lg);
