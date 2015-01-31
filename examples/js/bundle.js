@@ -55650,7 +55650,7 @@ module.exports = angular
         require('./version.directive.js').name
     ])
     .value('version', '0.6.2')
-    .value('buildTimestamp', '2015-01-30T13:43:43+0100');
+    .value('buildTimestamp', '2015-01-30T22:31:09+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
