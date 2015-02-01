@@ -1,4 +1,5 @@
 (function (root, factory) {
+    'use strict';
     // Using the Universal Module Definition pattern from
     // https://github.com/umdjs/umd/blob/master/returnExports.js
     if (typeof define === 'function' && define.amd) {
@@ -21,7 +22,7 @@
     function createCompounder(callback) {
         return function (string) {
             var index = -1,
-                array = words(deburr(string)),
+                array = _.words(_.deburr(string)),
                 length = array.length,
                 result = '';
 

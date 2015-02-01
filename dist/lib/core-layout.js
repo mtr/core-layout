@@ -1,10 +1,11 @@
 /**
- * @license core-layout v1.0.0, 2015-01-31T23:42:24+0100
+ * @license core-layout v1.0.1, 2015-02-01T22:11:18+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
 (function (module, window) {'use strict'; module.exports = angular.module('coreLayout.templates', []).run(['$templateCache', function($templateCache) { $templateCache.put("core-layout.html","<div class=\"cl-header\" ui-view=\"{{::names.header}}\"></div><div class=\"cl-contents\" ui-view=\"{{::names.contents}}\"></div><div class=\"cl-footer\" ui-view=\"{{::names.footer}}\"></div>");}]); })(module, window);
 (function (root, factory) {
+    'use strict';
     // Using the Universal Module Definition pattern from
     // https://github.com/umdjs/umd/blob/master/returnExports.js
     if (typeof define === 'function' && define.amd) {
@@ -27,7 +28,7 @@
     function createCompounder(callback) {
         return function (string) {
             var index = -1,
-                array = words(deburr(string)),
+                array = _.words(_.deburr(string)),
                 length = array.length,
                 result = '';
 
