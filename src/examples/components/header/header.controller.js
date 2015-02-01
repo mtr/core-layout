@@ -3,9 +3,14 @@
 var angular = require('angular-x');
 
 /* @ngInject */
-function HeaderController($scope, $window, $interval, iScrollService) {
+function HeaderController($scope, $window, $interval, $log, iScrollService,
+                          coreLayoutService) {
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
+
+    $log.debug('coreLayoutService', coreLayoutService);
+
+    $scope.toggleDrawer = coreLayoutService.toggleDrawer;
 
     $scope.demos = [
         {

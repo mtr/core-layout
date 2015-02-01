@@ -3,9 +3,10 @@
 var angular = require('angular-x');
 
 /* @ngInject */
-function HomeController($scope, $log, iScrollService) {
+function HomeController($scope, $log, iScrollService, coreLayoutService) {
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
+    $scope.drawers = coreLayoutService.state;
 }
 
 /* @ngInject */

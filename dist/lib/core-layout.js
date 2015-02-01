@@ -1,5 +1,5 @@
 /**
- * @license core-layout v1.0.2, 2015-02-01T23:54:51+0100
+ * @license core-layout v1.0.2, 2015-02-02T00:13:03+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -25,20 +25,6 @@
 }(this, function (angular, angularIscroll, _) {
     'use strict';
 
-    function createCompounder(callback) {
-        return function (string) {
-            var index = -1,
-                array = _.words(_.deburr(string)),
-                length = array.length,
-                result = '';
-
-            while (++index < length) {
-                result = callback(result, array[index], index);
-            }
-            return result;
-        };
-    }
-
     /* @ngInject */
     function CoreLayoutService($rootScope, $log, iScrollService) {
         var _state = {
@@ -48,9 +34,13 @@
              **/
         };
 
-        function _mergeStateIfProvided(configChanges) {
+        function _mergeStateIfProvided(configChanges, target) {
             if (angular.isDefined(configChanges)) {
-                _.merge(_state.modal, configChanges);
+                if (angular.isDefined(target)) {
+                    _.merge(target, configChanges);
+                } else {
+                    _.merge(_state.modal, configChanges);
+                }
             }
         }
 
@@ -68,6 +58,23 @@
             _mergeStateIfProvided(configChanges);
         }
 
+        function _openDrawer(drawerId, configChanges) {
+            var drawer = _state[drawerId];
+            _mergeStateIfProvided(configChanges, drawer);
+            drawer.show = true;
+        }
+
+        function _closeDrawer(drawerId, configChanges) {
+            var drawer = _state[drawerId];
+            drawer.show = false;
+            _mergeStateIfProvided(configChanges, drawer);
+        }
+
+        function _toggleDrawer(drawerId) {
+            var drawer = _state[drawerId];
+            drawer.show = !drawer.show;
+        }
+
         function _layoutChanged(name) {
             iScrollService.refresh(name);
         }
@@ -79,6 +86,9 @@
             openModal: _openModal,
             updateModal: _updateModal,
             closeModal: _closeModal,
+            openDrawer: _openDrawer,
+            closeDrawer: _closeDrawer,
+            toggleDrawer: _toggleDrawer,
             layoutChanged: _layoutChanged
         };
     }
