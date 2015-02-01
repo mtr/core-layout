@@ -1,5 +1,5 @@
 /**
- * @license core-layout v1.0.1, 2015-02-01T22:11:18+0100
+ * @license core-layout v1.0.2, 2015-02-01T23:54:51+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -37,15 +37,6 @@
             }
             return result;
         };
-    }
-
-    if (_.VERSION.split('.')[0] < 3) {
-        // Let's support lodash < 3.x for a while.
-        _.camelCase = createCompounder(function (result, word, index) {
-            word = word.toLowerCase();
-            return index ? (result + word.charAt(0).toUpperCase() +
-            word.slice(1)) : word;
-        });
     }
 
     /* @ngInject */
@@ -177,7 +168,7 @@
         function _link(scope, element, attrs) {
             var options = defaultsDeep({}, scope.options, defaults),
                 name = options.name,
-                ccName = _.camelCase(name);
+                ccName = attrs.$normalize(name);
 
             delete options.name;
 

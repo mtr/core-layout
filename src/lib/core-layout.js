@@ -33,15 +33,6 @@
         };
     }
 
-    if (_.VERSION.split('.')[0] < 3) {
-        // Let's support lodash < 3.x for a while.
-        _.camelCase = createCompounder(function (result, word, index) {
-            word = word.toLowerCase();
-            return index ? (result + word.charAt(0).toUpperCase() +
-            word.slice(1)) : word;
-        });
-    }
-
     /* @ngInject */
     function CoreLayoutService($rootScope, $log, iScrollService) {
         var _state = {
@@ -170,7 +161,7 @@
         function _link(scope, element, attrs) {
             var options = defaultsDeep({}, scope.options, defaults),
                 name = options.name,
-                ccName = _.camelCase(name);
+                ccName = attrs.$normalize(name);
 
             delete options.name;
 
