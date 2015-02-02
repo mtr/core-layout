@@ -15,6 +15,10 @@ function config($stateProvider) {
         .state('home', {
             url: '/',
             views: {
+                'left-drawer-header@': {
+                    templateUrl: 'components/drawer/left-drawer.header.html',
+                    controller: 'DrawerController'
+                },
                 'left-drawer-contents@': {
                     templateUrl: 'components/drawer/left-drawer.html',
                     controller: 'DrawerController'
