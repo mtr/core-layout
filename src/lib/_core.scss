@@ -1,6 +1,11 @@
 @import "core-variables";
 @import "core-responsive";
 @import "core-modal";
+@import "core-drawers";
+
+body {
+  overflow: hidden;
+}
 
 .cl-header,
 .cl-contents,
@@ -40,10 +45,6 @@
 }
 
 .iscroll-on {
-  body {
-    overflow: hidden;
-  }
-
   .cl-header,
   .cl-contents,
   .cl-footer {

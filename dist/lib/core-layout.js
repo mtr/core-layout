@@ -1,5 +1,5 @@
 /**
- * @license core-layout v1.0.2, 2015-02-02T00:13:03+0100
+ * @license core-layout v1.0.2, 2015-02-02T23:27:50+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -64,6 +64,10 @@
             drawer.show = true;
         }
 
+        function _updateDrawer(drawerId, configChanges) {
+            _mergeStateIfProvided(configChanges, _state[drawerId]);
+        }
+
         function _closeDrawer(drawerId, configChanges) {
             var drawer = _state[drawerId];
             drawer.show = false;
@@ -87,6 +91,7 @@
             updateModal: _updateModal,
             closeModal: _closeModal,
             openDrawer: _openDrawer,
+            updateDrawer: _updateDrawer,
             closeDrawer: _closeDrawer,
             toggleDrawer: _toggleDrawer,
             layoutChanged: _layoutChanged
@@ -191,6 +196,7 @@
             coreLayoutService.state[ccName] = options;
 
             attrs.$addClass('core-layout');
+            attrs.$addClass('cl-' + name);
 
             var deregistrators = [
                 _addWatcher(attrs, ccName, 'header', 'visible'),

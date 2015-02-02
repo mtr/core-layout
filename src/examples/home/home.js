@@ -19,6 +19,10 @@ function config($stateProvider) {
                     templateUrl: 'components/drawer/left-drawer.html',
                     controller: 'DrawerController'
                 },
+                'right-drawer-contents@': {
+                    templateUrl: 'components/drawer/right-drawer.html',
+                    controller: 'DrawerController'
+                },
                 'main-header@': {
                     templateUrl: 'components/header/header.html',
                     controller: 'HeaderController'
@@ -30,6 +34,12 @@ function config($stateProvider) {
                 'main-footer@': {
                     templateUrl: 'home/open-modal.footer.html'
                 }
+            },
+            onEnter: /* @ngInject */ function _openRightDrawer(coreLayoutService) {
+                coreLayoutService.updateDrawer('rightDrawer', {
+                    header: {hidden: {all: true}},
+                    footer: {hidden: {all: true}}
+                });
             }
         })
         .state('home.modal', {
