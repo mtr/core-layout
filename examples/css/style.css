@@ -2279,6 +2279,29 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 @media (min-width: 768px) and (max-width: 991px) { .cl-modal-box { width: 700px; height: 700px; margin: -350px 0 0 -350px; } }
 @media (min-width: 992px) and (max-width: 1199px) { .cl-modal-box { width: 700px; height: 700px; margin: -350px 0 0 -350px; } }
 @media (min-width: 1200px) { .cl-modal-box { width: 700px; height: 700px; margin: -350px 0 0 -350px; } }
+.cl-main { position: absolute; left: 0; top: 0; right: 0; bottom: 0; width: 100%; height: 100%; transition: left 0.2s ease-in-out, right 0.2s ease-in-out; }
+
+.cl-left-drawer, .cl-right-drawer { position: absolute; top: 0; height: 100%; overflow-x: hidden; }
+.cl-left-drawer .cl-header, .cl-left-drawer .cl-contents, .cl-left-drawer .cl-footer, .cl-right-drawer .cl-header, .cl-right-drawer .cl-contents, .cl-right-drawer .cl-footer { overflow-x: hidden; }
+
+.cl-left-drawer { background-color: #fff; }
+
+.cl-right-drawer { background-color: #fff; }
+
+.cl-left-drawer { width: 270px; left: -270px; transition: left 0.2s ease-in-out; }
+
+.cl-right-drawer { width: 270px; right: -270px; transition: right 0.2s ease-in-out; }
+
+.cl-left-drawer-open .cl-left-drawer { left: 0 !important; }
+.cl-left-drawer-open .cl-main { left: 270px !important; right: -270px !important; }
+
+.cl-right-drawer-open .cl-right-drawer { right: 0 !important; }
+.cl-right-drawer-open .cl-main { right: 270px !important; left: -270px !important; }
+
+.cl-left-drawer-open .cl-header, .cl-left-drawer-open .cl-contents, .cl-left-drawer-open .cl-footer, .cl-right-drawer-open .cl-header, .cl-right-drawer-open .cl-contents, .cl-right-drawer-open .cl-footer { left: auto; }
+
+body { overflow: hidden; }
+
 .cl-header, .cl-contents, .cl-footer { left: 0; width: 100%; padding: 0; margin: 0; }
 
 .cl-header { top: 0; }
@@ -2292,10 +2315,11 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 .iscroll-off .cl-header, .iscroll-off .cl-footer { position: fixed; }
 .iscroll-off .cl-contents { position: absolute; }
 
-.iscroll-on body { overflow: hidden; }
 .iscroll-on .cl-header, .iscroll-on .cl-contents, .iscroll-on .cl-footer { position: absolute; overflow: hidden; }
 
 .core.header .navbar, .core.header .navbar-text { margin-bottom: 0; }
+
+.left-drawer-toggle { float: left; margin-left: 15px; }
 
 .multi-column.container-fluid, .multi-column .row, .multi-column .column { height: 100%; }
 

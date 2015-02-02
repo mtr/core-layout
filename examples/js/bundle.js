@@ -39,12 +39,13 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v1.0.0, 2015-01-31T23:42:24+0100
+ * @license core-layout v1.1.1, 2015-02-03T00:03:48+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
 (function (module, window) {'use strict'; module.exports = angular.module('coreLayout.templates', []).run(['$templateCache', function($templateCache) { $templateCache.put("core-layout.html","<div class=\"cl-header\" ui-view=\"{{::names.header}}\"></div><div class=\"cl-contents\" ui-view=\"{{::names.contents}}\"></div><div class=\"cl-footer\" ui-view=\"{{::names.footer}}\"></div>");}]); })(module, window);
 (function (root, factory) {
+    'use strict';
     // Using the Universal Module Definition pattern from
     // https://github.com/umdjs/umd/blob/master/returnExports.js
     if (typeof define === 'function' && define.amd) {
@@ -64,31 +65,8 @@ module.exports = angular.module('myApp');
 }(this, function (angular, angularIscroll, _) {
     'use strict';
 
-    function createCompounder(callback) {
-        return function (string) {
-            var index = -1,
-                array = words(deburr(string)),
-                length = array.length,
-                result = '';
-
-            while (++index < length) {
-                result = callback(result, array[index], index);
-            }
-            return result;
-        };
-    }
-
-    if (_.VERSION.split('.')[0] < 3) {
-        // Let's support lodash < 3.x for a while.
-        _.camelCase = createCompounder(function (result, word, index) {
-            word = word.toLowerCase();
-            return index ? (result + word.charAt(0).toUpperCase() +
-            word.slice(1)) : word;
-        });
-    }
-
     /* @ngInject */
-    function CoreLayoutService($rootScope, $log, iScrollService) {
+    function CoreLayoutService($rootScope, iScrollService) {
         var _state = {
             /**
              * Different state variables get assigned by core-layout directive
@@ -96,9 +74,13 @@ module.exports = angular.module('myApp');
              **/
         };
 
-        function _mergeStateIfProvided(configChanges) {
+        function _mergeStateIfProvided(configChanges, target) {
             if (angular.isDefined(configChanges)) {
-                _.merge(_state.modal, configChanges);
+                if (angular.isDefined(target)) {
+                    _.merge(target, configChanges);
+                } else {
+                    _.merge(_state.modal, configChanges);
+                }
             }
         }
 
@@ -116,6 +98,27 @@ module.exports = angular.module('myApp');
             _mergeStateIfProvided(configChanges);
         }
 
+        function _openDrawer(drawerId, configChanges) {
+            var drawer = _state[drawerId];
+            _mergeStateIfProvided(configChanges, drawer);
+            drawer.show = true;
+        }
+
+        function _updateDrawer(drawerId, configChanges) {
+            _mergeStateIfProvided(configChanges, _state[drawerId]);
+        }
+
+        function _closeDrawer(drawerId, configChanges) {
+            var drawer = _state[drawerId];
+            drawer.show = false;
+            _mergeStateIfProvided(configChanges, drawer);
+        }
+
+        function _toggleDrawer(drawerId) {
+            var drawer = _state[drawerId];
+            drawer.show = !drawer.show;
+        }
+
         function _layoutChanged(name) {
             iScrollService.refresh(name);
         }
@@ -127,10 +130,14 @@ module.exports = angular.module('myApp');
             openModal: _openModal,
             updateModal: _updateModal,
             closeModal: _closeModal,
+            openDrawer: _openDrawer,
+            updateDrawer: _updateDrawer,
+            closeDrawer: _closeDrawer,
+            toggleDrawer: _toggleDrawer,
             layoutChanged: _layoutChanged
         };
     }
-    CoreLayoutService.$inject = ["$rootScope", "$log", "iScrollService"];
+    CoreLayoutService.$inject = ["$rootScope", "iScrollService"];
 
     var defaultsDeep = _.partialRight(_.merge, function deep(value, other) {
         return _.merge(value, other, deep);
@@ -216,7 +223,7 @@ module.exports = angular.module('myApp');
         function _link(scope, element, attrs) {
             var options = defaultsDeep({}, scope.options, defaults),
                 name = options.name,
-                ccName = _.camelCase(name);
+                ccName = attrs.$normalize(name);
 
             delete options.name;
 
@@ -229,6 +236,7 @@ module.exports = angular.module('myApp');
             coreLayoutService.state[ccName] = options;
 
             attrs.$addClass('core-layout');
+            attrs.$addClass('cl-' + name);
 
             var deregistrators = [
                 _addWatcher(attrs, ccName, 'header', 'visible'),
@@ -55587,7 +55595,7 @@ return jQuery;
 var angular = require('angular-x');
 
 /* @ngInject */
-function DrawerController($scope, $log, iScrollService) {
+function DrawerController($scope, iScrollService) {
     var _index = {};
 
     function _getRows(count) {
@@ -55602,10 +55610,9 @@ function DrawerController($scope, $log, iScrollService) {
 
     $scope.getRows = _getRows;
 }
-DrawerController.$inject = ["$scope", "$log", "iScrollService"];
+DrawerController.$inject = ["$scope", "iScrollService"];
 
 module.exports = angular.module('myApp.drawer', [])
-    //.config(config)
     .controller('DrawerController', DrawerController);
 
 },{"angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/components/header/header.controller.js":[function(require,module,exports){
@@ -55614,9 +55621,12 @@ module.exports = angular.module('myApp.drawer', [])
 var angular = require('angular-x');
 
 /* @ngInject */
-function HeaderController($scope, $window, $interval, iScrollService) {
+function HeaderController($scope, $window, $interval, iScrollService,
+                          coreLayoutService) {
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
+
+    $scope.toggleDrawer = coreLayoutService.toggleDrawer;
 
     $scope.demos = [
         {
@@ -55640,9 +55650,8 @@ function HeaderController($scope, $window, $interval, iScrollService) {
     $scope.$on('$destroy', function _cleanUp() {
         $interval.cancel(promise);
     });
-
 }
-HeaderController.$inject = ["$scope", "$window", "$interval", "iScrollService"];
+HeaderController.$inject = ["$scope", "$window", "$interval", "iScrollService", "coreLayoutService"];
 
 module.exports = angular.module('myApp.header.HeaderController', [])
     .controller('HeaderController', HeaderController);
@@ -55688,8 +55697,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '1.0.0')
-    .value('buildTimestamp', '2015-01-31T23:27:48+0100');
+    .value('version', '1.0.2')
+    .value('buildTimestamp', '2015-02-02T12:46:16+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
@@ -55838,11 +55847,12 @@ module.exports = angular.module('myApp.demos.staticList', [])
 var angular = require('angular-x');
 
 /* @ngInject */
-function HomeController($scope, $log, iScrollService) {
+function HomeController($scope, $log, iScrollService, coreLayoutService) {
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
+    $scope.drawers = coreLayoutService.state;
 }
-HomeController.$inject = ["$scope", "$log", "iScrollService"];
+HomeController.$inject = ["$scope", "$log", "iScrollService", "coreLayoutService"];
 
 /* @ngInject */
 function config($stateProvider) {
@@ -55850,8 +55860,16 @@ function config($stateProvider) {
         .state('home', {
             url: '/',
             views: {
+                'left-drawer-header@': {
+                    templateUrl: 'components/drawer/left-drawer.header.html',
+                    controller: 'DrawerController'
+                },
                 'left-drawer-contents@': {
                     templateUrl: 'components/drawer/left-drawer.html',
+                    controller: 'DrawerController'
+                },
+                'right-drawer-contents@': {
+                    templateUrl: 'components/drawer/right-drawer.html',
                     controller: 'DrawerController'
                 },
                 'main-header@': {
@@ -55865,7 +55883,13 @@ function config($stateProvider) {
                 'main-footer@': {
                     templateUrl: 'home/open-modal.footer.html'
                 }
-            }
+            },
+            onEnter: /* @ngInject */ ["coreLayoutService", function _openRightDrawer(coreLayoutService) {
+                coreLayoutService.updateDrawer('rightDrawer', {
+                    header: {hidden: {all: true}},
+                    footer: {hidden: {all: true}}
+                });
+            }]
         })
         .state('home.modal', {
             url: 'modal',
@@ -55879,7 +55903,7 @@ function config($stateProvider) {
                 }
             },
             onEnter: /* @ngInject */ ["coreLayoutService", function _openModal(coreLayoutService) {
-                console.log('modal.onEnter');
+                //console.log('modal.onEnter');
                 coreLayoutService.openModal({
                     header: {visible: {all: true}},
                     footer: {visible: {all: true}},
@@ -55887,7 +55911,7 @@ function config($stateProvider) {
                 });
             }],
             onExit: /* @ngInject */ ["coreLayoutService", function _closeModal(coreLayoutService) {
-                console.log('modal.onExit');
+                //console.log('modal.onExit');
                 coreLayoutService.closeModal({
                     closeTargetState: null
                 });
