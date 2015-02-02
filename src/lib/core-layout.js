@@ -20,7 +20,7 @@
     'use strict';
 
     /* @ngInject */
-    function CoreLayoutService($rootScope, $log, iScrollService) {
+    function CoreLayoutService($rootScope, iScrollService) {
         var _state = {
             /**
              * Different state variables get assigned by core-layout directive

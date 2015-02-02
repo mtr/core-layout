@@ -3,12 +3,10 @@
 var angular = require('angular-x');
 
 /* @ngInject */
-function HeaderController($scope, $window, $interval, $log, iScrollService,
+function HeaderController($scope, $window, $interval, iScrollService,
                           coreLayoutService) {
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
-
-    $log.debug('coreLayoutService', coreLayoutService);
 
     $scope.toggleDrawer = coreLayoutService.toggleDrawer;
 
@@ -34,7 +32,6 @@ function HeaderController($scope, $window, $interval, $log, iScrollService,
     $scope.$on('$destroy', function _cleanUp() {
         $interval.cancel(promise);
     });
-
 }
 
 module.exports = angular.module('myApp.header.HeaderController', [])

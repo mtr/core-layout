@@ -1,5 +1,5 @@
 /**
- * @license core-layout v1.0.2, 2015-02-02T23:27:50+0100
+ * @license core-layout v1.1.0, 2015-02-02T23:35:51+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -26,7 +26,7 @@
     'use strict';
 
     /* @ngInject */
-    function CoreLayoutService($rootScope, $log, iScrollService) {
+    function CoreLayoutService($rootScope, iScrollService) {
         var _state = {
             /**
              * Different state variables get assigned by core-layout directive
@@ -97,7 +97,7 @@
             layoutChanged: _layoutChanged
         };
     }
-    CoreLayoutService.$inject = ["$rootScope", "$log", "iScrollService"];
+    CoreLayoutService.$inject = ["$rootScope", "iScrollService"];
 
     var defaultsDeep = _.partialRight(_.merge, function deep(value, other) {
         return _.merge(value, other, deep);

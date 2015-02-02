@@ -54,7 +54,7 @@ function config($stateProvider) {
                 }
             },
             onEnter: /* @ngInject */ function _openModal(coreLayoutService) {
-                console.log('modal.onEnter');
+                //console.log('modal.onEnter');
                 coreLayoutService.openModal({
                     header: {visible: {all: true}},
                     footer: {visible: {all: true}},
@@ -62,7 +62,7 @@ function config($stateProvider) {
                 });
             },
             onExit: /* @ngInject */ function _closeModal(coreLayoutService) {
-                console.log('modal.onExit');
+                //console.log('modal.onExit');
                 coreLayoutService.closeModal({
                     closeTargetState: null
                 });

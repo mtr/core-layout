@@ -3,7 +3,7 @@
 var angular = require('angular-x');
 
 /* @ngInject */
-function DrawerController($scope, $log, iScrollService) {
+function DrawerController($scope, iScrollService) {
     var _index = {};
 
     function _getRows(count) {
@@ -20,5 +20,4 @@ function DrawerController($scope, $log, iScrollService) {
 }
 
 module.exports = angular.module('myApp.drawer', [])
-    //.config(config)
     .controller('DrawerController', DrawerController);
