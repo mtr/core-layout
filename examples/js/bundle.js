@@ -55698,8 +55698,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '1.0.2')
-    .value('buildTimestamp', '2015-02-02T12:46:16+0100');
+    .value('version', '1.2.0')
+    .value('buildTimestamp', '2015-02-03T22:48:12+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
