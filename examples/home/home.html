@@ -1,6 +1,6 @@
 <div class="iscroll-wrapper" iscroll>
   <div class="iscroll-scroller">
-    <div class="home container">
+    <div class="home container-fluid">
       <div class="row">
         <div class="col-xs-12">
           <h1>iScroll Example App</h1>
@@ -36,8 +36,18 @@
                   </li>
                   <li class="list-group-item">
                     <label><input type="checkbox"
+                                  ng-model="drawers.leftDrawer.enabled">
+                      Enable left drawer</label>
+                  </li>
+                  <li class="list-group-item">
+                    <label><input type="checkbox"
                                   ng-model="drawers.leftDrawer.show">
                       Open left drawer</label>
+                  </li>
+                  <li class="list-group-item">
+                    <label><input type="checkbox"
+                                  ng-model="drawers.rightDrawer.enabled">
+                      Enable right drawer</label>
                   </li>
                   <li class="list-group-item">
                     <label><input type="checkbox"

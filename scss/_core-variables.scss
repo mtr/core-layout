@@ -2,8 +2,10 @@ $cl-header-height: 50px !default;
 $cl-footer-height: 50px !default;
 
 $cl-header-z-index: 1000 !default;
-$cl-modal-z-index: ($cl-header-z-index + 1) !default;
+$cl-drawer-z-index: ($cl-header-z-index + 1) !default;
+$cl-modal-z-index: ($cl-header-z-index + 2) !default;
 $cl-modal-header-z-index: ($cl-modal-z-index + 999) !default;
+
 
 $cl-modal-overlay-color: rgba(0, 0, 0, 0.5) !default;
 $cl-modal-box-bg-color: #fff !default;

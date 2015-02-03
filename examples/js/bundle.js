@@ -39,7 +39,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v1.1.1, 2015-02-03T00:03:48+0100
+ * @license core-layout v1.2.0, 2015-02-03T22:36:42+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -172,6 +172,7 @@ module.exports = angular.module('myApp');
     /* @ngInject */
     function coreLayout($rootScope, coreLayoutService) {
         var defaults = {
+                enabled: true,
                 show: true,
                 header: {
                     visible: _createSizeSettings(),
@@ -55604,7 +55605,7 @@ function DrawerController($scope, iScrollService) {
         }
         return _index[count];
     }
-
+    
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
 
@@ -55711,6 +55712,26 @@ function config($stateProvider) {
         url: '/demos',
         abstract: true,
         views: {
+            'left-drawer-header@': {
+                templateUrl: 'components/drawer/left-drawer.header.html'
+            },
+            'left-drawer-contents@': {
+                templateUrl: 'components/drawer/left-drawer.html',
+                controller: 'DrawerController'
+            },
+            'left-drawer-footer@': {
+                templateUrl: 'components/drawer/left-drawer.footer.html'
+            },
+            'right-drawer-header@': {
+                templateUrl: 'components/drawer/right-drawer.header.html'
+            },
+            'right-drawer-contents@': {
+                templateUrl: 'components/drawer/right-drawer.html',
+                controller: 'DrawerController'
+            },
+            'right-drawer-footer@': {
+                templateUrl: 'components/drawer/right-drawer.footer.html'
+            },
             'main-header@': {
                 templateUrl: 'components/header/header.html',
                 controller: 'HeaderController'
@@ -55861,16 +55882,24 @@ function config($stateProvider) {
             url: '/',
             views: {
                 'left-drawer-header@': {
-                    templateUrl: 'components/drawer/left-drawer.header.html',
-                    controller: 'DrawerController'
+                    templateUrl: 'components/drawer/left-drawer.header.html'
                 },
                 'left-drawer-contents@': {
                     templateUrl: 'components/drawer/left-drawer.html',
                     controller: 'DrawerController'
                 },
+                'left-drawer-footer@': {
+                    templateUrl: 'components/drawer/left-drawer.footer.html'
+                },
+                'right-drawer-header@': {
+                    templateUrl: 'components/drawer/right-drawer.header.html'
+                },
                 'right-drawer-contents@': {
                     templateUrl: 'components/drawer/right-drawer.html',
                     controller: 'DrawerController'
+                },
+                'right-drawer-footer@': {
+                    templateUrl: 'components/drawer/right-drawer.footer.html'
                 },
                 'main-header@': {
                     templateUrl: 'components/header/header.html',
