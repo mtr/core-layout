@@ -9,3 +9,33 @@
   float: left;
   margin-left: 15px;
 }
+
+.cl-left-drawer {
+  .container {
+    @include container-fixed;
+
+    @media (min-width: $screen-sm-min) {
+      width: $cl-left-drawer-width-sm;
+    }
+    @media (min-width: $screen-md-min) {
+      width: $cl-left-drawer-width-md;
+    }
+    @media (min-width: $screen-lg-min) {
+      width: $cl-left-drawer-width-lg;
+    }
+  }
+}
+
+.container {
+  @include container-fixed;
+
+  @media (min-width: $screen-sm-min) {
+    width: $container-sm - $cl-left-drawer-width-sm;
+  }
+  @media (min-width: $screen-md-min) {
+    width: $container-md - $cl-left-drawer-width-md;
+  }
+  @media (min-width: $screen-lg-min) {
+    width: $container-lg - $cl-left-drawer-width-lg;
+  }
+}

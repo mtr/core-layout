@@ -125,6 +125,7 @@
     /* @ngInject */
     function coreLayout($rootScope, coreLayoutService) {
         var defaults = {
+                enabled: true,
                 show: true,
                 header: {
                     visible: _createSizeSettings(),

@@ -12,7 +12,7 @@ function DrawerController($scope, iScrollService) {
         }
         return _index[count];
     }
-
+    
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
 
