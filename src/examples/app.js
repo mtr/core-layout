@@ -11,11 +11,24 @@ function config($urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
 }
 
-function MyAppController(iScrollService, coreLayoutService) {
+function MyAppController($document, $window, $timeout, iScrollService, coreLayoutService) {
     var vm = this;  // Use 'controller as' syntax.
 
     vm.iScrollState = iScrollService.state;
     vm.layout = coreLayoutService.state;
+
+    function _nullScroll() {
+        $window.scrollTo($document.body.scrollLeft, $document.body.scrollTop);
+    }
+
+    $document.on('blur', 'input, textarea', function () {
+        $timeout(_nullScroll, 0);
+    });
+
+    angular.element($window).on('load', function () {
+        $timeout(_nullScroll, 0);
+    });
+
 }
 
 angular
