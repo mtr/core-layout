@@ -10,9 +10,9 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>AngularJS iScroll Demo App</title>
+  <title>Core Layout: Demo App</title>
   <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body ng-controller="MyAppController as app"
@@ -32,8 +32,8 @@
   your experience.</p>
 <![endif]-->
 
-<div core-layout="::{name: 'left-drawer', show: false, header: {visible: {all: false}}, footer: {visible: {all: false}}}"></div>
 <div core-layout="::{name: 'main', header: {visible: {all: true}}, footer: {visible: {xs: true}}}"></div>
+<div core-layout="::{name: 'left-drawer', show: false, header: {visible: {all: false}}, footer: {visible: {all: false}}}"></div>
 <div core-layout="::{name: 'right-drawer', show: false, header: {visible: {all: true}}, footer: {visible: {all: false}}}"></div>
 <div class="core-layout cl-modal-overlay" ng-show="app.layout.modal.show">
   <div class="cl-modal-box">

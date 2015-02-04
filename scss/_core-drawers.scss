@@ -32,25 +32,14 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
   }
 }
 
-.cl-left-drawer-enabled {
-  .cl-left-drawer {
-    display: block;
-  }
-}
-
-.cl-right-drawer-enabled {
-  .cl-right-drawer {
-    display: block;
-  }
-}
-
 .cl-main {
   position: absolute;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
-  height: 100%;
+//  height: auto;
+//  height: 100%;
   transition: $cl-left-drawer-transition, $cl-right-drawer-transition;
 }
 
@@ -74,18 +63,32 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
   }
 
   .cl-left-drawer {
+    display: none;
     width: $cl-left-drawer-width-xs;
     left: -$cl-left-drawer-width-xs;
     transition: $cl-left-drawer-transition;
+
+    .cl-footer, .cl-header {
+      width: $cl-left-drawer-width-xs;
+      left: -$cl-left-drawer-width-xs;
+    }
+
   }
   .cl-right-drawer {
+    display: none;
     width: $cl-right-drawer-width-xs;
     right: -$cl-right-drawer-width-xs;
     transition: $cl-right-drawer-transition;
+
+    .cl-footer, .cl-header {
+      width: $cl-right-drawer-width-xs;
+      right: -$cl-right-drawer-width-xs;
+    }
   }
 
   .cl-left-drawer-enabled.cl-left-drawer-open {
     .cl-left-drawer {
+      display: block;
       left: 0 !important;
     }
     .cl-main {
@@ -113,6 +116,18 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
 }
 
 @mixin cl-drawer($left-width, $right-width, $left-bg-color, $right-bg-color) {
+  .cl-left-drawer-enabled {
+    .cl-left-drawer {
+      display: block;
+    }
+  }
+
+  .cl-right-drawer-enabled {
+    .cl-right-drawer {
+      display: block;
+    }
+  }
+
   .cl-left-drawer {
     background-color: $left-bg-color;
   }

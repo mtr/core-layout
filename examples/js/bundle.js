@@ -13,13 +13,26 @@ function config($urlRouterProvider) {
 }
 config.$inject = ["$urlRouterProvider"];
 
-function MyAppController(iScrollService, coreLayoutService) {
+function MyAppController($document, $window, $timeout, iScrollService, coreLayoutService) {
     var vm = this;  // Use 'controller as' syntax.
 
     vm.iScrollState = iScrollService.state;
     vm.layout = coreLayoutService.state;
+
+    function _nullScroll() {
+        $window.scrollTo(document.body.scrollLeft, document.body.scrollTop);
+    }
+
+    $document.on('blur', 'input, textarea', function () {
+        $timeout(_nullScroll, 0);
+    });
+
+    angular.element($window).on('load', function () {
+        $timeout(_nullScroll, 0);
+    });
+
 }
-MyAppController.$inject = ["iScrollService", "coreLayoutService"];
+MyAppController.$inject = ["$document", "$window", "$timeout", "iScrollService", "coreLayoutService"];
 
 angular
     .module('myApp', [
@@ -39,7 +52,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v1.2.0, 2015-02-03T22:36:42+0100
+ * @license core-layout v1.2.1, 2015-02-05T00:16:06+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -55699,7 +55712,7 @@ module.exports = angular
         require('./version.directive.js').name
     ])
     .value('version', '1.2.0')
-    .value('buildTimestamp', '2015-02-03T22:48:12+0100');
+    .value('buildTimestamp', '2015-02-04T22:47:27+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
