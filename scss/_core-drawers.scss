@@ -25,7 +25,7 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
 
 .cl-left-drawer,
 .cl-right-drawer {
-  display: none;
+//  display: none;
 
   .cl-header, .cl-contents, .cl-footer {
     z-index: $cl-drawer-z-index;
@@ -38,8 +38,6 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
   top: 0;
   right: 0;
   bottom: 0;
-//  height: auto;
-//  height: 100%;
   transition: $cl-left-drawer-transition, $cl-right-drawer-transition;
 }
 
@@ -63,7 +61,7 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
   }
 
   .cl-left-drawer {
-    display: none;
+//    display: none;
     width: $cl-left-drawer-width-xs;
     left: -$cl-left-drawer-width-xs;
     transition: $cl-left-drawer-transition;
@@ -75,7 +73,7 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
 
   }
   .cl-right-drawer {
-    display: none;
+//    display: none;
     width: $cl-right-drawer-width-xs;
     right: -$cl-right-drawer-width-xs;
     transition: $cl-right-drawer-transition;
@@ -88,7 +86,7 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
 
   .cl-left-drawer-enabled.cl-left-drawer-open {
     .cl-left-drawer {
-      display: block;
+//      display: block;
       left: 0 !important;
     }
     .cl-main {
@@ -116,17 +114,17 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
 }
 
 @mixin cl-drawer($left-width, $right-width, $left-bg-color, $right-bg-color) {
-  .cl-left-drawer-enabled {
-    .cl-left-drawer {
-      display: block;
-    }
-  }
-
-  .cl-right-drawer-enabled {
-    .cl-right-drawer {
-      display: block;
-    }
-  }
+//  .cl-left-drawer-enabled {
+//    .cl-left-drawer {
+//      display: block;
+//    }
+//  }
+//
+//  .cl-right-drawer-enabled {
+//    .cl-right-drawer {
+//      display: block;
+//    }
+//  }
 
   .cl-left-drawer {
     background-color: $left-bg-color;
