@@ -2,7 +2,13 @@
 A responsive AngularJS layout component for a simple, yet not completely trivial, Web-app layout that works well on both small (mobile) and larger screens.  An important feature is its use of iScroll 5.x, through [angular-iscroll](https://github.com/mtr/angular-iscroll), to support fixed-position headers and footers without using the CSS `position: fixed` formatting instruction which is not well supported on older Android (<= 4.1.2 ?) and iOS (<= 8.x) versions.  
 
 ## Install
-To check out a development version, start by cloning the repository, by
+
+Install the [core-layout NPM package](https://www.npmjs.com/package/core-layout)
+```bash
+npm install --save core-layout
+```
+
+Or, to check out a development version, start by cloning the repository, by
 ```bash
 git clone git@github.com:mtr/core-layout.git
 ```
