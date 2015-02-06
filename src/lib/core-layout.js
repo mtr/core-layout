@@ -19,6 +19,17 @@
 }(this, function (angular, angularIscroll, _) {
     'use strict';
 
+    function _sizesFalseExcept(options) {
+        options = options || {};
+        return {
+            all: options.all || false,
+            xs: options.xs || false,
+            sm: options.sm || false,
+            md: options.md || false,
+            lg: options.lg || false
+        };
+    }
+
     /* @ngInject */
     function CoreLayoutService($rootScope, iScrollService) {
         var _state = {
@@ -77,6 +88,10 @@
             iScrollService.refresh(name);
         }
 
+        function _update(configChanges) {
+            _mergeStateIfProvided(configChanges, _state.main)
+        }
+
         $rootScope.coreLayout = _state;
 
         return {
@@ -88,7 +103,9 @@
             updateDrawer: _updateDrawer,
             closeDrawer: _closeDrawer,
             toggleDrawer: _toggleDrawer,
-            layoutChanged: _layoutChanged
+            layoutChanged: _layoutChanged,
+            update: _update,
+            sizesFalseExcept: _sizesFalseExcept
         };
     }
 
@@ -104,17 +121,6 @@
         lg: '-lg'
     };
 
-    function _createSizeSettings(options) {
-        options = options || {};
-        return {
-            all: options.all || false,
-            xs: options.xs || false,
-            sm: options.sm || false,
-            md: options.md || false,
-            lg: options.lg || false
-        };
-    }
-
     function _trueKeys(result, value, key) {
         if (value === true) {
             result.push(key);
@@ -128,12 +134,12 @@
                 enabled: true,
                 show: true,
                 header: {
-                    visible: _createSizeSettings(),
-                    hidden: _createSizeSettings()
+                    visible: _sizesFalseExcept(),
+                    hidden: _sizesFalseExcept()
                 },
                 footer: {
-                    visible: _createSizeSettings(),
-                    hidden: _createSizeSettings()
+                    visible: _sizesFalseExcept(),
+                    hidden: _sizesFalseExcept()
                 }
             },
             cache = {};
