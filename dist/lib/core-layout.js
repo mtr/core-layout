@@ -1,5 +1,5 @@
 /**
- * @license core-layout v1.3.1, 2015-02-06T12:03:18+0100
+ * @license core-layout v1.3.2, 2015-02-06T12:05:23+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -112,7 +112,7 @@
             toggleDrawer: _toggleDrawer,
             layoutChanged: _layoutChanged,
             update: _update,
-            sizesFalseExcept: _defaultExcept
+            defaultExcept: _defaultExcept
         };
     }
     CoreLayoutService.$inject = ["$rootScope", "iScrollService"];
