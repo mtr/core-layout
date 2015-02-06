@@ -19,14 +19,15 @@
 }(this, function (angular, angularIscroll, _) {
     'use strict';
 
-    function _sizesFalseExcept(options) {
+    function _defaultExcept(options, defaultValue) {
         options = options || {};
+        defaultValue = angular.isDefined(defaultValue) ? defaultValue : false;
         return {
-            all: options.all || false,
-            xs: options.xs || false,
-            sm: options.sm || false,
-            md: options.md || false,
-            lg: options.lg || false
+            all: options.all || defaultValue,
+            xs: options.xs || defaultValue,
+            sm: options.sm || defaultValue,
+            md: options.md || defaultValue,
+            lg: options.lg || defaultValue
         };
     }
 
@@ -105,7 +106,7 @@
             toggleDrawer: _toggleDrawer,
             layoutChanged: _layoutChanged,
             update: _update,
-            sizesFalseExcept: _sizesFalseExcept
+            sizesFalseExcept: _defaultExcept
         };
     }
 
@@ -134,12 +135,12 @@
                 enabled: true,
                 show: true,
                 header: {
-                    visible: _sizesFalseExcept(),
-                    hidden: _sizesFalseExcept()
+                    visible: _defaultExcept(),
+                    hidden: _defaultExcept()
                 },
                 footer: {
-                    visible: _sizesFalseExcept(),
-                    hidden: _sizesFalseExcept()
+                    visible: _defaultExcept(),
+                    hidden: _defaultExcept()
                 }
             },
             cache = {};
