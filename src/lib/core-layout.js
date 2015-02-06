@@ -106,7 +106,7 @@
             toggleDrawer: _toggleDrawer,
             layoutChanged: _layoutChanged,
             update: _update,
-            sizesFalseExcept: _defaultExcept
+            defaultExcept: _defaultExcept
         };
     }
 
