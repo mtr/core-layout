@@ -39,7 +39,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v1.3.0, 2015-02-06T11:40:12+0100
+ * @license core-layout v1.3.1, 2015-02-06T12:01:43+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -65,14 +65,15 @@ module.exports = angular.module('myApp');
 }(this, function (angular, angularIscroll, _) {
     'use strict';
 
-    function _sizesFalseExcept(options) {
+    function _defaultExcept(options, defaultValue) {
         options = options || {};
+        defaultValue = angular.isDefined(defaultValue) ? defaultValue : false;
         return {
-            all: options.all || false,
-            xs: options.xs || false,
-            sm: options.sm || false,
-            md: options.md || false,
-            lg: options.lg || false
+            all: options.all || defaultValue,
+            xs: options.xs || defaultValue,
+            sm: options.sm || defaultValue,
+            md: options.md || defaultValue,
+            lg: options.lg || defaultValue
         };
     }
 
@@ -151,7 +152,7 @@ module.exports = angular.module('myApp');
             toggleDrawer: _toggleDrawer,
             layoutChanged: _layoutChanged,
             update: _update,
-            sizesFalseExcept: _sizesFalseExcept
+            sizesFalseExcept: _defaultExcept
         };
     }
     CoreLayoutService.$inject = ["$rootScope", "iScrollService"];
@@ -181,12 +182,12 @@ module.exports = angular.module('myApp');
                 enabled: true,
                 show: true,
                 header: {
-                    visible: _sizesFalseExcept(),
-                    hidden: _sizesFalseExcept()
+                    visible: _defaultExcept(),
+                    hidden: _defaultExcept()
                 },
                 footer: {
-                    visible: _sizesFalseExcept(),
-                    hidden: _sizesFalseExcept()
+                    visible: _defaultExcept(),
+                    hidden: _defaultExcept()
                 }
             },
             cache = {};
@@ -55704,8 +55705,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '1.3.0')
-    .value('buildTimestamp', '2015-02-06T11:40:25+0100');
+    .value('version', '1.3.1')
+    .value('buildTimestamp', '2015-02-06T12:01:54+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
