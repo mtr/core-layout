@@ -39,7 +39,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v1.3.3, 2015-02-07T00:15:31+0100
+ * @license core-layout v1.3.4, 2015-02-10T15:21:25+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -55705,8 +55705,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '1.3.3')
-    .value('buildTimestamp', '2015-02-07T00:15:37+0100');
+    .value('version', '1.3.4')
+    .value('buildTimestamp', '2015-02-10T15:21:35+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
@@ -55922,8 +55922,8 @@ function config($stateProvider) {
             },
             onEnter: /* @ngInject */ ["coreLayoutService", function _openRightDrawer(coreLayoutService) {
                 coreLayoutService.updateDrawer('rightDrawer', {
-                    header: {hidden: {all: true}},
-                    footer: {hidden: {all: true}}
+                    header: {hidden: coreLayoutService.defaultExcept({all: true})},
+                    footer: {hidden: coreLayoutService.defaultExcept({all: true})}
                 });
             }]
         })
@@ -55982,16 +55982,68 @@ function config($stateProvider) {
                     //header: {visible: {all: true, xs: false}}
                 });
             }]
-        }
-    );
+        })
+        .state('home.modal.shared-state', {
+            url: '/shared-state',
+            views: {
+                'modal-header@': {
+                    controller: 'SharedStateController',
+                    templateUrl: 'home/shared-state/shared-state.header.html'
+                },
+                'modal-contents@': {
+                    controller: 'SharedStateController',
+                    templateUrl: 'home/shared-state/shared-state.html'
+                },
+                'modal-footer@': {
+                    controller: 'SharedStateController',
+                    templateUrl: 'home/shared-state/shared-state.footer.html'
+                }
+            }
+        });
 }
 config.$inject = ["$stateProvider"];
 
-module.exports = angular.module('myApp.home', [])
+module.exports = angular
+    .module('myApp.home', [
+        require('./shared-state/shared-state.controller.js').name
+    ])
     .config(config)
     .controller('HomeController', HomeController);
 
-},{"angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}]},{},["./src/examples/app.js"])
+},{"./shared-state/shared-state.controller.js":"/home/mtr/projects/core-layout/src/examples/home/shared-state/shared-state.controller.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/home/shared-state/shared-state.controller.js":[function(require,module,exports){
+'use strict';
+
+var angular = require('angular');
+
+function SharedStateController($scope, $log, sharedState) {
+    $log.debug('Initialized SharedStateController');
+    $scope.state = sharedState.state;
+}
+SharedStateController.$inject = ["$scope", "$log", "sharedState"];
+
+module.exports = angular
+    .module('myApp.sharedState.SharedStateController', [
+        require('./shared-state.service.js').name
+    ])
+    .controller('SharedStateController', SharedStateController);
+
+},{"./shared-state.service.js":"/home/mtr/projects/core-layout/src/examples/home/shared-state/shared-state.service.js","angular":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/home/shared-state/shared-state.service.js":[function(require,module,exports){
+'use strict';
+
+var angular = require('angular');
+
+function sharedState() {
+    var _state = {};
+    return {
+        state: _state
+    };
+}
+
+module.exports = angular
+    .module('myApp.home.sharedState', [])
+    .factory('sharedState', sharedState);
+
+},{"angular":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}]},{},["./src/examples/app.js"])
 
 
 //# sourceMappingURL=bundle.js.map
