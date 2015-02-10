@@ -49,8 +49,8 @@ function config($stateProvider) {
             },
             onEnter: /* @ngInject */ function _openRightDrawer(coreLayoutService) {
                 coreLayoutService.updateDrawer('rightDrawer', {
-                    header: {hidden: {all: true}},
-                    footer: {hidden: {all: true}}
+                    header: {hidden: coreLayoutService.defaultExcept({all: true})},
+                    footer: {hidden: coreLayoutService.defaultExcept({all: true})}
                 });
             }
         })
@@ -109,10 +109,29 @@ function config($stateProvider) {
                     //header: {visible: {all: true, xs: false}}
                 });
             }
-        }
-    );
+        })
+        .state('home.modal.shared-state', {
+            url: '/shared-state',
+            views: {
+                'modal-header@': {
+                    controller: 'SharedStateController',
+                    templateUrl: 'home/shared-state/shared-state.header.html'
+                },
+                'modal-contents@': {
+                    controller: 'SharedStateController',
+                    templateUrl: 'home/shared-state/shared-state.html'
+                },
+                'modal-footer@': {
+                    controller: 'SharedStateController',
+                    templateUrl: 'home/shared-state/shared-state.footer.html'
+                }
+            }
+        });
 }
 
-module.exports = angular.module('myApp.home', [])
+module.exports = angular
+    .module('myApp.home', [
+        require('./shared-state/shared-state.controller.js').name
+    ])
     .config(config)
     .controller('HomeController', HomeController);
