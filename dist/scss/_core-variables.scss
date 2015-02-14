@@ -10,8 +10,15 @@ $cl-modal-header-z-index: ($cl-modal-z-index + 999) !default;
 $cl-modal-overlay-color: rgba(0, 0, 0, 0.5) !default;
 $cl-modal-box-bg-color: #fff !default;
 
-$cl-modal-header-height: 56px !default;
-$cl-modal-footer-height: 56px !default;
+$cl-modal-header-height-xs: 56px !default;
+$cl-modal-footer-height-xs: 56px !default;
+$cl-modal-header-height-sm: 66px !default;
+$cl-modal-footer-height-sm: 66px !default;
+$cl-modal-header-height-md: 76px !default;
+$cl-modal-footer-height-md: 76px !default;
+$cl-modal-header-height-lg: 86px !default;
+$cl-modal-footer-height-lg: 86px !default;
+
 
 $cl-responsive-sizes: (xs, sm, md, lg);
 

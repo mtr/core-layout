@@ -23,16 +23,14 @@ $cl-right-drawer-bg-color-sm: $cl-left-drawer-bg-color-sm !default;
 $cl-right-drawer-bg-color-md: $cl-left-drawer-bg-color-md !default;
 $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
 
-.cl-left-drawer,
-.cl-right-drawer {
-//  display: none;
-
+#cl-left-drawer,
+#cl-right-drawer {
   .cl-header, .cl-contents, .cl-footer {
     z-index: $cl-drawer-z-index;
   }
 }
 
-.cl-main {
+#cl-main {
   position: absolute;
   left: 0;
   top: 0;
@@ -41,8 +39,8 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
   transition: $cl-left-drawer-transition, $cl-right-drawer-transition;
 }
 
-.cl-left-drawer,
-.cl-right-drawer {
+#cl-left-drawer,
+#cl-right-drawer {
   position: absolute;
   top: 0;
   height: 100%;
@@ -57,15 +55,14 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
 }
 
 @media (max-width: $cl-screen-xs-max) {
-  .cl-left-drawer {
+  #cl-left-drawer {
     background-color: $cl-left-drawer-bg-color-xs;
   }
-  .cl-right-drawer {
+  #cl-right-drawer {
     background-color: $cl-right-drawer-bg-color-xs;
   }
 
-  .cl-left-drawer {
-//    display: none;
+  #cl-left-drawer {
     width: $cl-left-drawer-width-xs;
     left: -$cl-left-drawer-width-xs;
     transition: $cl-left-drawer-transition;
@@ -76,8 +73,7 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
     }
 
   }
-  .cl-right-drawer {
-//    display: none;
+  #cl-right-drawer {
     width: $cl-right-drawer-width-xs;
     right: -$cl-right-drawer-width-xs;
     transition: $cl-right-drawer-transition;
@@ -89,59 +85,40 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
   }
 
   .cl-left-drawer-enabled.cl-left-drawer-open {
-    .cl-left-drawer {
-//      display: block;
+    #cl-left-drawer {
       left: 0 !important;
 
       .cl-header, .cl-contents, .cl-footer {
         left: auto;
       }
     }
-    .cl-main {
+    #cl-main {
       left: $cl-left-drawer-width-xs !important;
       right: -$cl-left-drawer-width-xs !important;
     }
   }
 
   .cl-right-drawer-enabled.cl-right-drawer-open {
-    .cl-right-drawer {
+    #cl-right-drawer {
       right: 0 !important;
     }
-    .cl-main {
+    #cl-main {
       right: $cl-right-drawer-width-xs !important;
       left: -$cl-right-drawer-width-xs !important;
     }
   }
-
-//  .cl-left-drawer-open {
-//    .cl-header, .cl-contents, .cl-footer {
-//      left: auto;
-//    }
-//  }
 }
 
 @mixin cl-drawer($left-width, $right-width, $left-bg-color, $right-bg-color) {
-//  .cl-left-drawer-enabled {
-//    .cl-left-drawer {
-//      display: block;
-//    }
-//  }
-//
-//  .cl-right-drawer-enabled {
-//    .cl-right-drawer {
-//      display: block;
-//    }
-//  }
-
-  .cl-left-drawer {
+  #cl-left-drawer {
     background-color: $left-bg-color;
   }
-  .cl-right-drawer {
+  #cl-right-drawer {
     background-color: $right-bg-color;
   }
 
   .cl-left-drawer-enabled {
-    .cl-left-drawer {
+    #cl-left-drawer {
       width: $left-width;
       left: 0 !important;
       transition: $cl-left-drawer-transition;
@@ -149,7 +126,7 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
         width: $left-width;
       }
     }
-    .cl-main {
+    #cl-main {
       left: $left-width !important;
       right: 0 !important;
 
@@ -158,7 +135,7 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
       }
     }
   }
-  .cl-right-drawer {
+  #cl-right-drawer {
     width: $right-width;
     right: -$right-width;
     transition: $cl-right-drawer-transition;
@@ -170,7 +147,7 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
   }
 
   .cl-right-drawer-enabled.cl-right-drawer-open {
-    .cl-right-drawer {
+    #cl-right-drawer {
       right: 0 !important;
     }
   }
