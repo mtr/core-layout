@@ -1,5 +1,11 @@
-$cl-header-height: 50px !default;
-$cl-footer-height: 50px !default;
+$cl-header-height-xs: 48px !default;
+$cl-footer-height-xs: 48px !default;
+$cl-header-height-sm: 50px !default;
+$cl-footer-height-sm: 50px !default;
+$cl-header-height-md: 60px !default;
+$cl-footer-height-md: 60px !default;
+$cl-header-height-lg: 70px !default;
+$cl-footer-height-lg: 70px !default;
 
 $cl-header-z-index: 1000 !default;
 $cl-drawer-z-index: ($cl-header-z-index + 1) !default;

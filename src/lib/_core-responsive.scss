@@ -98,17 +98,37 @@ $modal-header-height, $modal-footer-height, $size) {
 }
 
 @media (max-width: $cl-screen-xs-max) {
-  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height-xs, $cl-modal-footer-height-xs, xs);
+  @include cl-responsive-visible-hidden-pair(
+          $cl-header-height-xs,
+          $cl-footer-height-xs,
+          $cl-modal-header-height-xs,
+          $cl-modal-footer-height-xs,
+          xs);
 }
 
 @media (min-width: $cl-screen-sm-min) and (max-width: $cl-screen-sm-max) {
-  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height-sm, $cl-modal-footer-height-sm, sm);
+  @include cl-responsive-visible-hidden-pair(
+          $cl-header-height-sm,
+          $cl-footer-height-sm,
+          $cl-modal-header-height-sm,
+          $cl-modal-footer-height-sm,
+          sm);
 }
 
 @media (min-width: $cl-screen-md-min) and (max-width: $cl-screen-md-max) {
-  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height-md, $cl-modal-footer-height-md, md);
+  @include cl-responsive-visible-hidden-pair(
+          $cl-header-height-md,
+          $cl-footer-height-md,
+          $cl-modal-header-height-md,
+          $cl-modal-footer-height-md,
+          md);
 }
 
 @media (min-width: $cl-screen-lg-min) {
-  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height-lg, $cl-modal-footer-height-lg, lg);
+  @include cl-responsive-visible-hidden-pair(
+          $cl-header-height-lg,
+          $cl-footer-height-lg,
+          $cl-modal-header-height-lg,
+          $cl-modal-footer-height-lg,
+          lg);
 }
