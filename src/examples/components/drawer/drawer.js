@@ -3,7 +3,7 @@
 var angular = require('angular-x');
 
 /* @ngInject */
-function DrawerController($scope, iScrollService) {
+function DrawerController($scope, iScrollService, coreLayoutService) {
     var _index = {};
 
     function _getRows(count) {
@@ -15,6 +15,7 @@ function DrawerController($scope, iScrollService) {
     
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
+    $scope.drawers = coreLayoutService.state;
 
     $scope.getRows = _getRows;
 }

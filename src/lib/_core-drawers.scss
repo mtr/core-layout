@@ -88,6 +88,10 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
     .cl-left-drawer {
 //      display: block;
       left: 0 !important;
+
+      .cl-header, .cl-contents, .cl-footer {
+        left: auto;
+      }
     }
     .cl-main {
       left: $cl-left-drawer-width-xs !important;
@@ -105,12 +109,11 @@ $cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
     }
   }
 
-  .cl-left-drawer-open,
-  .cl-right-drawer-open {
-    .cl-header, .cl-contents, .cl-footer {
-      left: auto;
-    }
-  }
+//  .cl-left-drawer-open {
+//    .cl-header, .cl-contents, .cl-footer {
+//      left: auto;
+//    }
+//  }
 }
 
 @mixin cl-drawer($left-width, $right-width, $left-bg-color, $right-bg-color) {
