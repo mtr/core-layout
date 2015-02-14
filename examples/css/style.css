@@ -2174,12 +2174,12 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 
 @media (max-width: 767px) { .cl-header-visible > .cl-header { display: block !important; }
   .cl-footer-visible > .cl-footer { display: block !important; }
-  .cl-header-visible > .cl-contents { top: 50px; }
-  .cl-footer-visible > .cl-contents { bottom: 50px; }
+  .cl-header-visible > .cl-contents { top: 48px; }
+  .cl-footer-visible > .cl-contents { bottom: 48px; }
   .cl-header-visible-xs > .cl-header { display: block !important; }
   .cl-footer-visible-xs > .cl-footer { display: block !important; }
-  .cl-header-visible-xs > .cl-contents { top: 50px; }
-  .cl-footer-visible-xs > .cl-contents { bottom: 50px; }
+  .cl-header-visible-xs > .cl-contents { top: 48px; }
+  .cl-footer-visible-xs > .cl-contents { bottom: 48px; }
   .cl-header-hidden > .cl-header { display: none !important; }
   .cl-footer-hidden > .cl-footer { display: none !important; }
   .cl-header-hidden > .cl-contents { top: 0; }
@@ -2238,12 +2238,12 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
   #cl-modal-box .cl-footer-hidden-sm > .cl-contents { bottom: 0; } }
 @media (min-width: 992px) and (max-width: 1199px) { .cl-header-visible > .cl-header { display: block !important; }
   .cl-footer-visible > .cl-footer { display: block !important; }
-  .cl-header-visible > .cl-contents { top: 50px; }
-  .cl-footer-visible > .cl-contents { bottom: 50px; }
+  .cl-header-visible > .cl-contents { top: 60px; }
+  .cl-footer-visible > .cl-contents { bottom: 60px; }
   .cl-header-visible-md > .cl-header { display: block !important; }
   .cl-footer-visible-md > .cl-footer { display: block !important; }
-  .cl-header-visible-md > .cl-contents { top: 50px; }
-  .cl-footer-visible-md > .cl-contents { bottom: 50px; }
+  .cl-header-visible-md > .cl-contents { top: 60px; }
+  .cl-footer-visible-md > .cl-contents { bottom: 60px; }
   .cl-header-hidden > .cl-header { display: none !important; }
   .cl-footer-hidden > .cl-footer { display: none !important; }
   .cl-header-hidden > .cl-contents { top: 0; }
@@ -2270,12 +2270,12 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
   #cl-modal-box .cl-footer-hidden-md > .cl-contents { bottom: 0; } }
 @media (min-width: 1200px) { .cl-header-visible > .cl-header { display: block !important; }
   .cl-footer-visible > .cl-footer { display: block !important; }
-  .cl-header-visible > .cl-contents { top: 50px; }
-  .cl-footer-visible > .cl-contents { bottom: 50px; }
+  .cl-header-visible > .cl-contents { top: 70px; }
+  .cl-footer-visible > .cl-contents { bottom: 70px; }
   .cl-header-visible-lg > .cl-header { display: block !important; }
   .cl-footer-visible-lg > .cl-footer { display: block !important; }
-  .cl-header-visible-lg > .cl-contents { top: 50px; }
-  .cl-footer-visible-lg > .cl-contents { bottom: 50px; }
+  .cl-header-visible-lg > .cl-contents { top: 70px; }
+  .cl-footer-visible-lg > .cl-contents { bottom: 70px; }
   .cl-header-hidden > .cl-header { display: none !important; }
   .cl-footer-hidden > .cl-footer { display: none !important; }
   .cl-header-hidden > .cl-contents { top: 0; }
@@ -2387,10 +2387,22 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 
 .cl-header, .cl-footer { z-index: 1000; }
 
-.cl-footer { bottom: 0; height: 50px; }
+.cl-footer { bottom: 0; }
 
-.cl-contents { overflow: auto; top: 50px; bottom: 50px; }
+.cl-contents { overflow: auto; }
 
+@media (max-width: 767px) { /** The following is left out to allow "overflowing" drop-down menus from the header bar. */
+  .cl-contents { top: 48px; bottom: 48px; }
+  .cl-footer { height: 48px; } }
+@media (min-width: 768px) and (max-width: 991px) { /** The following is left out to allow "overflowing" drop-down menus from the header bar. */
+  .cl-contents { top: 50px; bottom: 50px; }
+  .cl-footer { height: 50px; } }
+@media (min-width: 992px) and (max-width: 1199px) { /** The following is left out to allow "overflowing" drop-down menus from the header bar. */
+  .cl-contents { top: 60px; bottom: 60px; }
+  .cl-footer { height: 60px; } }
+@media (min-width: 1200px) { /** The following is left out to allow "overflowing" drop-down menus from the header bar. */
+  .cl-contents { top: 70px; bottom: 70px; }
+  .cl-footer { height: 70px; } }
 .iscroll-off .cl-header, .iscroll-off .cl-footer { position: fixed; }
 .iscroll-off .cl-contents { position: absolute; }
 
@@ -2415,6 +2427,8 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 @media (min-width: 1200px) { .container { width: 810px; } }
 
 .modal-header, .modal-footer { height: 100%; }
+
+.cl-footer .navbar { height: 100%; margin-bottom: auto; }
 
 .multi-column.container-fluid, .multi-column .row, .multi-column .column { height: 100%; }
 
