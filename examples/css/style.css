@@ -2403,10 +2403,9 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 @media (min-width: 1200px) { /** The following is left out to allow "overflowing" drop-down menus from the header bar. */
   .cl-contents { top: 70px; bottom: 70px; }
   .cl-footer { height: 70px; } }
-.iscroll-off .cl-header, .iscroll-off .cl-footer { position: fixed; }
-.iscroll-off .cl-contents { position: absolute; }
+.cl-header, .cl-footer, .cl-contents { position: absolute; }
 
-.iscroll-on .cl-header, .iscroll-on .cl-contents, .iscroll-on .cl-footer { position: absolute; overflow: hidden; }
+.iscroll-on .cl-header, .iscroll-on .cl-contents, .iscroll-on .cl-footer { overflow: hidden; }
 
 .core.header .navbar, .core.header .navbar-text { margin-bottom: 0; }
 

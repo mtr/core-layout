@@ -64,21 +64,16 @@
   @include cl-heights($cl-header-height-lg, $cl-footer-height-lg);
 }
 
-.iscroll-off {
-  .cl-header,
-  .cl-footer {
-    position: fixed;
-  }
-  .cl-contents {
-    position: absolute;
-  }
+.cl-header,
+.cl-footer,
+.cl-contents {
+  position: absolute;
 }
 
 .iscroll-on {
   .cl-header,
   .cl-contents,
   .cl-footer {
-    position: absolute;
     overflow: hidden;
   }
 }
