@@ -2284,7 +2284,8 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 .cl-main { position: absolute; left: 0; top: 0; right: 0; bottom: 0; transition: left 0.2s ease-in-out, right 0.2s ease-in-out; }
 
 .cl-left-drawer, .cl-right-drawer { position: absolute; top: 0; height: 100%; overflow-x: hidden; }
-.cl-left-drawer .cl-header, .cl-left-drawer .cl-contents, .cl-left-drawer .cl-footer, .cl-right-drawer .cl-header, .cl-right-drawer .cl-contents, .cl-right-drawer .cl-footer { overflow-x: hidden; }
+.cl-left-drawer .cl-contents, .cl-right-drawer .cl-contents { overflow-x: hidden; }
+.cl-left-drawer .cl-header, .cl-left-drawer .cl-footer, .cl-right-drawer .cl-header, .cl-right-drawer .cl-footer { overflow: hidden; }
 
 @media (max-width: 767px) { .cl-left-drawer { background-color: #fff; }
   .cl-right-drawer { background-color: #fff; }
