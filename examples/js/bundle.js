@@ -39,7 +39,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v1.3.4, 2015-02-10T15:21:25+0100
+ * @license core-layout v1.3.5, 2015-02-14T11:07:36+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -55603,7 +55603,7 @@ return jQuery;
 var angular = require('angular-x');
 
 /* @ngInject */
-function DrawerController($scope, iScrollService) {
+function DrawerController($scope, iScrollService, coreLayoutService) {
     var _index = {};
 
     function _getRows(count) {
@@ -55615,10 +55615,11 @@ function DrawerController($scope, iScrollService) {
     
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
+    $scope.drawers = coreLayoutService.state;
 
     $scope.getRows = _getRows;
 }
-DrawerController.$inject = ["$scope", "iScrollService"];
+DrawerController.$inject = ["$scope", "iScrollService", "coreLayoutService"];
 
 module.exports = angular.module('myApp.drawer', [])
     .controller('DrawerController', DrawerController);
@@ -55705,8 +55706,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '1.3.4')
-    .value('buildTimestamp', '2015-02-10T15:21:35+0100');
+    .value('version', '1.3.5')
+    .value('buildTimestamp', '2015-02-14T11:07:39+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
