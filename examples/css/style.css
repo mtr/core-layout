@@ -2325,7 +2325,7 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
   .cl-right-drawer { width: 360px; right: -360px; transition: right 0.2s ease-in-out; }
   .cl-right-drawer .cl-footer, .cl-right-drawer .cl-header { width: 360px; left: auto; }
   .cl-right-drawer-enabled.cl-right-drawer-open .cl-right-drawer { right: 0 !important; } }
-body { overflow: hidden; }
+#outer-wrap { position: absolute; width: 100%; height: 100%; overflow: hidden; }
 
 .cl-header, .cl-contents, .cl-footer { left: 0; width: 100%; padding: 0; margin: 0; }
 
