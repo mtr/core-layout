@@ -36,9 +36,23 @@ $cl-screen-xs-max: ($cl-screen-sm-min - 1) !default;
 $cl-screen-sm-max: ($cl-screen-md-min - 1) !default;
 $cl-screen-md-max: ($cl-screen-lg-min - 1) !default;
 
-$cl-modal-box-width-sm: 700px !default;
-$cl-modal-box-height-sm: $cl-modal-box-width-sm !default;
-$cl-modal-box-width-md: 700px !default;
-$cl-modal-box-height-md: $cl-modal-box-width-md !default;
-$cl-modal-box-width-lg: 700px !default;
-$cl-modal-box-height-lg: $cl-modal-box-width-lg !default;
+$cl-modal-box-small-width-sm: 300px !default;
+$cl-modal-box-small-height-sm: $cl-modal-box-small-width-sm !default;
+$cl-modal-box-small-width-md: 350px !default;
+$cl-modal-box-small-height-md: $cl-modal-box-small-width-md !default;
+$cl-modal-box-small-width-lg: 400px !default;
+$cl-modal-box-small-height-lg: $cl-modal-box-small-width-lg !default;
+
+$cl-modal-box-medium-width-sm: 500px !default;
+$cl-modal-box-medium-height-sm: $cl-modal-box-medium-width-sm !default;
+$cl-modal-box-medium-width-md: 550px !default;
+$cl-modal-box-medium-height-md: $cl-modal-box-medium-width-md !default;
+$cl-modal-box-medium-width-lg: 600px !default;
+$cl-modal-box-medium-height-lg: $cl-modal-box-medium-width-lg !default;
+
+$cl-modal-box-large-width-sm: 700px !default;
+$cl-modal-box-large-height-sm: $cl-modal-box-large-width-sm !default;
+$cl-modal-box-large-width-md: 750px !default;
+$cl-modal-box-large-height-md: $cl-modal-box-large-width-md !default;
+$cl-modal-box-large-width-lg: 800px !default;
+$cl-modal-box-large-height-lg: $cl-modal-box-large-width-lg !default;
