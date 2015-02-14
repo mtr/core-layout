@@ -12,7 +12,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Core Layout: Demo App</title>
   <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <link rel="stylesheet" href="css/style.css">
@@ -26,21 +27,23 @@
       'cl-left-drawer-open': app.layout.leftDrawer.show,
       'cl-right-drawer-open': app.layout.rightDrawer.show
       }"
-    class="ng-cloak">
-<!--[if lt IE 7]>
-<p class="browsehappy">You are using an <strong>outdated</strong> browser.
-  Please <a href="http://browsehappy.com/">upgrade your browser</a> to
-  improve
-  your experience.</p>
-<![endif]-->
+      class="ng-cloak">
+<div id="outer-wrap">
+  <!--[if lt IE 7]>
+  <p class="browsehappy">You are using an <strong>outdated</strong> browser.
+    Please <a href="http://browsehappy.com/">upgrade your browser</a> to
+    improve
+    your experience.</p>
+  <![endif]-->
 
-<div core-layout="::{name: 'main', header: {visible: {all: true}}, footer: {visible: {xs: true}}}"></div>
-<div core-layout="::{name: 'left-drawer', show: false, header: {visible: {all: false}}, footer: {visible: {all: false}}}"></div>
-<div core-layout="::{name: 'right-drawer', show: false, header: {visible: {all: true}}, footer: {visible: {all: true}}}"></div>
-<div class="core-layout cl-modal-overlay" ng-show="app.layout.modal.show">
-  <div class="cl-modal-box">
-    <div core-layout="::{name: 'modal', show: false}"
-         ng-class="app.layout.modal.classes"></div>
+  <div core-layout="::{name: 'main', header: {visible: {all: true}}, footer: {visible: {xs: true}}}"></div>
+  <div core-layout="::{name: 'left-drawer', show: false, header: {visible: {all: false}}, footer: {visible: {all: false}}}"></div>
+  <div core-layout="::{name: 'right-drawer', show: false, header: {visible: {all: true}}, footer: {visible: {all: true}}}"></div>
+  <div class="core-layout cl-modal-overlay" ng-show="app.layout.modal.show">
+    <div class="cl-modal-box">
+      <div core-layout="::{name: 'modal', show: false}"
+           ng-class="app.layout.modal.classes"></div>
+    </div>
   </div>
 </div>
 <script src="js/bundle.js"></script>
