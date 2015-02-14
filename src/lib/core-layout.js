@@ -184,7 +184,8 @@
         function _link(scope, element, attrs) {
             var options = defaultsDeep({}, scope.options, defaults),
                 name = options.name,
-                ccName = attrs.$normalize(name);
+                ccName = attrs.$normalize(name),
+                identifier = 'cl-' + name;
 
             delete options.name;
 
@@ -196,8 +197,7 @@
 
             coreLayoutService.state[ccName] = options;
 
-            attrs.$addClass('core-layout');
-            attrs.$addClass('cl-' + name);
+            element.attr('id', identifier);
 
             var deregistrators = [
                 _addWatcher(attrs, ccName, 'header', 'visible'),

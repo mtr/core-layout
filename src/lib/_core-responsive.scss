@@ -74,7 +74,7 @@
 }
 
 @include default-invisible($cl-responsive-sizes);
-.cl-modal-box {
+#cl-modal-box {
   @include default-invisible($cl-responsive-sizes);
 }
 
@@ -87,7 +87,7 @@ $modal-header-height, $modal-footer-height, $size) {
   @include cl-responsive-hidden('hidden');
   @include cl-responsive-hidden('hidden-#{$size}');
 
-  .cl-modal-box {
+  #cl-modal-box {
     @include cl-responsive-visible('visible',
             $modal-header-height, $modal-footer-height);
     @include cl-responsive-visible('visible-#{$size}',
