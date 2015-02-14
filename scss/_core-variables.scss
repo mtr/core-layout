@@ -1,11 +1,11 @@
 $cl-header-height-xs: 48px !default;
-$cl-footer-height-xs: 48px !default;
+$cl-footer-height-xs: $cl-header-height-xs !default;
 $cl-header-height-sm: 50px !default;
-$cl-footer-height-sm: 50px !default;
+$cl-footer-height-sm: $cl-header-height-sm !default;
 $cl-header-height-md: 60px !default;
-$cl-footer-height-md: 60px !default;
+$cl-footer-height-md: $cl-header-height-md !default;
 $cl-header-height-lg: 70px !default;
-$cl-footer-height-lg: 70px !default;
+$cl-footer-height-lg: $cl-header-height-lg !default;
 
 $cl-header-z-index: 1000 !default;
 $cl-drawer-z-index: ($cl-header-z-index + 1) !default;
@@ -17,13 +17,13 @@ $cl-modal-overlay-color: rgba(0, 0, 0, 0.5) !default;
 $cl-modal-box-bg-color: #fff !default;
 
 $cl-modal-header-height-xs: 56px !default;
-$cl-modal-footer-height-xs: 56px !default;
+$cl-modal-footer-height-xs: $cl-modal-header-height-xs !default;
 $cl-modal-header-height-sm: 66px !default;
-$cl-modal-footer-height-sm: 66px !default;
+$cl-modal-footer-height-sm: $cl-modal-header-height-sm !default;
 $cl-modal-header-height-md: 76px !default;
-$cl-modal-footer-height-md: 76px !default;
+$cl-modal-footer-height-md: $cl-modal-header-height-md !default;
 $cl-modal-header-height-lg: 86px !default;
-$cl-modal-footer-height-lg: 86px !default;
+$cl-modal-footer-height-lg: $cl-modal-header-height-lg !default;
 
 
 $cl-responsive-sizes: (xs, sm, md, lg);
