@@ -79,35 +79,36 @@
 }
 
 @mixin cl-responsive-visible-hidden-pair($header-height, $footer-height,
-$modal-header-height, $modal-footer-height, $size: '', $joint: '-') {
-  $suffix: #{$joint}#{$size};
-
-  @include cl-responsive-visible('visible#{$suffix}',
+$modal-header-height, $modal-footer-height, $size) {
+  @include cl-responsive-visible('visible',
           $header-height, $footer-height);
-  @include cl-responsive-hidden('hidden#{$suffix}');
+  @include cl-responsive-visible('visible-#{$size}',
+          $header-height, $footer-height);
+  @include cl-responsive-hidden('hidden');
+  @include cl-responsive-hidden('hidden-#{$size}');
 
   .cl-modal-box {
-    @include cl-responsive-visible('visible#{$suffix}',
+    @include cl-responsive-visible('visible',
             $modal-header-height, $modal-footer-height);
-    @include cl-responsive-hidden('hidden#{$suffix}')
+    @include cl-responsive-visible('visible-#{$size}',
+            $modal-header-height, $modal-footer-height);
+    @include cl-responsive-hidden('hidden');
+    @include cl-responsive-hidden('hidden-#{$size}');
   }
 }
 
-@include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height,
-        $cl-modal-header-height, $cl-modal-footer-height, $joint: '');
-
 @media (max-width: $cl-screen-xs-max) {
-  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height, $cl-modal-footer-height, xs);
+  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height-xs, $cl-modal-footer-height-xs, xs);
 }
 
 @media (min-width: $cl-screen-sm-min) and (max-width: $cl-screen-sm-max) {
-  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height, $cl-modal-footer-height, sm);
+  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height-sm, $cl-modal-footer-height-sm, sm);
 }
 
 @media (min-width: $cl-screen-md-min) and (max-width: $cl-screen-md-max) {
-  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height, $cl-modal-footer-height, md);
+  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height-md, $cl-modal-footer-height-md, md);
 }
 
 @media (min-width: $cl-screen-lg-min) {
-  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height, $cl-modal-footer-height, lg);
+  @include cl-responsive-visible-hidden-pair($cl-header-height, $cl-footer-height, $cl-modal-header-height-lg, $cl-modal-footer-height-lg, lg);
 }
