@@ -39,7 +39,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v2.0.0, 2015-02-14T21:41:27+0100
+ * @license core-layout v3.0.0, 2015-02-14T23:30:27+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -55706,8 +55706,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '2.0.0')
-    .value('buildTimestamp', '2015-02-14T21:41:30+0100');
+    .value('version', '3.0.0')
+    .value('buildTimestamp', '2015-02-14T23:30:29+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
@@ -55964,7 +55964,12 @@ function config($stateProvider) {
                 'modal-footer@': {
                     templateUrl: 'home/first.modal.footer.html'
                 }
-            }
+            },
+            onEnter: /* @ngInject */ ["coreLayoutService", function _updateModal(coreLayoutService) {
+                coreLayoutService.updateModal({
+                    size: 'large'
+                });
+            }]
         })
         .state('home.modal.second', {
             url: '/second',
@@ -55999,7 +56004,31 @@ function config($stateProvider) {
                     controller: 'SharedStateController',
                     templateUrl: 'home/shared-state/shared-state.footer.html'
                 }
-            }
+            },
+            onEnter: /* @ngInject */ ["coreLayoutService", function _updateModal(coreLayoutService) {
+                coreLayoutService.updateModal({
+                    size: 'medium'
+                });
+            }]
+        })
+        .state('home.modal.small', {
+            url: '/small',
+            views: {
+                'modal-header@': {
+                    templateUrl: 'home/small.modal.header.html'
+                },
+                'modal-contents@': {
+                    templateUrl: 'home/small.modal.html'
+                },
+                'modal-footer@': {
+                    templateUrl: 'home/small.modal.footer.html'
+                }
+            },
+            onEnter: /* @ngInject */ ["coreLayoutService", function _updateModal(coreLayoutService) {
+                coreLayoutService.updateModal({
+                    size: 'small'
+                });
+            }]
         });
 }
 config.$inject = ["$stateProvider"];

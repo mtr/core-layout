@@ -33,15 +33,17 @@
 }
 
 @mixin cl-modal-header-footer-heights($header-height, $footer-height) {
-  .cl-header {
-    height: $header-height;
-  }
-  .cl-contents {
-    top: $header-height;
-    bottom: $footer-height;
-  }
-  .cl-footer {
-    height: $footer-height;
+  #cl-modal {
+    .cl-header {
+      height: $header-height;
+    }
+    .cl-contents {
+      top: $header-height;
+      bottom: $footer-height;
+    }
+    .cl-footer {
+      height: $footer-height;
+    }
   }
 }
 
@@ -49,11 +51,12 @@
   .cl-header, .cl-footer {
     z-index: $cl-modal-header-z-index;
   }
-  @media (max-width: $cl-screen-xs-max) {
-    @include cl-modal-header-footer-heights(
-            $cl-modal-header-height-xs,
-            $cl-modal-footer-height-xs);
-  }
+}
+
+@media (max-width: $cl-screen-xs-max) {
+  @include cl-modal-header-footer-heights(
+          $cl-modal-header-height-xs,
+          $cl-modal-footer-height-xs);
 }
 
 .iscroll-off {
@@ -70,40 +73,80 @@
   }
 }
 
-@mixin cl-modal-box-def($size, $box-width, $box-height,
-$modal-header-height, $modal-footer-height) {
-  #cl-modal-box {
-    width: $box-width;
-    height: $box-height;
-    margin: (- $box-height / 2) 0 0 (- $box-width / 2);
+@mixin cl-modal-box-size-def($size, $width, $height) {
+  #cl-modal-box.cl-modal-#{$size} {
+    width: $width;
+    height: $height;
+    margin: (- $height / 2) 0 0 (- $width / 2);
   }
-  #cl-modal {
-    @include cl-modal-header-footer-heights(
-            $modal-header-height,
-            $modal-footer-height);
+}
+
+@mixin cl-modal-box-def($size, $box-sizes) {
+  @each $box-size, $dimensions in $box-sizes {
+    @include cl-modal-box-size-def(
+            $box-size,
+            map-get($dimensions, width),
+            map-get($dimensions, height)
+    );
   }
 }
 
 @media (min-width: $cl-screen-sm-min) and (max-width: $cl-screen-sm-max) {
-  @include cl-modal-box-def(sm,
-          $cl-modal-box-width-sm,
-          $cl-modal-box-height-sm,
+  @include cl-modal-box-def(sm, (
+          small: (
+                  width: $cl-modal-box-small-width-sm,
+                  height: $cl-modal-box-small-height-sm
+          ),
+          medium: (
+                  width: $cl-modal-box-medium-width-sm,
+                  height: $cl-modal-box-medium-height-sm
+          ),
+          large: (
+                  width: $cl-modal-box-large-width-sm,
+                  height: $cl-modal-box-large-height-sm
+          )
+  ));
+  @include cl-modal-header-footer-heights(
           $cl-modal-header-height-sm,
           $cl-modal-footer-height-sm);
 }
 
 @media (min-width: $cl-screen-md-min) and (max-width: $cl-screen-md-max) {
-  @include cl-modal-box-def(md,
-          $cl-modal-box-width-md,
-          $cl-modal-box-height-md,
+  @include cl-modal-box-def(md, (
+          small: (
+                  width: $cl-modal-box-small-width-md,
+                  height: $cl-modal-box-small-height-md
+          ),
+          medium: (
+                  width: $cl-modal-box-medium-width-md,
+                  height: $cl-modal-box-medium-height-md
+          ),
+          large: (
+                  width: $cl-modal-box-large-width-md,
+                  height: $cl-modal-box-large-height-md
+          )
+  ));
+  @include cl-modal-header-footer-heights(
           $cl-modal-header-height-md,
           $cl-modal-footer-height-md);
 }
 
 @media (min-width: $cl-screen-lg-min) {
-  @include cl-modal-box-def(lg,
-          $cl-modal-box-width-lg,
-          $cl-modal-box-height-lg,
+  @include cl-modal-box-def(lg, (
+          small: (
+                  width: $cl-modal-box-small-width-lg,
+                  height: $cl-modal-box-small-height-lg
+          ),
+          medium: (
+                  width: $cl-modal-box-medium-width-lg,
+                  height: $cl-modal-box-medium-height-lg
+          ),
+          large: (
+                  width: $cl-modal-box-large-width-lg,
+                  height: $cl-modal-box-large-height-lg
+          )
+  ));
+  @include cl-modal-header-footer-heights(
           $cl-modal-header-height-lg,
           $cl-modal-footer-height-lg);
 }

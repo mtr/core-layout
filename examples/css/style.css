@@ -2307,23 +2307,29 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 @media (min-width: 768px) { #cl-modal-box { left: 50%; top: 50%; } }
 
 #cl-modal .cl-header, #cl-modal .cl-footer { z-index: 2001; }
+
 @media (max-width: 767px) { #cl-modal .cl-header { height: 56px; }
   #cl-modal .cl-contents { top: 56px; bottom: 56px; }
   #cl-modal .cl-footer { height: 56px; } }
-
 .iscroll-off #cl-modal .cl-header, .iscroll-off #cl-modal .cl-contents, .iscroll-off #cl-modal .cl-footer { position: absolute; }
 .iscroll-off #cl-modal .cl-header, .iscroll-off #cl-modal .cl-footer { overflow: hidden; }
 .iscroll-off #cl-modal .cl-contents { overflow: auto; }
 
-@media (min-width: 768px) and (max-width: 991px) { #cl-modal-box { width: 700px; height: 700px; margin: -350px 0 0 -350px; }
+@media (min-width: 768px) and (max-width: 991px) { #cl-modal-box.cl-modal-small { width: 300px; height: 300px; margin: -150px 0 0 -150px; }
+  #cl-modal-box.cl-modal-medium { width: 500px; height: 500px; margin: -250px 0 0 -250px; }
+  #cl-modal-box.cl-modal-large { width: 700px; height: 700px; margin: -350px 0 0 -350px; }
   #cl-modal .cl-header { height: 66px; }
   #cl-modal .cl-contents { top: 66px; bottom: 66px; }
   #cl-modal .cl-footer { height: 66px; } }
-@media (min-width: 992px) and (max-width: 1199px) { #cl-modal-box { width: 700px; height: 700px; margin: -350px 0 0 -350px; }
+@media (min-width: 992px) and (max-width: 1199px) { #cl-modal-box.cl-modal-small { width: 350px; height: 350px; margin: -175px 0 0 -175px; }
+  #cl-modal-box.cl-modal-medium { width: 550px; height: 550px; margin: -275px 0 0 -275px; }
+  #cl-modal-box.cl-modal-large { width: 750px; height: 750px; margin: -375px 0 0 -375px; }
   #cl-modal .cl-header { height: 76px; }
   #cl-modal .cl-contents { top: 76px; bottom: 76px; }
   #cl-modal .cl-footer { height: 76px; } }
-@media (min-width: 1200px) { #cl-modal-box { width: 700px; height: 700px; margin: -350px 0 0 -350px; }
+@media (min-width: 1200px) { #cl-modal-box.cl-modal-small { width: 400px; height: 400px; margin: -200px 0 0 -200px; }
+  #cl-modal-box.cl-modal-medium { width: 600px; height: 600px; margin: -300px 0 0 -300px; }
+  #cl-modal-box.cl-modal-large { width: 800px; height: 800px; margin: -400px 0 0 -400px; }
   #cl-modal .cl-header { height: 86px; }
   #cl-modal .cl-contents { top: 86px; bottom: 86px; }
   #cl-modal .cl-footer { height: 86px; } }
@@ -2407,6 +2413,8 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
 @media (min-width: 768px) { .container { width: 450px; } }
 @media (min-width: 992px) { .container { width: 640px; } }
 @media (min-width: 1200px) { .container { width: 810px; } }
+
+.modal-header, .modal-footer { height: 100%; }
 
 .multi-column.container-fluid, .multi-column .row, .multi-column .column { height: 100%; }
 
