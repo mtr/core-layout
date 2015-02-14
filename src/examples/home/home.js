@@ -90,6 +90,11 @@ function config($stateProvider) {
                 'modal-footer@': {
                     templateUrl: 'home/first.modal.footer.html'
                 }
+            },
+            onEnter: /* @ngInject */ function _updateModal(coreLayoutService) {
+                coreLayoutService.updateModal({
+                    size: 'large'
+                });
             }
         })
         .state('home.modal.second', {
@@ -125,6 +130,30 @@ function config($stateProvider) {
                     controller: 'SharedStateController',
                     templateUrl: 'home/shared-state/shared-state.footer.html'
                 }
+            },
+            onEnter: /* @ngInject */ function _updateModal(coreLayoutService) {
+                coreLayoutService.updateModal({
+                    size: 'medium'
+                });
+            }
+        })
+        .state('home.modal.small', {
+            url: '/small',
+            views: {
+                'modal-header@': {
+                    templateUrl: 'home/small.modal.header.html'
+                },
+                'modal-contents@': {
+                    templateUrl: 'home/small.modal.html'
+                },
+                'modal-footer@': {
+                    templateUrl: 'home/small.modal.footer.html'
+                }
+            },
+            onEnter: /* @ngInject */ function _updateModal(coreLayoutService) {
+                coreLayoutService.updateModal({
+                    size: 'small'
+                });
             }
         });
 }

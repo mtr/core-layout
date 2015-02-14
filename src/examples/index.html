@@ -40,9 +40,12 @@
   <div core-layout="::{name: 'left-drawer', show: false, header: {visible: {all: false}}, footer: {visible: {all: false}}}"></div>
   <div core-layout="::{name: 'right-drawer', show: false, header: {visible: {all: true}}, footer: {visible: {all: true}}}"></div>
   <div id="cl-modal-overlay" ng-show="app.layout.modal.show">
-    <div id="cl-modal-box">
-      <div core-layout="::{name: 'modal', show: false}"
-           ng-class="app.layout.modal.classes"></div>
+    <div id="cl-modal-box" ng-class="{
+      'cl-modal-small': app.layout.modal.size === 'small',
+      'cl-modal-medium': app.layout.modal.size === 'medium',
+      'cl-modal-large': app.layout.modal.size === 'large'
+      }">
+      <div core-layout="::{name: 'modal', show: false}"></div>
     </div>
   </div>
 </div>

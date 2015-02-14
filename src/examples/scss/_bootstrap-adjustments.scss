@@ -39,3 +39,7 @@
     width: $container-lg - $cl-left-drawer-width-lg;
   }
 }
+
+.modal-header, .modal-footer {
+  height: 100%;
+}
