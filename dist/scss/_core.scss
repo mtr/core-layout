@@ -28,13 +28,40 @@
 }
 .cl-footer {
   bottom: 0;
-  height: $cl-footer-height;
 }
 
 .cl-contents {
   overflow: auto;
-  top: $cl-header-height;
-  bottom: $cl-footer-height;
+}
+
+@mixin cl-heights($header-height, $footer-height) {
+  /**
+   * The following is left out to allow "overflowing" drop-down menus
+   * from the header bar.
+   **/
+//  .cl-header {
+//    height: $header-height;
+//  }
+  .cl-contents {
+    top: $header-height;
+    bottom: $footer-height;
+  }
+  .cl-footer {
+    height: $footer-height;
+  }
+}
+
+@media (max-width: $cl-screen-xs-max) {
+  @include cl-heights($cl-header-height-xs, $cl-footer-height-xs);
+}
+@media (min-width: $cl-screen-sm-min) and (max-width: $cl-screen-sm-max) {
+  @include cl-heights($cl-header-height-sm, $cl-footer-height-sm);
+}
+@media (min-width: $cl-screen-md-min) and (max-width: $cl-screen-md-max) {
+  @include cl-heights($cl-header-height-md, $cl-footer-height-md);
+}
+@media (min-width: $cl-screen-lg-min) {
+  @include cl-heights($cl-header-height-lg, $cl-footer-height-lg);
 }
 
 .iscroll-off {
