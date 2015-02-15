@@ -10,7 +10,7 @@ require('angular-messages');
 function config($urlRouterProvider, iScrollServiceProvider) {
     // For any unmatched url, redirect to '/'.
     $urlRouterProvider.otherwise('/');
-    iScrollServiceProvider.configure({
+    iScrollServiceProvider.configureDefaults({
         iScroll: {
             momentum: true,
             mouseWheel: true,
