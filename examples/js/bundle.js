@@ -1,17 +1,42 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/examples/app.js":[function(require,module,exports){
 'use strict';
 
-var angular = require('angular-x');
+var angular = require('angular-x'),
+    _ = require('lodash');
 
 require('bootstrap');
 require('angular-messages');
 
 /* @ngInject */
-function config($urlRouterProvider) {
+function config($urlRouterProvider, iScrollServiceProvider) {
     // For any unmatched url, redirect to '/'.
     $urlRouterProvider.otherwise('/');
+    iScrollServiceProvider.configure({
+        iScroll: {
+            momentum: true,
+            mouseWheel: true,
+            preventDefaultException: {
+                tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL|A)$/
+            }
+        },
+        directive: {
+            asyncRefreshDelay: 0,
+            refreshInterval: false
+        }
+    });
+    /**
+     * Alternative method, using Lodash's (deep) merge:
+     *
+     * _.merge(iScrollServiceProvider.getDefaults(), {
+     *   iScroll: {
+     *       preventDefaultException: {
+     *           tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL|A)$/
+     *       }
+     *   }
+     * });
+     */
 }
-config.$inject = ["$urlRouterProvider"];
+config.$inject = ["$urlRouterProvider", "iScrollServiceProvider"];
 
 function MyAppController(iScrollService, coreLayoutService) {
     var vm = this;  // Use 'controller as' syntax.
@@ -37,9 +62,9 @@ angular
 
 module.exports = angular.module('myApp');
 
-},{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
+},{"../../dist/lib/core-layout.js":"/home/mtr/projects/core-layout/dist/lib/core-layout.js","./components/drawer/drawer.js":"/home/mtr/projects/core-layout/src/examples/components/drawer/drawer.js","./components/header/header.js":"/home/mtr/projects/core-layout/src/examples/components/header/header.js","./components/version/version.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.js","./demos/demos.js":"/home/mtr/projects/core-layout/src/examples/demos/demos.js","./home/home.js":"/home/mtr/projects/core-layout/src/examples/home/home.js","angular-messages":"/home/mtr/projects/core-layout/node_modules/angular-messages/angular-messages.js","angular-ui-router":"/home/mtr/projects/core-layout/node_modules/angular-ui-router/release/angular-ui-router.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","bootstrap":"/home/mtr/projects/core-layout/node_modules/bootstrap-sass/assets/javascripts/bootstrap.js","lodash":"/home/mtr/projects/core-layout/node_modules/lodash/index.js"}],"/home/mtr/projects/core-layout/dist/lib/core-layout.js":[function(require,module,exports){
 /**
- * @license core-layout v4.0.3, 2015-02-15T13:10:53+0100
+ * @license core-layout v4.1.0, 2015-02-15T13:51:01+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -297,7 +322,7 @@ module.exports = angular.module('myApp');
 
 },{"angular":"/home/mtr/projects/core-layout/node_modules/angular/angular.js","angular-iscroll":"/home/mtr/projects/core-layout/node_modules/angular-iscroll/dist/lib/angular-iscroll.js","lodash":"/home/mtr/projects/core-layout/node_modules/lodash/index.js"}],"/home/mtr/projects/core-layout/node_modules/angular-iscroll/dist/lib/angular-iscroll.js":[function(require,module,exports){
 /**
- * @license angular-iscroll v1.1.2, 2015-02-15T13:09:57+0100
+ * @license angular-iscroll v1.2.0, 2015-02-15T13:44:12+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -351,12 +376,14 @@ module.exports = angular.module('myApp');
             }
         };
 
-        function _configure(options) {
+        function _configureDefaults(options) {
             angular.extend(defaultOptions, options);
-
-            console.log('defaultOptions', defaultOptions);
         }
-        this.configure = _configure;
+        this.configureDefaults = _configureDefaults;
+        function _getDefaults() {
+            return defaultOptions;
+        }
+        this.getDefaults = _getDefaults;
 
         /* @ngInject */
         function iScrollService($rootScope, $log, iScrollSignals) {
@@ -449,9 +476,9 @@ module.exports = angular.module('myApp');
             function _refreshInstance() {
                 if (refreshEnabled) {
                     refreshEnabled = false;
-                asyncRefresh(instance, options);
+                    asyncRefresh(instance, options);
                     refreshEnabled = true;
-            }
+                }
             }
 
             function _disableRefresh() {
@@ -528,7 +555,7 @@ module.exports = angular.module('myApp');
 
     return angular.module('angular-iscroll', [])
         .directive('iscroll', iscroll)
-        .factory('iScrollService', iScrollService)
+        .provider('iScrollService', iScrollServiceProvider)
         .constant('iScrollSignals', signals);
 }));
 
@@ -55741,8 +55768,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '4.0.3')
-    .value('buildTimestamp', '2015-02-15T13:10:55+0100');
+    .value('version', '4.1.0')
+    .value('buildTimestamp', '2015-02-15T13:51:04+0100');
 
 },{"./version.directive.js":"/home/mtr/projects/core-layout/src/examples/components/version/version.directive.js","angular-x":"/home/mtr/projects/core-layout/node_modules/angular/angular.js"}],"/home/mtr/projects/core-layout/src/examples/demos/demos.js":[function(require,module,exports){
 'use strict';
