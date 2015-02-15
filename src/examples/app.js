@@ -1,14 +1,39 @@
 'use strict';
 
-var angular = require('angular-x');
+var angular = require('angular-x'),
+    _ = require('lodash');
 
 require('bootstrap');
 require('angular-messages');
 
 /* @ngInject */
-function config($urlRouterProvider) {
+function config($urlRouterProvider, iScrollServiceProvider) {
     // For any unmatched url, redirect to '/'.
     $urlRouterProvider.otherwise('/');
+    iScrollServiceProvider.configure({
+        iScroll: {
+            momentum: true,
+            mouseWheel: true,
+            preventDefaultException: {
+                tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL|A)$/
+            }
+        },
+        directive: {
+            asyncRefreshDelay: 0,
+            refreshInterval: false
+        }
+    });
+    /**
+     * Alternative method, using Lodash's (deep) merge:
+     *
+     * _.merge(iScrollServiceProvider.getDefaults(), {
+     *   iScroll: {
+     *       preventDefaultException: {
+     *           tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL|A)$/
+     *       }
+     *   }
+     * });
+     */
 }
 
 function MyAppController(iScrollService, coreLayoutService) {
