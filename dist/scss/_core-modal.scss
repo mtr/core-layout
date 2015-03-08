@@ -76,8 +76,15 @@
 @mixin cl-modal-box-size-def($size, $width, $height) {
   #cl-modal-box.cl-modal-#{$size} {
     width: $width;
-    height: $height;
-    margin: (- $height / 2) 0 0 (- $width / 2);
+    @media (max-height: $height - 1) {
+      height: $cl-modal-box-higher-than-window-height;
+      margin: 0 0 0 (- $width / 2);
+      transform: translate(0, -50%);
+    }
+    @media (min-height: $height) {
+      height: $height;
+      margin: (- $height / 2) 0 0 (- $width / 2);
+    }
   }
 }
 
