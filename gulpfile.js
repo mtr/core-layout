@@ -4,6 +4,7 @@
 'use strict';
 
 var _ = require('lodash'),
+    autoPrefixer = require('gulp-autoprefixer'),
     browserify = require('browserify'),
     browserSync = require('browser-sync'),
     buffer = require('vinyl-buffer'),
@@ -108,7 +109,26 @@ var _ = require('lodash'),
     examplesBundler = watchify(browserify(_.extend({
         entries: paths.examples.js.src,
         debug: true
-    }, watchify.args)));
+    }, watchify.args))),
+    autopreFixerConfig = {
+        browsers: [
+            'last 4 version',
+            '> 0.9%',
+            '> 0.9% in NO',
+            '> 0.9% in SE',
+            '> 0.9% in DE',
+            '> 0.9% in DK',
+            '> 0.9% in GB',
+            '> 0.9% in NL',
+            'Android 2.3',
+            'Chrome 37',
+            'IE >= 9',
+            'Firefox ESR',
+            'Firefox 15',
+            'Firefox 32',
+            'Opera 12'
+        ]
+    };
 
 //process.env.BROWSERIFYSHIM_DIAGNOSTICS = 1;
 
@@ -224,6 +244,7 @@ gulp.task('style', ['bootstrap-assets' /*, 'wrap-vendor-css'*/], function () {
         style: 'compact'
     })
         .on('error', gutil.log.bind(gutil, 'Sass/Compass Error'))
+        .pipe(autoPrefixer(autopreFixerConfig))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(paths.examples.style.dest))
         .pipe(browserSync.reload({stream: true}));
