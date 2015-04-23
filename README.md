@@ -40,7 +40,3 @@ gulp examples   # (will rebuild on every file change)
 
 ## Demo
 You may have a look at an Angular [demo app](https://mtr.github.io/core-layout/examples/) that shows how you can use this `core-layout` module.
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mtr/core-layout/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
