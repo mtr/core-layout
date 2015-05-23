@@ -1,6 +1,6 @@
 {
   "name": "core-layout",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "description": "A responsive AngularJS layout component for a simple, yet non-trivial, Web-app that works well on both small (mobile) and larger screens.",
   "main": "dist/lib/core-layout.js",
   "scripts": {
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/mtr/core-layout",
   "dependencies": {
     "angular": ">=1.2",
-    "angular-iscroll": "^1.2.4",
+    "angular-iscroll": "^1.3.0",
     "angular-ui-router": "^0.2.13",
     "lodash": ">=2.4.1"
   },
