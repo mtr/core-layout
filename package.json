@@ -31,7 +31,7 @@
   "homepage": "https://github.com/mtr/core-layout",
   "dependencies": {
     "angular": ">=1.2",
-    "angular-iscroll": "^1.3.0",
+    "angular-iscroll": "^1.3.3",
     "angular-ui-router": "^0.2.13",
     "lodash": ">=2.4.1"
   },
