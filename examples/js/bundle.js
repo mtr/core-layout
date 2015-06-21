@@ -64,7 +64,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":2,"./components/drawer/drawer.js":12,"./components/header/header.js":14,"./components/version/version.js":16,"./demos/demos.js":17,"./home/home.js":21,"angular-messages":5,"angular-ui-router":6,"angular-x":7,"bootstrap":9,"lodash":11}],2:[function(require,module,exports){
 /**
- * @license core-layout v4.3.0, 2015-05-23T20:17:23+0200
+ * @license core-layout v4.3.0, 2015-06-21T13:07:51+0200
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -322,7 +322,7 @@ module.exports = angular.module('myApp');
 
 },{"angular":8,"angular-iscroll":3,"lodash":11}],3:[function(require,module,exports){
 /**
- * @license angular-iscroll v1.3.0, 2015-05-23T20:11:35+0200
+ * @license angular-iscroll v1.3.3, 2015-06-07T14:28:20+0200
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -359,19 +359,20 @@ module.exports = angular.module('myApp');
             'zoomStart',
             'zoomEnd'
         ],
-        /**
-         * Add handler name to event name mapping.
-         *
-         * Please note that the 'scroll' event is only available when using
-         * iscroll-probe.js (for example, through angular-iscroll-probe).
-         *
-         * For example, the handler for the 'scrollEnd' event can be configured
-         * by supplying the onScrollEnd option.
-         **/
-        iScrollEventHandlerMap =
-            _.reduce(iScrollEvents, function _addPair(result, event) {
-                result['on' + _capitalizeFirst(event)] = event;
-            }, {});
+        iScrollEventHandlerMap = {};
+
+    /**
+     * Add handler name to event name mapping.
+     *
+     * Please note that the 'scroll' event is only available when using
+     * iscroll-probe.js (for example, through angular-iscroll-probe).
+     *
+     * For example, the handler for the 'scrollEnd' event can be configured
+     * by supplying the onScrollEnd option.
+     **/
+    angular.forEach(iScrollEvents, function _addPair(event) {
+        this['on' + _capitalizeFirst(event)] = event;
+    }, iScrollEventHandlerMap);
 
     function _capitalizeFirst(str) {
         return str.substring(0,1).toLocaleUpperCase() + str.substring(1);
@@ -405,9 +406,9 @@ module.exports = angular.module('myApp');
                 }
             };
 
-        _.each(iScrollEventHandlerMap, function _provideDefault(event, handler) {
-            defaultOptions.directive[handler] = undefined;
-        });
+        angular.forEach(iScrollEventHandlerMap, function _default(event, handler) {
+            this[handler] = undefined;
+        }, defaultOptions.directive);
 
         function _configureDefaults(options) {
             angular.extend(defaultOptions, options);
@@ -486,11 +487,12 @@ module.exports = angular.module('myApp');
                 refreshEnabled = true,
                 refreshInterval = null;
 
-            _.each(iScrollEventHandlerMap, function _addHandler(event, option) {
-                if (_.has(options.directive, option)) {
-                    instance.on(event, options.directive[option]);
-                }
-            });
+            angular.forEach(iScrollEventHandlerMap,
+                function _addHandler(event, option) {
+                    if (angular.isDefined(options.directive[option])) {
+                        instance.on(event, options.directive[option]);
+                    }
+                });
 
             element.removeClass(classes.off).addClass(classes.on);
 
@@ -562,7 +564,8 @@ module.exports = angular.module('myApp');
 
             angular.forEach(options.iScroll,
                 function _extractOptions(value, key) {
-                    if (iScrollService.defaults.directive.hasOwnProperty(key)) {
+                    if (iScrollService.defaults.directive.hasOwnProperty(key) ||
+                        iScrollEventHandlerMap.hasOwnProperty(key)) {
                         options.directive[key] = value;
                         delete options.iScroll[key];
                     }
@@ -597,7 +600,7 @@ module.exports = angular.module('myApp');
                 iscroll: '=',
                 iscrollInstance: '='
             }
-        }
+        };
     }
     iscroll.$inject = ["$rootScope", "$timeout", "$interval", "$log", "iScrollSignals", "iScrollService"];
 
@@ -57548,7 +57551,7 @@ module.exports = angular
         require('./version.directive.js').name
     ])
     .value('version', '4.3.0')
-    .value('buildTimestamp', '2015-05-23T20:17:26+0200');
+    .value('buildTimestamp', '2015-06-21T13:07:54+0200');
 
 },{"./version.directive.js":15,"angular-x":7}],17:[function(require,module,exports){
 'use strict';
