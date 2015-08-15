@@ -64,7 +64,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":2,"./components/drawer/drawer.js":12,"./components/header/header.js":14,"./components/version/version.js":16,"./demos/demos.js":17,"./home/home.js":21,"angular-messages":5,"angular-ui-router":6,"angular-x":7,"bootstrap":9,"lodash":11}],2:[function(require,module,exports){
 /**
- * @license core-layout v4.3.1, 2015-06-21T13:09:47+0200
+ * @license core-layout v5.0.0, 2015-08-15T18:10:09+0200
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -135,10 +135,26 @@ module.exports = angular.module('myApp');
             _mergeStateIfProvided(configChanges);
         }
 
+        function _mayChangeDrawerState(drawerId, doOpen) {
+            var drawer = _state[drawerId],
+                now = Date.now(),
+                lastActionTimeStamp = drawer.lastActionTimeStamp || 0,
+                isTimedOut =
+                    (now - lastActionTimeStamp) > drawer.debounceTimeout;
+
+            if (isTimedOut) {
+                drawer.lastActionTimeStamp = now;
+            }
+
+            return isTimedOut;
+        }
+
         function _openDrawer(drawerId, configChanges) {
             var drawer = _state[drawerId];
             _mergeStateIfProvided(configChanges, drawer);
-            drawer.show = true;
+            if (_mayChangeDrawerState(drawerId)) {
+                drawer.show = true;
+            }
         }
 
         function _updateDrawer(drawerId, configChanges) {
@@ -147,13 +163,17 @@ module.exports = angular.module('myApp');
 
         function _closeDrawer(drawerId, configChanges) {
             var drawer = _state[drawerId];
-            drawer.show = false;
+            if (_mayChangeDrawerState(drawerId)) {
+                drawer.show = false;
+            }
             _mergeStateIfProvided(configChanges, drawer);
         }
 
         function _toggleDrawer(drawerId) {
             var drawer = _state[drawerId];
-            drawer.show = !drawer.show;
+            if (_mayChangeDrawerState(drawerId)) {
+                drawer.show = !drawer.show;
+            }
         }
 
         function _layoutChanged(name) {
@@ -213,7 +233,8 @@ module.exports = angular.module('myApp');
                 footer: {
                     visible: _defaultExcept(),
                     hidden: _defaultExcept()
-                }
+                },
+                debounceTimeout: 0
             },
             cache = {};
 
@@ -57550,8 +57571,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '4.3.1')
-    .value('buildTimestamp', '2015-06-21T13:09:51+0200');
+    .value('version', '5.0.0')
+    .value('buildTimestamp', '2015-08-15T18:10:13+0200');
 
 },{"./version.directive.js":15,"angular-x":7}],17:[function(require,module,exports){
 'use strict';
