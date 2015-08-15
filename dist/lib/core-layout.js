@@ -1,5 +1,5 @@
 /**
- * @license core-layout v4.3.1, 2015-06-21T13:10:34+0200
+ * @license core-layout v5.0.0, 2015-08-15T18:10:09+0200
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -70,10 +70,26 @@
             _mergeStateIfProvided(configChanges);
         }
 
+        function _mayChangeDrawerState(drawerId, doOpen) {
+            var drawer = _state[drawerId],
+                now = Date.now(),
+                lastActionTimeStamp = drawer.lastActionTimeStamp || 0,
+                isTimedOut =
+                    (now - lastActionTimeStamp) > drawer.debounceTimeout;
+
+            if (isTimedOut) {
+                drawer.lastActionTimeStamp = now;
+            }
+
+            return isTimedOut;
+        }
+
         function _openDrawer(drawerId, configChanges) {
             var drawer = _state[drawerId];
             _mergeStateIfProvided(configChanges, drawer);
-            drawer.show = true;
+            if (_mayChangeDrawerState(drawerId)) {
+                drawer.show = true;
+            }
         }
 
         function _updateDrawer(drawerId, configChanges) {
@@ -82,13 +98,17 @@
 
         function _closeDrawer(drawerId, configChanges) {
             var drawer = _state[drawerId];
-            drawer.show = false;
+            if (_mayChangeDrawerState(drawerId)) {
+                drawer.show = false;
+            }
             _mergeStateIfProvided(configChanges, drawer);
         }
 
         function _toggleDrawer(drawerId) {
             var drawer = _state[drawerId];
-            drawer.show = !drawer.show;
+            if (_mayChangeDrawerState(drawerId)) {
+                drawer.show = !drawer.show;
+            }
         }
 
         function _layoutChanged(name) {
@@ -148,7 +168,8 @@
                 footer: {
                     visible: _defaultExcept(),
                     hidden: _defaultExcept()
-                }
+                },
+                debounceTimeout: 0
             },
             cache = {};
 
