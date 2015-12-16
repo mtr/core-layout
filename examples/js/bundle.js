@@ -64,7 +64,7 @@ module.exports = angular.module('myApp');
 
 },{"../../dist/lib/core-layout.js":2,"./components/drawer/drawer.js":12,"./components/header/header.js":14,"./components/version/version.js":16,"./demos/demos.js":17,"./home/home.js":21,"angular-messages":5,"angular-ui-router":6,"angular-x":7,"bootstrap":9,"lodash":11}],2:[function(require,module,exports){
 /**
- * @license core-layout v4.4.0, 2015-08-15T18:14:43+0200
+ * @license core-layout v5.0.0, 2015-12-16T11:49:24+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -343,7 +343,7 @@ module.exports = angular.module('myApp');
 
 },{"angular":8,"angular-iscroll":3,"lodash":11}],3:[function(require,module,exports){
 /**
- * @license angular-iscroll v1.3.3, 2015-06-07T14:28:20+0200
+ * @license angular-iscroll v2.0.0, 2015-12-16T11:17:26+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -420,7 +420,11 @@ module.exports = angular.module('myApp');
                      * Delay, in ms, between each iScroll.refresh().  If false,
                      * then no periodic refresh is performed.
                      **/
-                    refreshInterval: false
+                    refreshInterval: false,
+                    /**
+                     * If `false`, skip `$digest()` cycle on iScroll.refresh().
+                     */
+                    invokeApply: false
                     /**
                      * Event handler options are added below.
                      **/
@@ -500,7 +504,7 @@ module.exports = angular.module('myApp');
         function asyncRefresh(instance, options) {
             $timeout(function _refreshAfterInitialRender() {
                 instance.refresh();
-            }, options.directive.asyncRefreshDelay);
+            }, options.directive.asyncRefreshDelay, options.directive.invokeApply);
         }
 
         function _createInstance(scope, element, attrs, options) {
@@ -564,7 +568,7 @@ module.exports = angular.module('myApp');
 
             if (options.directive.refreshInterval !== false) {
                 refreshInterval = $interval(_refreshInstance,
-                    options.directive.refreshInterval);
+                    options.directive.refreshInterval,0, options.directive.invokeApply);
             }
 
             var deregistrators = [
@@ -57571,8 +57575,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '4.4.0')
-    .value('buildTimestamp', '2015-08-15T18:14:46+0200');
+    .value('version', '5.0.0')
+    .value('buildTimestamp', '2015-12-16T11:49:27+0100');
 
 },{"./version.directive.js":15,"angular-x":7}],17:[function(require,module,exports){
 'use strict';
