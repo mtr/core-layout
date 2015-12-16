@@ -1,5 +1,8 @@
 # Change Log
 
+## [v5.0.0](https://github.com/mtr/core-layout/tree/v5.0.0) (2015-12-16)
+[Full Changelog](https://github.com/mtr/core-layout/compare/v4.4.0...v5.0.0)
+
 ## [v4.4.0](https://github.com/mtr/core-layout/tree/v4.4.0) (2015-08-15)
 [Full Changelog](https://github.com/mtr/core-layout/compare/v4.3.1...v4.4.0)
 
