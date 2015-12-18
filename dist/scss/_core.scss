@@ -77,3 +77,9 @@
     overflow: hidden;
   }
 }
+
+.iscroll-off {
+  .cl-contents {
+    -webkit-overflow-scrolling: touch;
+  }
+}
