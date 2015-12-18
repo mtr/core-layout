@@ -1,3 +1,8 @@
+[![bitHound Overall Score](https://www.bithound.io/github/mtr/core-layout/badges/score.svg)](https://www.bithound.io/github/mtr/core-layout)
+[![bitHound Dependencies](https://www.bithound.io/github/mtr/core-layout/badges/dependencies.svg)](https://www.bithound.io/github/mtr/core-layout/master/dependencies/npm)
+[![bitHound Dev Dependencies](https://www.bithound.io/github/mtr/core-layout/badges/devDependencies.svg)](https://www.bithound.io/github/mtr/core-layout/master/dependencies/npm)
+[![bitHound Code](https://www.bithound.io/github/mtr/core-layout/badges/code.svg)](https://www.bithound.io/github/mtr/core-layout)
+
 # core-layout
 A responsive AngularJS layout component for a simple, yet not completely trivial, Web-app layout that works well on both small (mobile) and larger screens.  An important feature is its use of iScroll 5.x, through [angular-iscroll](https://github.com/mtr/angular-iscroll), to support fixed-position headers and footers without using the CSS `position: fixed` formatting instruction which is not well supported on older Android (<= 4.1.2 ?) and iOS (<= 8.x) versions.  
 
