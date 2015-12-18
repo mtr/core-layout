@@ -28,6 +28,8 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 
+.publish/
+
 # IDEA-based editor project directory
 .idea/
 
