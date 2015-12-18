@@ -1,5 +1,20 @@
 # Change Log
 
+## [v5.2.0](https://github.com/mtr/core-layout/tree/v5.2.0) (2015-12-18)
+[Full Changelog](https://github.com/mtr/core-layout/compare/v5.1.0...v5.2.0)
+
+**Implemented enhancements:**
+
+- Make scrolling with iScroll turned off better on iPhone [\#17](https://github.com/mtr/core-layout/issues/17)
+- Address npm dependency issues found in master branch \[Opened by bitHound\] [\#14](https://github.com/mtr/core-layout/issues/14)
+
+## [v5.1.0](https://github.com/mtr/core-layout/tree/v5.1.0) (2015-12-18)
+[Full Changelog](https://github.com/mtr/core-layout/compare/v5.0.0...v5.1.0)
+
+**Implemented enhancements:**
+
+- Add bitHound configuration. [\#15](https://github.com/mtr/core-layout/issues/15)
+
 ## [v5.0.0](https://github.com/mtr/core-layout/tree/v5.0.0) (2015-12-16)
 [Full Changelog](https://github.com/mtr/core-layout/compare/v4.4.0...v5.0.0)
 
