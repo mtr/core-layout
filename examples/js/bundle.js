@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * @license core-layout v5.2.0, 2015-12-18T09:27:44+0100
+ * @license core-layout v5.3.0, 2015-12-18T10:46:21+0100
  * (c) 2015 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -60793,7 +60793,7 @@ module.exports = angular
         require('./version.directive.js').name
     ])
     .value('version', '5.2.0')
-    .value('buildTimestamp', '2015-12-18T09:27:47+0100');
+    .value('buildTimestamp', '2015-12-18T10:40:04+0100');
 
 },{"./version.directive.js":15,"angular-x":6}],17:[function(require,module,exports){
 'use strict';
