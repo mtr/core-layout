@@ -45,3 +45,8 @@ gulp examples   # (will rebuild on every file change)
 
 ## Demo
 You may have a look at an Angular [demo app](https://mtr.github.io/core-layout/examples/) that shows how you can use this `core-layout` module.
+
+### Building the Demo (`examples/`)
+To build the examples, you will need to install the `sass` gem.  How this is done differs from one operating system to another, so I will refer to the [Install Sass](http://sass-lang.com/install) page, and hope you'll find the appropriate steps for your system. 
+Please note that if you don't plan on changing the demo and testing new stuff, there's no need to compile it yourself; you can just visit the [demo app](https://mtr.github.io/core-layout/examples/).
+
