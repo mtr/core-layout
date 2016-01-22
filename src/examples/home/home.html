@@ -27,6 +27,17 @@
                   properly.
                 </p>
 
+                <p>During initialization, the angular-iscroll package tried
+                  to determine whether or not it should use native scrolling
+                  instead of iScroll. For your current browser the answer
+                  was to use
+                  <span
+                      ng-if="iScrollState.autoDetectedUseNativeScroll"><em>native
+                    scrolling</em> (you can still turn on iScroll in the menu below)
+                  </span><span
+                      ng-if="!iScrollState.autoDetectedUseNativeScroll"><em>iScroll
+                  </em> (you can turn off iScroll in the menu below)</span>.
+                </p>
                 <p>Feel free to check out (no pun intended)
                   <a href="https://github.com/mtr/core-layout/">core-layout</a>
                   on GitHub.
