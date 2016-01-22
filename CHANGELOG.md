@@ -1,5 +1,15 @@
 # Change Log
 
+## [v5.4.0](https://github.com/mtr/core-layout/tree/v5.4.0) (2016-01-22)
+[Full Changelog](https://github.com/mtr/core-layout/compare/v5.3.1...v5.4.0)
+
+## [v5.3.1](https://github.com/mtr/core-layout/tree/v5.3.1) (2016-01-07)
+[Full Changelog](https://github.com/mtr/core-layout/compare/v5.3.0...v5.3.1)
+
+**Fixed bugs:**
+
+- Linked demo is missing style sheet. [\#19](https://github.com/mtr/core-layout/issues/19)
+
 ## [v5.3.0](https://github.com/mtr/core-layout/tree/v5.3.0) (2015-12-18)
 [Full Changelog](https://github.com/mtr/core-layout/compare/v5.2.0...v5.3.0)
 
