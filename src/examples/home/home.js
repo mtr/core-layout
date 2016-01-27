@@ -7,6 +7,7 @@ function HomeController($scope, $log, iScrollService, coreLayoutService) {
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
     $scope.drawers = coreLayoutService.state;
+    $scope.toJson = angular.toJson;
 }
 
 /* @ngInject */

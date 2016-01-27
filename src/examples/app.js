@@ -6,10 +6,15 @@ var angular = require('angular-x'),
 require('bootstrap');
 require('angular-messages');
 
+var _platform;
+
 /* @ngInject */
 function config($urlRouterProvider, iScrollServiceProvider) {
     // For any unmatched url, redirect to '/'.
     $urlRouterProvider.otherwise('/');
+
+    _platform = iScrollServiceProvider.platform;
+
     iScrollServiceProvider.configureDefaults({
         iScroll: {
             momentum: true,
@@ -36,10 +41,15 @@ function config($urlRouterProvider, iScrollServiceProvider) {
      */
 }
 
-function MyAppController(iScrollService, coreLayoutService) {
+function MyAppController($rootScope, iScrollService, coreLayoutService) {
     var vm = this;  // Use 'controller as' syntax.
 
     vm.iScrollState = iScrollService.state;
+
+    if (angular.isDefined(_platform)) {
+        $rootScope.platform = _platform;
+    }
+
     vm.layout = coreLayoutService.state;
 }
 

@@ -38,6 +38,12 @@
                       ng-if="!iScrollState.autoDetectedUseNativeScroll"><em>iScroll
                   </em> (you can turn off iScroll in the menu below)</span>.
                 </p>
+
+                <p ng-if="$root.platform">
+                  Current platform:
+                  <pre ng-bind="toJson($root.platform, true)"></pre>
+                </p>
+
                 <p>Feel free to check out (no pun intended)
                   <a href="https://github.com/mtr/core-layout/">core-layout</a>
                   on GitHub.
