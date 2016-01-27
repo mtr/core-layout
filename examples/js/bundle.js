@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * @license core-layout v5.4.1, 2016-01-22T23:12:52+0100
+ * @license core-layout v5.5.0, 2016-01-27T14:44:56+0100
  * (c) 2016 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -278,7 +278,7 @@
 
 },{"angular":8,"angular-iscroll":2,"lodash":11}],2:[function(require,module,exports){
 /**
- * @license angular-iscroll v3.1.0, 2016-01-22T22:36:40+0100
+ * @license angular-iscroll v3.2.0, 2016-01-27T14:27:44+0100
  * (c) 2016 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -316,34 +316,111 @@
             'zoomEnd'
         ],
         iScrollEventHandlerMap = {},
-        minIOSMajorVersion = 7,
-        useNativeScroll = _useNativeScroll();
+        useNativeScroll = angular.isDefined(platform) && _useNativeScroll(platform);
 
-    function _osVersion() {
-        var v = (platform.os.version).match(/(\d+).(\d+).?(\d+)?/);
-        return [
-            parseInt(v[1], 10),
-            parseInt(v[2], 10),
-            parseInt(v[3] || 0, 10)
-        ];
+    /**
+     * Compares two software version numbers (e.g. "1.7.1" or "1.2b").
+     *
+     * This function was born in http://stackoverflow.com/a/6832721.
+     *
+     * @param {string} v1 The first version to be compared.
+     * @param {string} v2 The second version to be compared.
+     * @param {object} [options] Optional flags that affect comparison behavior:
+     * <ul>
+     *     <li>
+     *         <tt>lexicographical: true</tt> compares each part of the version strings lexicographically instead of
+     *         naturally; this allows suffixes such as "b" or "dev" but will cause "1.10" to be considered smaller than
+     *         "1.2".
+     *     </li>
+     *     <li>
+     *         <tt>zeroExtend: true</tt> changes the result if one version string has less parts than the other. In
+     *         this case the shorter string will be padded with "zero" parts instead of being considered smaller.
+     *     </li>
+     * </ul>
+     * @returns {number|NaN}
+     * <ul>
+     *    <li>0 if the versions are equal</li>
+     *    <li>a negative integer iff v1 < v2</li>
+     *    <li>a positive integer iff v1 > v2</li>
+     *    <li>NaN if either version string is in the wrong format</li>
+     * </ul>
+     *
+     * @copyright by Jon Papaioannou (["john", "papaioannou"].join(".") + "@gmail.com")
+     * @license This function is in the public domain. Do what you want with it, no strings attached.
+     */
+    function versionCompare(v1, v2, options) {
+        var lexicographical = options && options.lexicographical,
+            zeroExtend = options && options.zeroExtend,
+            v1parts = v1.split('.'),
+            v2parts = v2.split('.');
+
+        function isValidPart(x) {
+            return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
+        }
+
+        if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
+            return NaN;
+        }
+
+        if (zeroExtend) {
+            while (v1parts.length < v2parts.length) v1parts.push('0');
+            while (v2parts.length < v1parts.length) v2parts.push('0');
+        }
+
+        if (!lexicographical) {
+            v1parts = v1parts.map(Number);
+            v2parts = v2parts.map(Number);
+        }
+
+        for (var i = 0; i < v1parts.length; ++i) {
+            if (v2parts.length == i) {
+                return 1;
+            }
+
+            if (v1parts[i] == v2parts[i]) {
+                continue;
+            }
+            else if (v1parts[i] > v2parts[i]) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        }
+
+        if (v1parts.length != v2parts.length) {
+            return -1;
+        }
+
+        return 0;
     }
 
-    function _isChromeMobile() {
+    function _isChromeMobile(platform) {
         return platform.name === 'Chrome Mobile';
     }
 
-    function _useNativeScroll() {
+    function _isAndroidBrowserWithRecentOS(platform) {
+        return platform.name === 'Android Browser' &&
+            versionCompare(platform.os.version, '4.0.4') >= 0;
+    }
+
+    function _useNativeScroll(platform) {
         if (platform.name === 'Opera Mini') {
             return false;
+        }
+
+        if (platform.name === 'IE Mobile') {
+            return versionCompare(platform.version, '11.0') >= 0
         }
 
         switch (platform.os.family) {
             case 'Android':
                 // In Chrome we trust.
-                return _isChromeMobile();
+                return _isChromeMobile(platform) ||
+                    _isAndroidBrowserWithRecentOS(platform);
             case 'iOS':
                 // Buggy handling in older iOS versions.
-                return _osVersion()[0] > minIOSMajorVersion;
+                return versionCompare(platform.version, '5.1') >= 0;
             default:
                 // Assuming desktop or other browser.
                 return true;
@@ -473,6 +550,8 @@
             return {
                 defaults: defaultOptions,
                 state: _state,
+                versionCompare: versionCompare,
+                platform: platform,
                 enable: _enable,
                 disable: _disable,
                 toggle: _toggle,
@@ -63077,17 +63156,22 @@ return jQuery;
 'use strict';
 
 config.$inject = ["$urlRouterProvider", "iScrollServiceProvider"];
-MyAppController.$inject = ["iScrollService", "coreLayoutService"];
+MyAppController.$inject = ["$rootScope", "iScrollService", "coreLayoutService"];
 var angular = require('angular-x'),
     _ = require('lodash');
 
 require('bootstrap');
 require('angular-messages');
 
+var _platform;
+
 /* @ngInject */
 function config($urlRouterProvider, iScrollServiceProvider) {
     // For any unmatched url, redirect to '/'.
     $urlRouterProvider.otherwise('/');
+
+    _platform = iScrollServiceProvider.platform;
+
     iScrollServiceProvider.configureDefaults({
         iScroll: {
             momentum: true,
@@ -63114,10 +63198,15 @@ function config($urlRouterProvider, iScrollServiceProvider) {
      */
 }
 
-function MyAppController(iScrollService, coreLayoutService) {
+function MyAppController($rootScope, iScrollService, coreLayoutService) {
     var vm = this;  // Use 'controller as' syntax.
 
     vm.iScrollState = iScrollService.state;
+
+    if (angular.isDefined(_platform)) {
+        $rootScope.platform = _platform;
+    }
+
     vm.layout = coreLayoutService.state;
 }
 
@@ -63246,8 +63335,8 @@ module.exports = angular
     .module('myApp.version', [
         require('./version.directive.js').name
     ])
-    .value('version', '5.4.1')
-    .value('buildTimestamp', '2016-01-22T23:12:55+0100');
+    .value('version', '5.5.0')
+    .value('buildTimestamp', '2016-01-27T14:44:59+0100');
 
 },{"./version.directive.js":16,"angular-x":7}],18:[function(require,module,exports){
 'use strict';
@@ -63422,6 +63511,7 @@ function HomeController($scope, $log, iScrollService, coreLayoutService) {
     $scope.iScrollState = iScrollService.state;
     $scope.toggleIScroll = iScrollService.toggle;
     $scope.drawers = coreLayoutService.state;
+    $scope.toJson = angular.toJson;
 }
 
 /* @ngInject */
