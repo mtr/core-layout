@@ -259,6 +259,28 @@
         };
     }
 
+    function _fixViewportHeight() {
+        /**
+         * To cope with Facebook's embedded browser on iOS 9.x breaking the
+         * layout because the page's height gets wrong.
+         **/
+        var html = document.querySelector('html');
+
+        function _onResize(event) {
+            html.style.height = window.innerHeight + 'px';
+        }
+
+        window.addEventListener('resize', _.debounce(_onResize, 125, {
+            leading: true,
+            maxWait: 250,
+            trailing: true
+        }));
+
+        _onResize();
+    }
+
+    _fixViewportHeight();
+
     return angular
         .module('coreLayout', [angularIscroll.name, 'coreLayout.templates'])
         .factory('coreLayoutService', CoreLayoutService)
