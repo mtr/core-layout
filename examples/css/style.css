@@ -2455,7 +2455,7 @@ button.close { padding: 0; cursor: pointer; background: transparent; border: 0; 
   #cl-right-drawer { width: 360px; right: -360px; -webkit-transition: right 0.2s ease-in-out; -moz-transition: right 0.2s ease-in-out; -o-transition: right 0.2s ease-in-out; transition: right 0.2s ease-in-out; }
   #cl-right-drawer .cl-footer, #cl-right-drawer .cl-header { width: 360px; left: auto; }
   .cl-right-drawer-enabled.cl-right-drawer-open #cl-right-drawer { right: 0 !important; } }
-#outer-wrap { position: absolute; width: 100%; height: 100%; overflow: hidden; }
+html, body, #outer-wrap { position: absolute; top: 0; left: 0; bottom: 0; right: 0; overflow: hidden; }
 
 .cl-header, .cl-contents, .cl-footer { left: 0; width: 100%; padding: 0; margin: 0; }
 
