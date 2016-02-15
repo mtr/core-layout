@@ -1,5 +1,16 @@
 # Change Log
 
+## [v5.5.1](https://github.com/mtr/core-layout/tree/v5.5.1) (2016-02-15)
+[Full Changelog](https://github.com/mtr/core-layout/compare/v5.5.0...v5.5.1)
+
+**Implemented enhancements:**
+
+- Automatically detect the need for using iScroll. [\#21](https://github.com/mtr/core-layout/issues/21)
+
+**Fixed bugs:**
+
+- Viewport height is wrong in Facebook's embedded browser in iOS 9.x [\#22](https://github.com/mtr/core-layout/issues/22)
+
 ## [v5.5.0](https://github.com/mtr/core-layout/tree/v5.5.0) (2016-01-27)
 [Full Changelog](https://github.com/mtr/core-layout/compare/v5.4.1...v5.5.0)
 
