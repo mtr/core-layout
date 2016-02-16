@@ -1,5 +1,5 @@
 /**
- * @license core-layout v5.5.1, 2016-02-15T15:20:09+0100
+ * @license core-layout v5.5.1, 2016-02-16T08:06:15+0100
  * (c) 2016 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -279,11 +279,7 @@
             html.style.height = window.innerHeight + 'px';
         }
 
-        window.addEventListener('resize', _.debounce(_onResize, 125, {
-            leading: true,
-            maxWait: 250,
-            trailing: true
-        }));
+        angular.element(window).on('resize', _onResize);
 
         _onResize();
     }

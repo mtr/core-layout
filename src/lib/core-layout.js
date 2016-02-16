@@ -270,7 +270,7 @@
             html.style.height = window.innerHeight + 'px';
         }
 
-        window.addEventListener('resize', _.debounce(_onResize, 125, {
+        angular.element(window).on('resize', _.debounce(_onResize, 125, {
             leading: true,
             maxWait: 250,
             trailing: true
