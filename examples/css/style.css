@@ -774,7 +774,7 @@ dd { margin-left: 0; }
 
 .dl-horizontal dd:before, .dl-horizontal dd:after { content: " "; display: table; }
 .dl-horizontal dd:after { clear: both; }
-@media (min-width: 768px) { .dl-horizontal dt { float: left; width: 160px; clear: left; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (min-width: 768px) { .dl-horizontal dt { float: left; width: 160px; clear: left; text-align: right; overflow: hidden; -o-text-overflow: ellipsis; text-overflow: ellipsis; white-space: nowrap; }
   .dl-horizontal dd { margin-left: 180px; } }
 
 abbr[title], abbr[data-original-title] { cursor: help; border-bottom: 1px dotted #777777; }
