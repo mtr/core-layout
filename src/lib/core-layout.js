@@ -130,10 +130,6 @@
         };
     }
 
-    var defaultsDeep = _.partialRight(_.merge, function deep(value, other) {
-        return _.merge(value, other, deep);
-    });
-
     var suffixes = {
         all: '',
         xs: '-xs',
@@ -202,19 +198,23 @@
                 });
         }
 
-        function _link(scope, element, attrs) {
-            var options = defaultsDeep({}, scope.options, defaults),
-                name = options.name,
-                ccName = attrs.$normalize(name),
-                identifier = 'cl-' + name;
-
-            delete options.name;
+        function _preLink(scope) {
+            var name = scope.options.name;
 
             scope.names = {
                 header: name + '-header',
                 contents: name + '-contents',
                 footer: name + '-footer'
             };
+        }
+
+        function _postLink(scope, element, attrs) {
+            var options = _.merge({}, defaults, scope.options),
+                name = options.name,
+                ccName = attrs.$normalize(name),
+                identifier = 'cl-' + name;
+
+            delete options.name;
 
             coreLayoutService.state[ccName] = options;
 
@@ -235,7 +235,10 @@
         }
 
         return {
-            link: _link,
+            link: {
+                pre: _preLink,
+                post: _postLink
+            },
             scope: {
                 options: '=coreLayout'
             },

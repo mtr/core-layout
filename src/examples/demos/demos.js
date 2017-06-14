@@ -4,7 +4,8 @@ var angular = require('angular-x');
 
 /* @ngInject */
 function config($stateProvider) {
-    $stateProvider.state('demos', {
+    $stateProvider.state({
+        name: 'demos',
         url: '/demos',
         abstract: true,
         views: {

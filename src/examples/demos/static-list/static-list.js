@@ -13,7 +13,8 @@ function StaticListController($scope, $log) {
 
 /* @ngInject */
 function config($stateProvider) {
-    $stateProvider.state('demos.staticList', {
+    $stateProvider.state({
+        name: 'demos.staticList',
         url: '/staticList',
         views: {
             'main-contents@': {

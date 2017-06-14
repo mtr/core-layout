@@ -18,7 +18,8 @@ function MultiColumnDynamicController($scope, $log) {
 
 /* @ngInject */
 function config($stateProvider) {
-    $stateProvider.state('demos.multiColumnDynamic', {
+    $stateProvider.state({
+        name: 'demos.multiColumnDynamic',
         url: '/multiColumnDynamic',
         views: {
             'main-contents@': {

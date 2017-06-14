@@ -9,9 +9,9 @@ require('angular-messages');
 var _platform;
 
 /* @ngInject */
-function config($urlRouterProvider, iScrollServiceProvider) {
+function config($urlServiceProvider, iScrollServiceProvider) {
     // For any unmatched url, redirect to '/'.
-    $urlRouterProvider.otherwise('/');
+    $urlServiceProvider.rules.otherwise('/');
 
     _platform = iScrollServiceProvider.platform;
 
@@ -55,7 +55,7 @@ function MyAppController($rootScope, iScrollService, coreLayoutService) {
 
 angular
     .module('myApp', [
-        require('angular-ui-router'),
+        require('@uirouter/angularjs').default,
         require('../../dist/lib/core-layout.js').name,
         'ngMessages',
         require('./components/drawer/drawer.js').name,
@@ -65,6 +65,9 @@ angular
         require('./home/home.js').name
     ])
     .config(config)
+    .run(function _run(/*$trace*/) {
+        // $trace.enable();
+    })
     .controller('MyAppController', MyAppController);
 
 module.exports = angular.module('myApp');

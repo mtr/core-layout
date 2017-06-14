@@ -13,7 +13,8 @@ function HomeController($scope, $log, iScrollService, coreLayoutService) {
 /* @ngInject */
 function config($stateProvider) {
     $stateProvider
-        .state('home', {
+        .state({
+            name: 'home',
             url: '/',
             views: {
                 'left-drawer-header@': {
@@ -55,7 +56,8 @@ function config($stateProvider) {
                 });
             }
         })
-        .state('home.modal', {
+        .state({
+            name: 'home.modal',
             url: 'modal',
             abstract: true,
             views: {
@@ -81,7 +83,8 @@ function config($stateProvider) {
                 });
             }
         })
-        .state('home.modal.first', {
+        .state({
+            name: 'home.modal.first',
             url: '/first',
             views: {
                 'modal-contents@': {
@@ -98,7 +101,8 @@ function config($stateProvider) {
                 });
             }
         })
-        .state('home.modal.second', {
+        .state({
+            name: 'home.modal.second',
             url: '/second',
             views: {
                 'modal-contents@': {
@@ -116,7 +120,8 @@ function config($stateProvider) {
                 });
             }
         })
-        .state('home.modal.shared-state', {
+        .state({
+            name: 'home.modal.shared-state',
             url: '/shared-state',
             views: {
                 'modal-header@': {
@@ -138,7 +143,8 @@ function config($stateProvider) {
                 });
             }
         })
-        .state('home.modal.small', {
+        .state({
+            name: 'home.modal.small',
             url: '/small',
             views: {
                 'modal-header@': {

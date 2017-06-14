@@ -29,6 +29,7 @@ var _ = require('lodash'),
     path = require('path'),
     preprocessify = require('preprocessify'),
     prettyBytes = require('pretty-bytes'),
+    pump = require('pump'),
     remember = require('gulp-remember'),
     rename = require('gulp-rename'),
     sass = require('gulp-ruby-sass'),
@@ -140,19 +141,20 @@ gulp.task('scss', function () {
         .pipe(gulp.dest('dist/scss'));
 });
 
-gulp.task('cache-angular-templates', function () {
+gulp.task('cache-angular-templates', function (cb) {
     /* The returned stream is a hint to tell it when the task is done.
      Either take in a callback and call it when you're done or return a
      promise or stream that the engine should wait to resolve or end
      respectively.   If not, the watchify task would start running before
      this one is finished. */
-    return gulp.src(paths.lib.html)
-        .pipe(htmlmin({
+    pump([
+        gulp.src(paths.lib.html),
+        htmlmin({
             collapseWhitespace: true,
             removeComments: true
-        }))
-        .pipe(htmlify())
-        .pipe(templateCache({
+        }),
+        htmlify(),
+        templateCache({
             filename: paths.lib.templateCache.name,
             module: paths.lib.templateCache.module,
             standalone: true,
@@ -162,38 +164,38 @@ gulp.task('cache-angular-templates', function () {
             "module.exports = angular.module('<%= module %>'<%= standalone %>)" +
             ".run(['$templateCache', function($templateCache) { ",
             templateFooter: "}]); })(module, window);"
-        }))
-        .pipe(gulp.dest(paths.lib.templateCache.dest));
+        }),
+        gulp.dest(paths.lib.templateCache.dest)
+    ], cb);
 });
 
-gulp.task('lib', ['cache-angular-templates'], function () {
+gulp.task('lib', ['cache-angular-templates'], function (cb) {
     var now = _getNow();
 
-    return gulp.src([paths.lib.templates, paths.lib.src])
-        .pipe(cached('lib'))            // Only pass through changed files.
-        .pipe(jshint())
-        .pipe(concat(libBundleName)) // Do things that require all files.
-        .pipe(header('/**\n' +
-        ' * @license <%= pkg.name %> v<%= pkg.version %>, <%= now %>\n' +
-        ' * (c) <%= years %> <%= pkg.author.name %> <<%= pkg.author.email %>>\n' +
-        ' * License: <%= pkg.license %>\n' +
-        ' */\n', {
+    pump([
+        gulp.src([paths.lib.templates, paths.lib.src]),
+        cached('lib'),            // Only pass through changed files.
+        jshint(),
+        concat(libBundleName), // Do things that require all files.
+        header('/**\n' +
+            ' * @license <%= pkg.name %> v<%= pkg.version %>, <%= now %>\n' +
+            ' * (c) <%= years %> <%= pkg.author.name %> <<%= pkg.author.email %>>\n' +
+            ' * License: <%= pkg.license %>\n' +
+            ' */\n', {
             now: dateFormat(now, "isoDateTime"),
             years: dateFormat(now, "yyyy"),
             pkg: pkg
-        }))
-        .pipe(footer('\n'))
-        .pipe(remember('lib'))          // Add back all files to the stream.
-        .pipe(gulpNgAnnotate())
-        .pipe(gulp.dest(paths.lib.dest))
-        .pipe(uglify({
-            preserveComments: 'some'
-        }))
-        .pipe(rename({
+        }),
+        footer('\n'),
+        remember('lib'),          // Add back all files to the stream.
+        gulpNgAnnotate(),
+        gulp.dest(paths.lib.dest),
+        uglify({output: {comments: /^!|@preserve|@license|@cc_on/i}}),
+        rename({
             extname: '.min.js'
-        }))
-        .pipe(gulp.dest(paths.lib.dest));
-
+        }),
+        gulp.dest(paths.lib.dest)
+    ], cb);
 });
 
 gulp.task('watch', function () {
@@ -257,11 +259,11 @@ gulp.task('demo-views', function () {
 
 gulp.task('views', ['demo-views'], function () {
     return gulp.src(paths.examples.index.src)
-        //.pipe(htmlmin({
-        //    collapseWhitespace: true,
-        //    removeComments: true
-        //}))
-        //.pipe(htmlify())
+    //.pipe(htmlmin({
+    //    collapseWhitespace: true,
+    //    removeComments: true
+    //}))
+    //.pipe(htmlify())
         .pipe(gulp.dest(paths.examples.index.dest))
         .pipe(browserSync.reload({stream: true}));
 });
@@ -269,10 +271,10 @@ gulp.task('views', ['demo-views'], function () {
 function decorateBundler(meta) {
     meta.bundle = function bundle() {
         gutil.log("Starting '" + gutil.colors.cyan("browserify-rebundle (" +
-        meta.paths.js.bundleName + ")") + "' ...");
+            meta.paths.js.bundleName + ")") + "' ...");
 
         return meta.bundler.bundle()
-            // log errors if they happen
+        // log errors if they happen
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
             .pipe(source(meta.paths.js.bundleName))
             // Optional, remove if you don't want sourcemaps.
@@ -286,10 +288,10 @@ function decorateBundler(meta) {
 
 // Add any other browserify options or transforms here.
     meta.bundler
-        .transform(preprocessify({
+        .transform('preprocessify', {
             now: dateFormat(_getNow(), "isoDateTime"),
             pkg: pkg
-        }))
+        })
         .transform(browserifyNgAnnotate)
         .on('update', meta.bundle)
         .on('bytes', function (bytes) {
@@ -348,7 +350,7 @@ gulp.task('examples', [
 function increaseVersion(importance) {
     // Get all the files to bump version in.
     return gulp.src(['./package.json'])
-        // Bump the version number in those files.
+    // Bump the version number in those files.
         .pipe(bump({type: importance}))
         // Save it back to filesystem.
         .pipe(gulp.dest('./'))
