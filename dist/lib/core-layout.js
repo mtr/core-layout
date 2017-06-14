@@ -1,5 +1,5 @@
 /**
- * @license core-layout v6.0.0, 2017-06-14T11:09:55+0200
+ * @license core-layout v6.1.0, 2017-06-14T11:17:28+0200
  * (c) 2017 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -26,7 +26,7 @@
     'use strict';
 
     CoreLayoutService.$inject = ["$rootScope", "iScrollService"];
-    coreLayout.$inject = ["$rootScope", "$log", "coreLayoutService"];
+    coreLayout.$inject = ["$rootScope", "coreLayoutService"];
     coreLayoutClose.$inject = ["$state", "coreLayoutService"];
     function _defaultExcept(options, defaultValue) {
         options = options || {};
@@ -155,7 +155,7 @@
     }
 
     /* @ngInject */
-    function coreLayout($rootScope, $log, coreLayoutService) {
+    function coreLayout($rootScope, coreLayoutService) {
         var defaults = {
                 enabled: true,
                 show: true,
