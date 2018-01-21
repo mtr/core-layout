@@ -1,5 +1,5 @@
 /**
- * @license core-layout v6.2.0, 2018-01-21T01:31:53+0100
+ * @license core-layout v6.2.1, 2018-01-21T20:40:38+0100
  * (c) 2018 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
