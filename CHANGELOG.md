@@ -1,5 +1,8 @@
 # Change Log
 
+## [v6.1.0](https://github.com/mtr/core-layout/tree/v6.1.0) (2017-06-14)
+[Full Changelog](https://github.com/mtr/core-layout/compare/v6.0.0...v6.1.0)
+
 ## [v6.0.0](https://github.com/mtr/core-layout/tree/v6.0.0) (2016-09-02)
 [Full Changelog](https://github.com/mtr/core-layout/compare/v5.5.2...v6.0.0)
 
@@ -193,13 +196,13 @@
 [Full Changelog](https://github.com/mtr/core-layout/compare/v1.1.0...v1.1.1)
 
 ## [v1.1.0](https://github.com/mtr/core-layout/tree/v1.1.0) (2015-02-02)
-[Full Changelog](https://github.com/mtr/core-layout/compare/v1.0.0...v1.1.0)
-
-## [v1.0.0](https://github.com/mtr/core-layout/tree/v1.0.0) (2015-01-31)
-[Full Changelog](https://github.com/mtr/core-layout/compare/mtr/less-broken-on-ios-7.1.2...v1.0.0)
+[Full Changelog](https://github.com/mtr/core-layout/compare/mtr/less-broken-on-ios-7.1.2...v1.1.0)
 
 ## [mtr/less-broken-on-ios-7.1.2](https://github.com/mtr/core-layout/tree/mtr/less-broken-on-ios-7.1.2) (2015-01-31)
-[Full Changelog](https://github.com/mtr/core-layout/compare/mtr/headless-merge...mtr/less-broken-on-ios-7.1.2)
+[Full Changelog](https://github.com/mtr/core-layout/compare/v1.0.0...mtr/less-broken-on-ios-7.1.2)
+
+## [v1.0.0](https://github.com/mtr/core-layout/tree/v1.0.0) (2015-01-31)
+[Full Changelog](https://github.com/mtr/core-layout/compare/mtr/headless-merge...v1.0.0)
 
 ## [mtr/headless-merge](https://github.com/mtr/core-layout/tree/mtr/headless-merge) (2015-01-30)
 
