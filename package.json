@@ -1,6 +1,6 @@
 {
   "name": "core-layout",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "description": "A responsive AngularJS layout component for a simple, yet non-trivial, Web-app that works well on both small (mobile) and larger screens.",
   "main": "dist/lib/core-layout.js",
   "scripts": {
