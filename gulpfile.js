@@ -240,7 +240,6 @@ gulp.task('bootstrap-assets', function () {
 gulp.task('style', ['bootstrap-assets' /*, 'wrap-vendor-css'*/], function () {
     return sass(paths.examples.style.src, {
         loadPath: [paths.examples.style.bootstrap.sass, './src/lib/'],
-        compass: true,
         sourcemap: true,
         style: 'compact'
     })
