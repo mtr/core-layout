@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * @license core-layout v6.1.0, 2018-01-21T01:25:49+0100
+ * @license core-layout v6.2.1, 2018-01-21T20:41:53+0100
  * (c) 2018 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
@@ -2265,6 +2265,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 },{"@uirouter/core":23,"angular":78}],3:[function(require,module,exports){
+(function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -2279,11 +2280,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var predicates_1 = require("./predicates");
 var hof_1 = require("./hof");
 var coreservices_1 = require("./coreservices");
-var w = typeof window === 'undefined' ? {} : window;
-var angular = w.angular || {};
+exports.root = (typeof self === 'object' && self.self === self && self) ||
+    (typeof global === 'object' && global.global === global && global) || this;
+var angular = exports.root.angular || {};
 exports.fromJson = angular.fromJson || JSON.parse.bind(JSON);
 exports.toJson = angular.toJson || JSON.stringify.bind(JSON);
-exports.copy = angular.copy || _copy;
 exports.forEach = angular.forEach || _forEach;
 exports.extend = Object.assign || _extend;
 exports.equals = angular.equals || _equals;
@@ -2370,33 +2371,6 @@ exports.createProxyFunctions = createProxyFunctions;
 exports.inherit = function (parent, extra) {
     return exports.extend(Object.create(parent), extra);
 };
-/**
- * Given an arguments object, converts the arguments at index idx and above to an array.
- * This is similar to es6 rest parameters.
- *
- * Optionally, the argument at index idx may itself already be an array.
- *
- * For example,
- * given either:
- *        arguments = [ obj, "foo", "bar" ]
- * or:
- *        arguments = [ obj, ["foo", "bar"] ]
- * then:
- *        restArgs(arguments, 1) == ["foo", "bar"]
- *
- * This allows functions like pick() to be implemented such that it allows either a bunch
- * of string arguments (like es6 rest parameters), or a single array of strings:
- *
- * given:
- *        var obj = { foo: 1, bar: 2, baz: 3 };
- * then:
- *        pick(obj, "foo", "bar");   // returns { foo: 1, bar: 2 }
- *        pick(obj, ["foo", "bar"]); // returns { foo: 1, bar: 2 }
- */
-var restArgs = function (args, idx) {
-    if (idx === void 0) { idx = 0; }
-    return Array.prototype.concat.apply(Array.prototype, Array.prototype.slice.call(args, idx));
-};
 /** Given an array, returns true if the object is found in the array, (using indexOf) */
 exports.inArray = hof_1.curry(_inArray);
 function _inArray(array, obj) {
@@ -2475,9 +2449,9 @@ exports.ancestors = ancestors;
  */
 function pick(obj, propNames) {
     var objCopy = {};
-    for (var prop_1 in obj) {
-        if (propNames.indexOf(prop_1) !== -1) {
-            objCopy[prop_1] = obj[prop_1];
+    for (var _prop in obj) {
+        if (propNames.indexOf(_prop) !== -1) {
+            objCopy[_prop] = obj[_prop];
         }
     }
     return objCopy;
@@ -2671,7 +2645,7 @@ exports.assertPredicate = assertFn;
  */
 exports.assertMap = assertFn;
 function assertFn(predicateOrMap, errMsg) {
-    if (errMsg === void 0) { errMsg = "assert failure"; }
+    if (errMsg === void 0) { errMsg = 'assert failure'; }
     return function (obj) {
         var result = predicateOrMap(obj);
         if (!result) {
@@ -2715,8 +2689,8 @@ function arrayTuples() {
     if (args.length === 0)
         return [];
     var maxArrayLen = args.reduce(function (min, arr) { return Math.min(arr.length, min); }, 9007199254740991); // aka 2^53 − 1 aka Number.MAX_SAFE_INTEGER
-    var i, result = [];
-    for (i = 0; i < maxArrayLen; i++) {
+    var result = [];
+    var _loop_1 = function (i) {
         // This is a hot function
         // Unroll when there are 1-4 arguments
         switch (args.length) {
@@ -2736,6 +2710,9 @@ function arrayTuples() {
                 result.push(args.map(function (array) { return array[i]; }));
                 break;
         }
+    };
+    for (var i = 0; i < maxArrayLen; i++) {
+        _loop_1(i);
     }
     return result;
 }
@@ -2765,7 +2742,7 @@ function applyPairs(memo, keyValTuple) {
     if (predicates_1.isArray(keyValTuple))
         key = keyValTuple[0], value = keyValTuple[1];
     if (!predicates_1.isString(key))
-        throw new Error("invalid parameters to applyPairs");
+        throw new Error('invalid parameters to applyPairs');
     memo[key] = value;
     return memo;
 }
@@ -2777,17 +2754,15 @@ function tail(arr) {
 exports.tail = tail;
 /**
  * shallow copy from src to dest
- *
- * note: This is a shallow copy, while angular.copy is a deep copy.
- * ui-router uses `copy` only to make copies of state parameters.
  */
-function _copy(src, dest) {
+function copy(src, dest) {
     if (dest)
         Object.keys(dest).forEach(function (key) { return delete dest[key]; });
     if (!dest)
         dest = {};
     return exports.extend(dest, src);
 }
+exports.copy = copy;
 /** Naive forEach implementation works with Objects or Arrays */
 function _forEach(obj, cb, _this) {
     if (predicates_1.isArray(obj))
@@ -2829,13 +2804,13 @@ function _equals(o1, o2) {
     var predicates = [predicates_1.isFunction, predicates_1.isArray, predicates_1.isDate, predicates_1.isRegExp];
     if (predicates.map(hof_1.any).reduce(function (b, fn) { return b || !!fn(tup); }, false))
         return false;
-    var key, keys = {};
-    for (key in o1) {
+    var keys = {};
+    for (var key in o1) {
         if (!_equals(o1[key], o2[key]))
             return false;
         keys[key] = true;
     }
-    for (key in o2) {
+    for (var key in o2) {
         if (!keys[key])
             return false;
     }
@@ -2846,64 +2821,6 @@ function _arraysEq(a1, a2) {
         return false;
     return arrayTuples(a1, a2).reduce(function (b, t) { return b && _equals(t[0], t[1]); }, true);
 }
-/**
- * Create a sort function
- *
- * Creates a sort function which sorts by a numeric property.
- *
- * The `propFn` should return the property as a number which can be sorted.
- *
- * #### Example:
- * This example returns the `priority` prop.
- * ```js
- * var sortfn = sortBy(obj => obj.priority)
- * // equivalent to:
- * var longhandSortFn = (a, b) => a.priority - b.priority;
- * ```
- *
- * #### Example:
- * This example uses [[prop]]
- * ```js
- * var sortfn = sortBy(prop('priority'))
- * ```
- *
- * The `checkFn` can be used to exclude objects from sorting.
- *
- * #### Example:
- * This example only sorts objects with type === 'FOO'
- * ```js
- * var sortfn = sortBy(prop('priority'), propEq('type', 'FOO'))
- * ```
- *
- * @param propFn a function that returns the property (as a number)
- * @param checkFn a predicate
- *
- * @return a sort function like: `(a, b) => (checkFn(a) && checkFn(b)) ? propFn(a) - propFn(b) : 0`
- */
-exports.sortBy = function (propFn, checkFn) {
-    if (checkFn === void 0) { checkFn = hof_1.val(true); }
-    return function (a, b) {
-        return (checkFn(a) && checkFn(b)) ? propFn(a) - propFn(b) : 0;
-    };
-};
-/**
- * Composes a list of sort functions
- *
- * Creates a sort function composed of multiple sort functions.
- * Each sort function is invoked in series.
- * The first sort function to return non-zero "wins".
- *
- * @param sortFns list of sort functions
- */
-exports.composeSort = function () {
-    var sortFns = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        sortFns[_i] = arguments[_i];
-    }
-    return function composedSort(a, b) {
-        return sortFns.reduce(function (prev, fn) { return prev || fn(a, b); }, 0);
-    };
-};
 // issue #2676
 exports.silenceUncaughtInPromise = function (promise) {
     return promise.catch(function (e) { return 0; }) && promise;
@@ -2911,6 +2828,8 @@ exports.silenceUncaughtInPromise = function (promise) {
 exports.silentRejection = function (error) {
     return exports.silenceUncaughtInPromise(coreservices_1.services.$q.reject(error));
 };
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{"./coreservices":4,"./hof":6,"./predicates":8}],4:[function(require,module,exports){
 "use strict";
@@ -2979,7 +2898,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * | `'A.**.X'`  | `'A.X'` , `'A.B.X'` , `'A.B.C.X'`             | `'A'` , `'A.B.C'`                 |
  *
  */
-var Glob = (function () {
+var Glob = /** @class */ (function () {
     function Glob(text) {
         this.text = text;
         this.glob = text.split('.');
@@ -2991,11 +2910,8 @@ var Glob = (function () {
                 return '\\.[^.]*';
             return '\\.' + seg;
         }).join('');
-        this.regexp = new RegExp("^" + regexpString + "$");
+        this.regexp = new RegExp('^' + regexpString + '$');
     }
-    Glob.prototype.matches = function (name) {
-        return this.regexp.test('.' + name);
-    };
     /** Returns true if the string has glob-like characters in it */
     Glob.is = function (text) {
         return !!/[!,*]+/.exec(text);
@@ -3003,6 +2919,9 @@ var Glob = (function () {
     /** Returns a glob from the string, or null if the string isn't Glob-like */
     Glob.fromString = function (text) {
         return Glob.is(text) ? new Glob(text) : null;
+    };
+    Glob.prototype.matches = function (name) {
+        return this.regexp.test('.' + name);
     };
     return Glob;
 }());
@@ -3121,7 +3040,7 @@ exports.prop = function (name) {
  * let getName = propEq("name", "blarg");
  * getName(obj) === true
  */
-exports.propEq = curry(function (name, val, obj) { return obj && obj[name] === val; });
+exports.propEq = curry(function (name, _val, obj) { return obj && obj[name] === _val; });
 /**
  * Given a dotted property name, returns a function that returns a nested property from an object, or undefined
  * let obj = { id: 1, nestedObj: { foo: 1, name: "blarg" }, };
@@ -3131,7 +3050,7 @@ exports.propEq = curry(function (name, val, obj) { return obj && obj[name] === v
  * propNotFound(obj) === undefined
  */
 exports.parse = function (name) {
-    return pipe.apply(null, name.split(".").map(exports.prop));
+    return pipe.apply(null, name.split('.').map(exports.prop));
 };
 /**
  * Given a function that returns a truthy or falsey value, returns a
@@ -3183,6 +3102,7 @@ exports.or = or;
 exports.all = function (fn1) {
     return function (arr) { return arr.reduce(function (b, x) { return b && !!fn1(x); }, true); };
 };
+// tslint:disable-next-line:variable-name
 exports.any = function (fn1) {
     return function (arr) { return arr.reduce(function (b, x) { return b || !!fn1(x); }, false); };
 };
@@ -3193,8 +3113,8 @@ exports.is = function (ctor) {
     };
 };
 /** Given a value, returns a Predicate function that returns true if another value is === equal to the original value */
-exports.eq = function (val) { return function (other) {
-    return val === other;
+exports.eq = function (value) { return function (other) {
+    return value === other;
 }; };
 /** Given a value, returns a function which returns the value */
 exports.val = function (v) { return function () { return v; }; };
@@ -3324,7 +3244,7 @@ exports.isPromise = hof_1.and(exports.isObject, hof_1.pipe(hof_1.prop('then'), e
  * @module common
  */ /** for typedoc */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Queue = (function () {
+var Queue = /** @class */ (function () {
     function Queue(_items, _limit) {
         if (_items === void 0) { _items = []; }
         if (_limit === void 0) { _limit = null; }
@@ -3393,7 +3313,7 @@ var resolvable_1 = require("../resolve/resolvable");
 function maxLength(max, str) {
     if (str.length <= max)
         return str;
-    return str.substr(0, max - 3) + "...";
+    return str.substr(0, max - 3) + '...';
 }
 exports.maxLength = maxLength;
 /**
@@ -3407,14 +3327,14 @@ exports.maxLength = maxLength;
  */
 function padString(length, str) {
     while (str.length < length)
-        str += " ";
+        str += ' ';
     return str;
 }
 exports.padString = padString;
 function kebobString(camelCase) {
     return camelCase
         .replace(/^([A-Z])/, function ($1) { return $1.toLowerCase(); }) // replace first char
-        .replace(/([A-Z])/g, function ($1) { return "-" + $1.toLowerCase(); }); // replace rest
+        .replace(/([A-Z])/g, function ($1) { return '-' + $1.toLowerCase(); }); // replace rest
 }
 exports.kebobString = kebobString;
 function _toJson(obj) {
@@ -3430,7 +3350,7 @@ function functionToString(fn) {
     var fnStr = fnToString(fn);
     var namedFunctionMatch = fnStr.match(/^(function [^ ]+\([^)]*\))/);
     var toStr = namedFunctionMatch ? namedFunctionMatch[1] : fnStr;
-    var fnName = fn['name'] || "";
+    var fnName = fn['name'] || '';
     if (fnName && toStr.match(/function \(/)) {
         return 'function ' + fnName + toStr.substr(9);
     }
@@ -3439,47 +3359,53 @@ function functionToString(fn) {
 exports.functionToString = functionToString;
 function fnToString(fn) {
     var _fn = predicates_1.isArray(fn) ? fn.slice(-1)[0] : fn;
-    return _fn && _fn.toString() || "undefined";
+    return _fn && _fn.toString() || 'undefined';
 }
 exports.fnToString = fnToString;
 var stringifyPatternFn = null;
 var stringifyPattern = function (value) {
     var isRejection = rejectFactory_1.Rejection.isRejectionPromise;
     stringifyPatternFn = stringifyPatternFn || hof_1.pattern([
-        [hof_1.not(predicates_1.isDefined), hof_1.val("undefined")],
-        [predicates_1.isNull, hof_1.val("null")],
-        [predicates_1.isPromise, hof_1.val("[Promise]")],
+        [hof_1.not(predicates_1.isDefined), hof_1.val('undefined')],
+        [predicates_1.isNull, hof_1.val('null')],
+        [predicates_1.isPromise, hof_1.val('[Promise]')],
         [isRejection, function (x) { return x._transitionRejection.toString(); }],
-        [hof_1.is(rejectFactory_1.Rejection), hof_1.invoke("toString")],
-        [hof_1.is(transition_1.Transition), hof_1.invoke("toString")],
-        [hof_1.is(resolvable_1.Resolvable), hof_1.invoke("toString")],
+        [hof_1.is(rejectFactory_1.Rejection), hof_1.invoke('toString')],
+        [hof_1.is(transition_1.Transition), hof_1.invoke('toString')],
+        [hof_1.is(resolvable_1.Resolvable), hof_1.invoke('toString')],
         [predicates_1.isInjectable, functionToString],
-        [hof_1.val(true), common_1.identity]
+        [hof_1.val(true), common_1.identity],
     ]);
     return stringifyPatternFn(value);
 };
 function stringify(o) {
     var seen = [];
-    function format(val) {
-        if (predicates_1.isObject(val)) {
-            if (seen.indexOf(val) !== -1)
+    function format(value) {
+        if (predicates_1.isObject(value)) {
+            if (seen.indexOf(value) !== -1)
                 return '[circular ref]';
-            seen.push(val);
+            seen.push(value);
         }
-        return stringifyPattern(val);
+        return stringifyPattern(value);
     }
-    return JSON.stringify(o, function (key, val) { return format(val); }).replace(/\\"/g, '"');
+    return JSON.stringify(o, function (key, value) { return format(value); }).replace(/\\"/g, '"');
 }
 exports.stringify = stringify;
 /** Returns a function that splits a string on a character or substring */
 exports.beforeAfterSubstr = function (char) { return function (str) {
     if (!str)
-        return ["", ""];
+        return ['', ''];
     var idx = str.indexOf(char);
     if (idx === -1)
-        return [str, ""];
+        return [str, ''];
     return [str.substr(0, idx), str.substr(idx + 1)];
 }; };
+exports.hostRegex = new RegExp('^(?:[a-z]+:)?//[^/]+/');
+exports.stripLastPathElement = function (str) { return str.replace(/\/[^/]*$/, ''); };
+exports.splitHash = exports.beforeAfterSubstr('#');
+exports.splitQuery = exports.beforeAfterSubstr('?');
+exports.splitEqual = exports.beforeAfterSubstr('=');
+exports.trimHashVal = function (str) { return str ? str.replace(/^#/, '') : ''; };
 /**
  * Splits on a delimiter, but returns the delimiters in the array
  *
@@ -3491,13 +3417,12 @@ exports.beforeAfterSubstr = function (char) { return function (str) {
  * ```
  */
 function splitOnDelim(delim) {
-    var re = new RegExp("(" + delim + ")", "g");
+    var re = new RegExp('(' + delim + ')', 'g');
     return function (str) {
         return str.split(re).filter(common_1.identity);
     };
 }
 exports.splitOnDelim = splitOnDelim;
-;
 /**
  * Reduce fn that joins neighboring strings
  *
@@ -3516,7 +3441,6 @@ function joinNeighborsR(acc, x) {
     return common_1.pushR(acc, x);
 }
 exports.joinNeighborsR = joinNeighborsR;
-;
 
 },{"../resolve/resolvable":35,"../transition/rejectFactory":50,"../transition/transition":51,"./common":3,"./hof":6,"./predicates":8}],11:[function(require,module,exports){
 "use strict";
@@ -3555,27 +3479,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
  *
  * @coreapi
  * @module trace
- */ /** for typedoc */
+ */
+/* tslint:disable:no-console */
 var hof_1 = require("../common/hof");
 var predicates_1 = require("../common/predicates");
 var strings_1 = require("./strings");
 /** @hidden */
-function uiViewString(viewData) {
-    if (!viewData)
+function uiViewString(uiview) {
+    if (!uiview)
         return 'ui-view (defunct)';
-    return "[ui-view#" + viewData.id + " tag " +
-        ("in template from '" + (viewData.creationContext && viewData.creationContext.name || '(root)') + "' state]: ") +
-        ("fqn: '" + viewData.fqn + "', ") +
-        ("name: '" + viewData.name + "@" + viewData.creationContext + "')");
+    var state = uiview.creationContext ? uiview.creationContext.name || '(root)' : '(none)';
+    return "[ui-view#" + uiview.id + " " + uiview.$type + ":" + uiview.fqn + " (" + uiview.name + "@" + state + ")]";
 }
 /** @hidden */
 var viewConfigString = function (viewConfig) {
-    return "[ViewConfig#" + viewConfig.$id + " from '" + (viewConfig.viewDecl.$context.name || '(root)') + "' state]: target ui-view: '" + viewConfig.viewDecl.$uiViewName + "@" + viewConfig.viewDecl.$uiViewContextAnchor + "'";
+    var view = viewConfig.viewDecl;
+    var state = view.$context.name || '(root)';
+    return "[View#" + viewConfig.$id + " from '" + state + "' state]: target ui-view: '" + view.$uiViewName + "@" + view.$uiViewContextAnchor + "'";
 };
 /** @hidden */
 function normalizedCat(input) {
     return predicates_1.isNumber(input) ? Category[input] : Category[Category[input]];
 }
+/** @hidden */
+var consoleLog = Function.prototype.bind.call(console.log, console);
+/** @hidden */
+var consoletable = predicates_1.isFunction(console.table) ? console.table.bind(console) : consoleLog.bind(console);
 /**
  * Trace categories Enum
  *
@@ -3597,13 +3526,16 @@ var Category;
     Category[Category["UIVIEW"] = 3] = "UIVIEW";
     Category[Category["VIEWCONFIG"] = 4] = "VIEWCONFIG";
 })(Category = exports.Category || (exports.Category = {}));
-/** @hidden */ var _tid = hof_1.parse("$id");
-/** @hidden */ var _rid = hof_1.parse("router.$id");
-/** @hidden */ var transLbl = function (trans) { return "Transition #" + _tid(trans) + "-" + _rid(trans); };
+/** @hidden */
+var _tid = hof_1.parse('$id');
+/** @hidden */
+var _rid = hof_1.parse('router.$id');
+/** @hidden */
+var transLbl = function (trans) { return "Transition #" + _tid(trans) + "-" + _rid(trans); };
 /**
  * Prints UI-Router Transition trace information to the console.
  */
-var Trace = (function () {
+var Trace = /** @class */ (function () {
     /** @hidden */
     function Trace() {
         /** @hidden */
@@ -3621,16 +3553,6 @@ var Trace = (function () {
         }
         categories.map(normalizedCat).forEach(function (category) { return _this._enabled[category] = enabled; });
     };
-    /**
-     * Enables a trace [[Category]]
-     *
-     * ```js
-     * trace.enable("TRANSITION");
-     * ```
-     *
-     * @param categories categories to enable. If `categories` is omitted, all categories are enabled.
-     *        Also takes strings (category name) or ordinal (category position)
-     */
     Trace.prototype.enable = function () {
         var categories = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -3638,16 +3560,6 @@ var Trace = (function () {
         }
         this._set(true, categories);
     };
-    /**
-     * Disables a trace [[Category]]
-     *
-     * ```js
-     * trace.disable("VIEWCONFIG");
-     * ```
-     *
-     * @param categories categories to disable. If `categories` is omitted, all categories are disabled.
-     *        Also takes strings (category name) or ordinal (category position)
-     */
     Trace.prototype.disable = function () {
         var categories = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -3683,7 +3595,7 @@ var Trace = (function () {
     Trace.prototype.traceHookInvocation = function (step, trans, options) {
         if (!this.enabled(Category.HOOK))
             return;
-        var event = hof_1.parse("traceData.hookType")(options) || "internal", context = hof_1.parse("traceData.context.state.name")(options) || hof_1.parse("traceData.context")(options) || "unknown", name = strings_1.functionToString(step.registeredHook.callback);
+        var event = hof_1.parse('traceData.hookType')(options) || 'internal', context = hof_1.parse('traceData.context.state.name')(options) || hof_1.parse('traceData.context')(options) || 'unknown', name = strings_1.functionToString(step.registeredHook.callback);
         console.log(transLbl(trans) + ":   Hook -> " + event + " context: " + context + ", " + strings_1.maxLength(200, name));
     };
     /** @internalapi called by ui-router code */
@@ -3718,7 +3630,7 @@ var Trace = (function () {
     };
     /** @internalapi called by ui-router code */
     Trace.prototype.traceUIViewEvent = function (event, viewData, extra) {
-        if (extra === void 0) { extra = ""; }
+        if (extra === void 0) { extra = ''; }
         if (!this.enabled(Category.UIVIEW))
             return;
         console.log("ui-view: " + strings_1.padString(30, event) + " " + uiViewString(viewData) + extra);
@@ -3727,13 +3639,28 @@ var Trace = (function () {
     Trace.prototype.traceUIViewConfigUpdated = function (viewData, context) {
         if (!this.enabled(Category.UIVIEW))
             return;
-        this.traceUIViewEvent("Updating", viewData, " with ViewConfig from context='" + context + "'");
+        this.traceUIViewEvent('Updating', viewData, " with ViewConfig from context='" + context + "'");
     };
     /** @internalapi called by ui-router code */
     Trace.prototype.traceUIViewFill = function (viewData, html) {
         if (!this.enabled(Category.UIVIEW))
             return;
-        this.traceUIViewEvent("Fill", viewData, " with: " + strings_1.maxLength(200, html));
+        this.traceUIViewEvent('Fill', viewData, " with: " + strings_1.maxLength(200, html));
+    };
+    /** @internalapi called by ui-router code */
+    Trace.prototype.traceViewSync = function (pairs) {
+        if (!this.enabled(Category.VIEWCONFIG))
+            return;
+        var uivheader = 'uiview component fqn';
+        var cfgheader = 'view config state (view name)';
+        var mapping = pairs.map(function (_a) {
+            var uiView = _a.uiView, viewConfig = _a.viewConfig;
+            var uiv = uiView && uiView.fqn;
+            var cfg = viewConfig && viewConfig.viewDecl.$context.name + ": (" + viewConfig.viewDecl.$name + ")";
+            return _b = {}, _b[uivheader] = uiv, _b[cfgheader] = cfg, _b;
+            var _b;
+        }).sort(function (a, b) { return (a[uivheader] || '').localeCompare(b[uivheader] || ''); });
+        consoletable(mapping);
     };
     /** @internalapi called by ui-router code */
     Trace.prototype.traceViewServiceEvent = function (event, viewConfig) {
@@ -3777,7 +3704,7 @@ var queue_1 = require("./common/queue");
  * This is where we hold the global mutable state such as current state, current
  * params, current transition, etc.
  */
-var UIRouterGlobals = (function () {
+var UIRouterGlobals = /** @class */ (function () {
     function UIRouterGlobals() {
         /**
          * Current parameter values
@@ -3808,10 +3735,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var transition_1 = require("../transition/transition");
 var router_1 = require("../router");
 function addCoreResolvables(trans) {
-    trans.addResolvable({ token: router_1.UIRouter, deps: [], resolveFn: function () { return trans.router; }, data: trans.router }, "");
-    trans.addResolvable({ token: transition_1.Transition, deps: [], resolveFn: function () { return trans; }, data: trans }, "");
-    trans.addResolvable({ token: '$transition$', deps: [], resolveFn: function () { return trans; }, data: trans }, "");
-    trans.addResolvable({ token: '$stateParams', deps: [], resolveFn: function () { return trans.params(); }, data: trans.params() }, "");
+    trans.addResolvable({ token: router_1.UIRouter, deps: [], resolveFn: function () { return trans.router; }, data: trans.router }, '');
+    trans.addResolvable({ token: transition_1.Transition, deps: [], resolveFn: function () { return trans; }, data: trans }, '');
+    trans.addResolvable({ token: '$transition$', deps: [], resolveFn: function () { return trans; }, data: trans }, '');
+    trans.addResolvable({ token: '$stateParams', deps: [], resolveFn: function () { return trans.params(); }, data: trans.params() }, '');
     trans.entering().forEach(function (state) {
         trans.addResolvable({ token: '$state$', deps: [], resolveFn: function () { return state; }, data: state }, state);
     });
@@ -3916,7 +3843,7 @@ var lazyLoadHook = function (transition) {
         var rule = result && result.rule;
         // If the best match is a state, redirect the transition (instead
         // of calling sync() which supersedes the current transition)
-        if (rule && rule.type === "STATE") {
+        if (rule && rule.type === 'STATE') {
             var state = rule.state;
             var params = result.match;
             return router.stateService.target(state, params, transition.options());
@@ -3962,7 +3889,7 @@ function lazyLoadState(transition, state) {
     /** Register any lazy loaded state definitions */
     function updateStateRegistry(result) {
         if (result && Array.isArray(result.states)) {
-            result.states.forEach(function (state) { return transition.router.stateRegistry.register(state); });
+            result.states.forEach(function (_state) { return transition.router.stateRegistry.register(_state); });
         }
         return result;
     }
@@ -4074,10 +4001,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var common_1 = require("../common/common");
 var resolveContext_1 = require("../resolve/resolveContext");
 var hof_1 = require("../common/hof");
+exports.RESOLVE_HOOK_PRIORITY = 1000;
 /**
  * A [[TransitionHookFn]] which resolves all EAGER Resolvables in the To Path
  *
- * Registered using `transitionService.onStart({}, eagerResolvePath);`
+ * Registered using `transitionService.onStart({}, eagerResolvePath, { priority: 1000 });`
  *
  * When a Transition starts, this hook resolves all the EAGER Resolvables, which the transition then waits for.
  *
@@ -4085,16 +4013,16 @@ var hof_1 = require("../common/hof");
  */
 var eagerResolvePath = function (trans) {
     return new resolveContext_1.ResolveContext(trans.treeChanges().to)
-        .resolvePath("EAGER", trans)
+        .resolvePath('EAGER', trans)
         .then(common_1.noop);
 };
 exports.registerEagerResolvePath = function (transitionService) {
-    return transitionService.onStart({}, eagerResolvePath, { priority: 1000 });
+    return transitionService.onStart({}, eagerResolvePath, { priority: exports.RESOLVE_HOOK_PRIORITY });
 };
 /**
  * A [[TransitionHookFn]] which resolves all LAZY Resolvables for the state (and all its ancestors) in the To Path
  *
- * Registered using `transitionService.onEnter({ entering: () => true }, lazyResolveState);`
+ * Registered using `transitionService.onEnter({ entering: () => true }, lazyResolveState, { priority: 1000 });`
  *
  * When a State is being entered, this hook resolves all the Resolvables for this state, which the transition then waits for.
  *
@@ -4103,11 +4031,29 @@ exports.registerEagerResolvePath = function (transitionService) {
 var lazyResolveState = function (trans, state) {
     return new resolveContext_1.ResolveContext(trans.treeChanges().to)
         .subContext(state.$$state())
-        .resolvePath("LAZY", trans)
+        .resolvePath('LAZY', trans)
         .then(common_1.noop);
 };
 exports.registerLazyResolveState = function (transitionService) {
-    return transitionService.onEnter({ entering: hof_1.val(true) }, lazyResolveState, { priority: 1000 });
+    return transitionService.onEnter({ entering: hof_1.val(true) }, lazyResolveState, { priority: exports.RESOLVE_HOOK_PRIORITY });
+};
+/**
+ * A [[TransitionHookFn]] which resolves any dynamically added (LAZY or EAGER) Resolvables.
+ *
+ * Registered using `transitionService.onFinish({}, eagerResolvePath, { priority: 1000 });`
+ *
+ * After all entering states have been entered, this hook resolves any remaining Resolvables.
+ * These are typically dynamic resolves which were added by some Transition Hook using [[Transition.addResolvable]].
+ *
+ * See [[StateDeclaration.resolve]]
+ */
+var resolveRemaining = function (trans) {
+    return new resolveContext_1.ResolveContext(trans.treeChanges().to)
+        .resolvePath('LAZY', trans)
+        .then(common_1.noop);
+};
+exports.registerResolveRemaining = function (transitionService) {
+    return transitionService.onFinish({}, resolveRemaining, { priority: exports.RESOLVE_HOOK_PRIORITY });
 };
 
 },{"../common/common":3,"../common/hof":6,"../resolve/resolveContext":36}],20:[function(require,module,exports){
@@ -4188,7 +4134,7 @@ var coreservices_1 = require("../common/coreservices");
  */
 var loadEnteringViews = function (transition) {
     var $q = coreservices_1.services.$q;
-    var enteringViews = transition.views("entering");
+    var enteringViews = transition.views('entering');
     if (!enteringViews.length)
         return;
     return $q.all(enteringViews.map(function (view) { return $q.when(view.load()); })).then(common_1.noop);
@@ -4207,8 +4153,8 @@ exports.registerLoadEnteringViews = function (transitionService) {
  * See [[ViewService]]
  */
 var activateViews = function (transition) {
-    var enteringViews = transition.views("entering");
-    var exitingViews = transition.views("exiting");
+    var enteringViews = transition.views('entering');
+    var exitingViews = transition.views('exiting');
     if (!enteringViews.length && !exitingViews.length)
         return;
     var $view = transition.router.viewService;
@@ -4257,7 +4203,7 @@ __export(require("./interface"));
  */ /** for typedoc */
 Object.defineProperty(exports, "__esModule", { value: true });
 /** @internalapi */
-var UIRouterPluginBase = (function () {
+var UIRouterPluginBase = /** @class */ (function () {
     function UIRouterPluginBase() {
     }
     UIRouterPluginBase.prototype.dispose = function (router) { };
@@ -4288,9 +4234,11 @@ var hof_1 = require("../common/hof");
 var predicates_1 = require("../common/predicates");
 var coreservices_1 = require("../common/coreservices");
 var paramType_1 = require("./paramType");
-/** @hidden */ var hasOwn = Object.prototype.hasOwnProperty;
-/** @hidden */ var isShorthand = function (cfg) {
-    return ["value", "type", "squash", "array", "dynamic"].filter(hasOwn.bind(cfg || {})).length === 0;
+/** @hidden */
+var hasOwn = Object.prototype.hasOwnProperty;
+/** @hidden */
+var isShorthand = function (cfg) {
+    return ['value', 'type', 'squash', 'array', 'dynamic'].filter(hasOwn.bind(cfg || {})).length === 0;
 };
 /** @internalapi */
 var DefType;
@@ -4319,9 +4267,9 @@ function getType(cfg, urlType, location, id, paramTypes) {
     if (urlType)
         return urlType;
     if (!cfg.type) {
-        var type = location === DefType.CONFIG ? "any" :
-            location === DefType.PATH ? "path" :
-                location === DefType.SEARCH ? "query" : "string";
+        var type = location === DefType.CONFIG ? 'any' :
+            location === DefType.PATH ? 'path' :
+                location === DefType.SEARCH ? 'query' : 'string';
         return paramTypes.type(type);
     }
     return cfg.type instanceof paramType_1.ParamType ? cfg.type : paramTypes.type(cfg.type);
@@ -4342,18 +4290,18 @@ function getSquashPolicy(config, isOptional, defaultPolicy) {
 }
 /** @internalapi */
 function getReplace(config, arrayMode, isOptional, squash) {
-    var replace, configuredKeys, defaultPolicy = [
-        { from: "", to: (isOptional || arrayMode ? undefined : "") },
-        { from: null, to: (isOptional || arrayMode ? undefined : "") },
+    var defaultPolicy = [
+        { from: '', to: (isOptional || arrayMode ? undefined : '') },
+        { from: null, to: (isOptional || arrayMode ? undefined : '') },
     ];
-    replace = predicates_1.isArray(config.replace) ? config.replace : [];
+    var replace = predicates_1.isArray(config.replace) ? config.replace : [];
     if (predicates_1.isString(squash))
         replace.push({ from: squash, to: undefined });
-    configuredKeys = common_1.map(replace, hof_1.prop("from"));
+    var configuredKeys = common_1.map(replace, hof_1.prop('from'));
     return common_1.filter(defaultPolicy, function (item) { return configuredKeys.indexOf(item.from) === -1; }).concat(replace);
 }
 /** @internalapi */
-var Param = (function () {
+var Param = /** @class */ (function () {
     function Param(id, type, config, location, urlMatcherFactory) {
         config = unwrapShorthand(config);
         type = getType(config, type, location, id, urlMatcherFactory.paramTypes);
@@ -4367,66 +4315,12 @@ var Param = (function () {
         var inherit = predicates_1.isDefined(config.inherit) ? !!config.inherit : !!type.inherit;
         // array config: param name (param[]) overrides default settings.  explicit config overrides param name.
         function getArrayMode() {
-            var arrayDefaults = { array: (location === DefType.SEARCH ? "auto" : false) };
+            var arrayDefaults = { array: (location === DefType.SEARCH ? 'auto' : false) };
             var arrayParamNomenclature = id.match(/\[\]$/) ? { array: true } : {};
             return common_1.extend(arrayDefaults, arrayParamNomenclature, config).array;
         }
         common_1.extend(this, { id: id, type: type, location: location, isOptional: isOptional, dynamic: dynamic, raw: raw, squash: squash, replace: replace, inherit: inherit, array: arrayMode, config: config });
     }
-    Param.prototype.isDefaultValue = function (value) {
-        return this.isOptional && this.type.equals(this.value(), value);
-    };
-    /**
-     * [Internal] Gets the decoded representation of a value if the value is defined, otherwise, returns the
-     * default value, which may be the result of an injectable function.
-     */
-    Param.prototype.value = function (value) {
-        var _this = this;
-        /**
-         * [Internal] Get the default value of a parameter, which may be an injectable function.
-         */
-        var getDefaultValue = function () {
-            if (_this._defaultValueCache)
-                return _this._defaultValueCache.defaultValue;
-            if (!coreservices_1.services.$injector)
-                throw new Error("Injectable functions cannot be called at configuration time");
-            var defaultValue = coreservices_1.services.$injector.invoke(_this.config.$$fn);
-            if (defaultValue !== null && defaultValue !== undefined && !_this.type.is(defaultValue))
-                throw new Error("Default value (" + defaultValue + ") for parameter '" + _this.id + "' is not an instance of ParamType (" + _this.type.name + ")");
-            if (_this.config.$$fn['__cacheable']) {
-                _this._defaultValueCache = { defaultValue: defaultValue };
-            }
-            return defaultValue;
-        };
-        var replaceSpecialValues = function (val) {
-            for (var _i = 0, _a = _this.replace; _i < _a.length; _i++) {
-                var tuple = _a[_i];
-                if (tuple.from === val)
-                    return tuple.to;
-            }
-            return val;
-        };
-        value = replaceSpecialValues(value);
-        return predicates_1.isUndefined(value) ? getDefaultValue() : this.type.$normalize(value);
-    };
-    Param.prototype.isSearch = function () {
-        return this.location === DefType.SEARCH;
-    };
-    Param.prototype.validates = function (value) {
-        // There was no parameter value, but the param is optional
-        if ((predicates_1.isUndefined(value) || value === null) && this.isOptional)
-            return true;
-        // The value was not of the correct ParamType, and could not be decoded to the correct ParamType
-        var normalized = this.type.$normalize(value);
-        if (!this.type.is(normalized))
-            return false;
-        // The value was of the correct type, but when encoded, did not match the ParamType's regexp
-        var encoded = this.type.encode(normalized);
-        return !(predicates_1.isString(encoded) && !this.type.pattern.exec(encoded));
-    };
-    Param.prototype.toString = function () {
-        return "{Param:" + this.id + " " + this.type + " squash: '" + this.squash + "' optional: " + this.isOptional + "}";
-    };
     Param.values = function (params, values) {
         if (values === void 0) { values = {}; }
         var paramValues = {};
@@ -4471,6 +4365,60 @@ var Param = (function () {
         if (values === void 0) { values = {}; }
         return params.map(function (param) { return param.validates(values[param.id]); }).reduce(common_1.allTrueR, true);
     };
+    Param.prototype.isDefaultValue = function (value) {
+        return this.isOptional && this.type.equals(this.value(), value);
+    };
+    /**
+     * [Internal] Gets the decoded representation of a value if the value is defined, otherwise, returns the
+     * default value, which may be the result of an injectable function.
+     */
+    Param.prototype.value = function (value) {
+        var _this = this;
+        /**
+         * [Internal] Get the default value of a parameter, which may be an injectable function.
+         */
+        var getDefaultValue = function () {
+            if (_this._defaultValueCache)
+                return _this._defaultValueCache.defaultValue;
+            if (!coreservices_1.services.$injector)
+                throw new Error('Injectable functions cannot be called at configuration time');
+            var defaultValue = coreservices_1.services.$injector.invoke(_this.config.$$fn);
+            if (defaultValue !== null && defaultValue !== undefined && !_this.type.is(defaultValue))
+                throw new Error("Default value (" + defaultValue + ") for parameter '" + _this.id + "' is not an instance of ParamType (" + _this.type.name + ")");
+            if (_this.config.$$fn['__cacheable']) {
+                _this._defaultValueCache = { defaultValue: defaultValue };
+            }
+            return defaultValue;
+        };
+        var replaceSpecialValues = function (val) {
+            for (var _i = 0, _a = _this.replace; _i < _a.length; _i++) {
+                var tuple = _a[_i];
+                if (tuple.from === val)
+                    return tuple.to;
+            }
+            return val;
+        };
+        value = replaceSpecialValues(value);
+        return predicates_1.isUndefined(value) ? getDefaultValue() : this.type.$normalize(value);
+    };
+    Param.prototype.isSearch = function () {
+        return this.location === DefType.SEARCH;
+    };
+    Param.prototype.validates = function (value) {
+        // There was no parameter value, but the param is optional
+        if ((predicates_1.isUndefined(value) || value === null) && this.isOptional)
+            return true;
+        // The value was not of the correct ParamType, and could not be decoded to the correct ParamType
+        var normalized = this.type.$normalize(value);
+        if (!this.type.is(normalized))
+            return false;
+        // The value was of the correct type, but when encoded, did not match the ParamType's regexp
+        var encoded = this.type.encode(normalized);
+        return !(predicates_1.isString(encoded) && !this.type.pattern.exec(encoded));
+    };
+    Param.prototype.toString = function () {
+        return "{Param:" + this.id + " " + this.type + " squash: '" + this.squash + "' optional: " + this.isOptional + "}";
+    };
     return Param;
 }());
 exports.Param = Param;
@@ -4509,7 +4457,7 @@ var predicates_1 = require("../common/predicates");
  * ```
  * @internalapi
  */
-var ParamType = (function () {
+var ParamType = /** @class */ (function () {
     /**
      * @param def  A configuration object which contains the custom type definition.  The object's
      *        properties will override the default methods and/or pattern in `ParamType`'s public interface.
@@ -4530,7 +4478,7 @@ var ParamType = (function () {
     /** @inheritdoc */
     ParamType.prototype.decode = function (val, key) { return val; };
     /** @inheritdoc */
-    ParamType.prototype.equals = function (a, b) { return a == b; };
+    ParamType.prototype.equals = function (a, b) { return a == b; }; // tslint:disable-line:triple-equals
     ParamType.prototype.$subPattern = function () {
         var sub = this.pattern.toString();
         return sub.substr(1, sub.length - 2);
@@ -4555,7 +4503,7 @@ var ParamType = (function () {
     ParamType.prototype.$asArray = function (mode, isSearch) {
         if (!mode)
             return this;
-        if (mode === "auto" && !isSearch)
+        if (mode === 'auto' && !isSearch)
             throw new Error("'auto' array mode is for query parameters only");
         return new ArrayType(this, mode);
     };
@@ -4576,7 +4524,7 @@ function ArrayType(type, mode) {
     function arrayUnwrap(val) {
         switch (val.length) {
             case 0: return undefined;
-            case 1: return mode === "auto" ? val[0] : val;
+            case 1: return mode === 'auto' ? val[0] : val;
             default: return val;
         }
     }
@@ -4614,7 +4562,7 @@ function ArrayType(type, mode) {
         pattern: type.pattern,
         inherit: type.inherit,
         is: arrayHandler(type.is.bind(type), true),
-        $arrayMode: mode
+        $arrayMode: mode,
     });
 }
 
@@ -4648,7 +4596,7 @@ var paramType_1 = require("./paramType");
  * - [[json]]
  * - [[any]]
  */
-var ParamTypes = (function () {
+var ParamTypes = /** @class */ (function () {
     /** @internalapi */
     function ParamTypes() {
         /** @hidden */
@@ -4656,7 +4604,7 @@ var ParamTypes = (function () {
         /** @hidden */
         this.typeQueue = [];
         /** @internalapi */
-        this.defaultTypes = common_1.pick(ParamTypes.prototype, ["hash", "string", "query", "path", "int", "bool", "date", "json", "any"]);
+        this.defaultTypes = common_1.pick(ParamTypes.prototype, ['hash', 'string', 'query', 'path', 'int', 'bool', 'date', 'json', 'any']);
         // Register default types. Store them in the prototype of this.types.
         var makeType = function (definition, name) {
             return new paramType_1.ParamType(common_1.extend({ name: name }, definition));
@@ -4708,6 +4656,7 @@ function initDefaultTypes() {
             decode: valToString,
             is: hof_1.is(String),
             pattern: /.*/,
+            // tslint:disable-next-line:triple-equals
             equals: function (a, b) { return a == b; },
         };
         return common_1.extend({}, defaultTypeBase, def);
@@ -4733,15 +4682,15 @@ function initDefaultTypes() {
             encode: function (val) { return val && 1 || 0; },
             decode: function (val) { return parseInt(val, 10) !== 0; },
             is: hof_1.is(Boolean),
-            pattern: /0|1/
+            pattern: /0|1/,
         }),
         date: makeDefaultType({
             encode: function (val) {
                 return !this.is(val) ? undefined : [
                     val.getFullYear(),
                     ('0' + (val.getMonth() + 1)).slice(-2),
-                    ('0' + val.getDate()).slice(-2)
-                ].join("-");
+                    ('0' + val.getDate()).slice(-2),
+                ].join('-');
             },
             decode: function (val) {
                 if (this.is(val))
@@ -4755,14 +4704,14 @@ function initDefaultTypes() {
                     .reduce(function (acc, fn) { return acc && l[fn]() === r[fn](); }, true);
             },
             pattern: /[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[0-1])/,
-            capture: /([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/
+            capture: /([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/,
         }),
         json: makeDefaultType({
             encode: common_1.toJson,
             decode: common_1.fromJson,
             is: hof_1.is(Object),
             equals: common_1.equals,
-            pattern: /[^/]*/
+            pattern: /[^/]*/,
         }),
         // does not encode/decode
         any: makeDefaultType({
@@ -4785,7 +4734,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /** */
 var common_1 = require("../common/common");
 /** @internalapi */
-var StateParams = (function () {
+var StateParams = /** @class */ (function () {
     function StateParams(params) {
         if (params === void 0) { params = {}; }
         common_1.extend(this, params);
@@ -4799,7 +4748,8 @@ var StateParams = (function () {
      * @param {Object} $to Internal definition of object representing state to transition to.
      */
     StateParams.prototype.$inherit = function (newParams, $current, $to) {
-        var parents = common_1.ancestors($current, $to), parentParams, inherited = {}, inheritList = [];
+        var parentParams;
+        var parents = common_1.ancestors($current, $to), inherited = {}, inheritList = [];
         for (var i in parents) {
             if (!parents[i] || !parents[i].params)
                 continue;
@@ -4815,7 +4765,6 @@ var StateParams = (function () {
         }
         return common_1.extend({}, inherited, newParams);
     };
-    ;
     return StateParams;
 }());
 exports.StateParams = StateParams;
@@ -4828,9 +4777,87 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 /** @module path */ /** for typedoc */
 __export(require("./pathNode"));
-__export(require("./pathFactory"));
+__export(require("./pathUtils"));
 
-},{"./pathFactory":31,"./pathNode":32}],31:[function(require,module,exports){
+},{"./pathNode":31,"./pathUtils":32}],31:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/** @module path */ /** for typedoc */
+var common_1 = require("../common/common");
+var hof_1 = require("../common/hof");
+var param_1 = require("../params/param");
+/**
+ * @internalapi
+ *
+ * A node in a [[TreeChanges]] path
+ *
+ * For a [[TreeChanges]] path, this class holds the stateful information for a single node in the path.
+ * Each PathNode corresponds to a state being entered, exited, or retained.
+ * The stateful information includes parameter values and resolve data.
+ */
+var PathNode = /** @class */ (function () {
+    function PathNode(stateOrNode) {
+        if (stateOrNode instanceof PathNode) {
+            var node = stateOrNode;
+            this.state = node.state;
+            this.paramSchema = node.paramSchema.slice();
+            this.paramValues = common_1.extend({}, node.paramValues);
+            this.resolvables = node.resolvables.slice();
+            this.views = node.views && node.views.slice();
+        }
+        else {
+            var state = stateOrNode;
+            this.state = state;
+            this.paramSchema = state.parameters({ inherit: false });
+            this.paramValues = {};
+            this.resolvables = state.resolvables.map(function (res) { return res.clone(); });
+        }
+    }
+    /** Returns a clone of the PathNode */
+    PathNode.clone = function (node) {
+        return new PathNode(node);
+    };
+    /** Sets [[paramValues]] for the node, from the values of an object hash */
+    PathNode.prototype.applyRawParams = function (params) {
+        var getParamVal = function (paramDef) { return [paramDef.id, paramDef.value(params[paramDef.id])]; };
+        this.paramValues = this.paramSchema.reduce(function (memo, pDef) { return common_1.applyPairs(memo, getParamVal(pDef)); }, {});
+        return this;
+    };
+    /** Gets a specific [[Param]] metadata that belongs to the node */
+    PathNode.prototype.parameter = function (name) {
+        return common_1.find(this.paramSchema, hof_1.propEq('id', name));
+    };
+    /**
+     * @returns true if the state and parameter values for another PathNode are
+     * equal to the state and param values for this PathNode
+     */
+    PathNode.prototype.equals = function (node, paramsFn) {
+        var diff = this.diff(node, paramsFn);
+        return diff && diff.length === 0;
+    };
+    /**
+     * Finds Params with different parameter values on another PathNode.
+     *
+     * Given another node (of the same state), finds the parameter values which differ.
+     * Returns the [[Param]] (schema objects) whose parameter values differ.
+     *
+     * Given another node for a different state, returns `false`
+     *
+     * @param node The node to compare to
+     * @param paramsFn A function that returns which parameters should be compared.
+     * @returns The [[Param]]s which differ, or null if the two nodes are for different states
+     */
+    PathNode.prototype.diff = function (node, paramsFn) {
+        if (this.state !== node.state)
+            return false;
+        var params = paramsFn ? paramsFn(this) : this.paramSchema;
+        return param_1.Param.changed(params, this.paramValues, node.paramValues);
+    };
+    return PathNode;
+}());
+exports.PathNode = PathNode;
+
+},{"../common/common":3,"../common/hof":6,"../params/param":26}],32:[function(require,module,exports){
 "use strict";
 /** @module path */ /** for typedoc */
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -4841,13 +4868,13 @@ var pathNode_1 = require("./pathNode");
 /**
  * This class contains functions which convert TargetStates, Nodes and paths from one type to another.
  */
-var PathUtils = (function () {
+var PathUtils = /** @class */ (function () {
     function PathUtils() {
     }
     /** Given a PathNode[], create an TargetState */
-    PathUtils.makeTargetState = function (path) {
+    PathUtils.makeTargetState = function (registry, path) {
         var state = common_1.tail(path).state;
-        return new targetState_1.TargetState(state, state, path.map(hof_1.prop("paramValues")).reduce(common_1.mergeR, {}));
+        return new targetState_1.TargetState(registry, state, path.map(hof_1.prop('paramValues')).reduce(common_1.mergeR, {}), {});
     };
     PathUtils.buildPath = function (targetState) {
         var toParams = targetState.params();
@@ -4918,7 +4945,8 @@ var PathUtils = (function () {
      * Computes the tree changes (entering, exiting) between a fromPath and toPath.
      */
     PathUtils.treeChanges = function (fromPath, toPath, reloadState) {
-        var keep = 0, max = Math.min(fromPath.length, toPath.length);
+        var max = Math.min(fromPath.length, toPath.length);
+        var keep = 0;
         var nodesMatch = function (node1, node2) {
             return node1.equals(node2, PathUtils.nonDynamicParams);
         };
@@ -4933,12 +4961,10 @@ var PathUtils = (function () {
         }
         var from, retained, exiting, entering, to;
         from = fromPath;
-        retained = from.slice(0, keep);
+        retained = from.slice(0, keep).map(applyToParams); // applyToParams to update dynamic params
         exiting = from.slice(keep);
-        // Create a new retained path (with shallow copies of nodes) which have the params of the toPath mapped
-        var retainedWithToParams = retained.map(applyToParams);
         entering = toPath.slice(keep);
-        to = (retainedWithToParams).concat(entering);
+        to = (retained).concat(entering);
         return { from: from, to: to, retained: retained, exiting: exiting, entering: entering };
     };
     /**
@@ -4992,97 +5018,19 @@ var PathUtils = (function () {
         var elementIdx = path.indexOf(node);
         return elementIdx === -1 ? undefined : path.slice(0, elementIdx + 1);
     };
+    PathUtils.nonDynamicParams = function (node) {
+        return node.state.parameters({ inherit: false })
+            .filter(function (param) { return !param.dynamic; });
+    };
+    /** Gets the raw parameter values from a path */
+    PathUtils.paramValues = function (path) {
+        return path.reduce(function (acc, node) { return common_1.extend(acc, node.paramValues); }, {});
+    };
     return PathUtils;
 }());
-PathUtils.nonDynamicParams = function (node) {
-    return node.state.parameters({ inherit: false })
-        .filter(function (param) { return !param.dynamic; });
-};
-/** Gets the raw parameter values from a path */
-PathUtils.paramValues = function (path) {
-    return path.reduce(function (acc, node) { return common_1.extend(acc, node.paramValues); }, {});
-};
 exports.PathUtils = PathUtils;
 
-},{"../common/common":3,"../common/hof":6,"../state/targetState":45,"./pathNode":32}],32:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-/** @module path */ /** for typedoc */
-var common_1 = require("../common/common");
-var hof_1 = require("../common/hof");
-var param_1 = require("../params/param");
-/**
- * @internalapi
- *
- * A node in a [[TreeChanges]] path
- *
- * For a [[TreeChanges]] path, this class holds the stateful information for a single node in the path.
- * Each PathNode corresponds to a state being entered, exited, or retained.
- * The stateful information includes parameter values and resolve data.
- */
-var PathNode = (function () {
-    function PathNode(stateOrNode) {
-        if (stateOrNode instanceof PathNode) {
-            var node = stateOrNode;
-            this.state = node.state;
-            this.paramSchema = node.paramSchema.slice();
-            this.paramValues = common_1.extend({}, node.paramValues);
-            this.resolvables = node.resolvables.slice();
-            this.views = node.views && node.views.slice();
-        }
-        else {
-            var state = stateOrNode;
-            this.state = state;
-            this.paramSchema = state.parameters({ inherit: false });
-            this.paramValues = {};
-            this.resolvables = state.resolvables.map(function (res) { return res.clone(); });
-        }
-    }
-    /** Sets [[paramValues]] for the node, from the values of an object hash */
-    PathNode.prototype.applyRawParams = function (params) {
-        var getParamVal = function (paramDef) { return [paramDef.id, paramDef.value(params[paramDef.id])]; };
-        this.paramValues = this.paramSchema.reduce(function (memo, pDef) { return common_1.applyPairs(memo, getParamVal(pDef)); }, {});
-        return this;
-    };
-    /** Gets a specific [[Param]] metadata that belongs to the node */
-    PathNode.prototype.parameter = function (name) {
-        return common_1.find(this.paramSchema, hof_1.propEq("id", name));
-    };
-    /**
-     * @returns true if the state and parameter values for another PathNode are
-     * equal to the state and param values for this PathNode
-     */
-    PathNode.prototype.equals = function (node, paramsFn) {
-        var diff = this.diff(node, paramsFn);
-        return diff && diff.length === 0;
-    };
-    /**
-     * Finds Params with different parameter values on another PathNode.
-     *
-     * Given another node (of the same state), finds the parameter values which differ.
-     * Returns the [[Param]] (schema objects) whose parameter values differ.
-     *
-     * Given another node for a different state, returns `false`
-     *
-     * @param node The node to compare to
-     * @param paramsFn A function that returns which parameters should be compared.
-     * @returns The [[Param]]s which differ, or null if the two nodes are for different states
-     */
-    PathNode.prototype.diff = function (node, paramsFn) {
-        if (this.state !== node.state)
-            return false;
-        var params = paramsFn ? paramsFn(this) : this.paramSchema;
-        return param_1.Param.changed(params, this.paramValues, node.paramValues);
-    };
-    /** Returns a clone of the PathNode */
-    PathNode.clone = function (node) {
-        return new PathNode(node);
-    };
-    return PathNode;
-}());
-exports.PathNode = PathNode;
-
-},{"../common/common":3,"../common/hof":6,"../params/param":26}],33:[function(require,module,exports){
+},{"../common/common":3,"../common/hof":6,"../state/targetState":45,"./pathNode":31}],33:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -5099,14 +5047,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /** @internalapi */
 exports.resolvePolicies = {
     when: {
-        LAZY: "LAZY",
-        EAGER: "EAGER"
+        LAZY: 'LAZY',
+        EAGER: 'EAGER',
     },
     async: {
-        WAIT: "WAIT",
-        NOWAIT: "NOWAIT",
-        RXWAIT: "RXWAIT"
-    }
+        WAIT: 'WAIT',
+        NOWAIT: 'NOWAIT',
+        RXWAIT: 'RXWAIT',
+    },
 };
 
 },{}],35:[function(require,module,exports){
@@ -5121,10 +5069,11 @@ var coreservices_1 = require("../common/coreservices");
 var trace_1 = require("../common/trace");
 var strings_1 = require("../common/strings");
 var predicates_1 = require("../common/predicates");
+var predicates_2 = require("../common/predicates");
 // TODO: explicitly make this user configurable
 exports.defaultResolvePolicy = {
-    when: "LAZY",
-    async: "WAIT"
+    when: 'LAZY',
+    async: 'WAIT',
 };
 /**
  * The basic building block for the resolve system.
@@ -5138,7 +5087,7 @@ exports.defaultResolvePolicy = {
  * Resolvable.get() and Resolvable.resolve() both execute within a context path, which is passed as the first
  * parameter to those fns.
  */
-var Resolvable = (function () {
+var Resolvable = /** @class */ (function () {
     function Resolvable(arg1, resolveFn, deps, policy, data) {
         this.resolved = false;
         this.promise = undefined;
@@ -5146,10 +5095,10 @@ var Resolvable = (function () {
             common_1.extend(this, arg1);
         }
         else if (predicates_1.isFunction(resolveFn)) {
-            if (arg1 == null || arg1 == undefined)
-                throw new Error("new Resolvable(): token argument is required");
+            if (predicates_2.isNullOrUndefined(arg1))
+                throw new Error('new Resolvable(): token argument is required');
             if (!predicates_1.isFunction(resolveFn))
-                throw new Error("new Resolvable(): resolveFn argument must be a function");
+                throw new Error('new Resolvable(): resolveFn argument must be a function');
             this.token = arg1;
             this.policy = policy;
             this.resolveFn = resolveFn;
@@ -5206,7 +5155,7 @@ var Resolvable = (function () {
         // If the resolve policy is RXWAIT, wait for the observable to emit something. otherwise pass through.
         var node = resolveContext.findNode(this);
         var state = node && node.state;
-        var maybeWaitForRx = this.getPolicy(state).async === "RXWAIT" ? waitForRx : common_1.identity;
+        var maybeWaitForRx = this.getPolicy(state).async === 'RXWAIT' ? waitForRx : common_1.identity;
         // After the final value has been resolved, update the state of the Resolvable
         var applyResolvedValue = function (resolvedValue) {
             _this.data = resolvedValue;
@@ -5236,11 +5185,11 @@ var Resolvable = (function () {
     Resolvable.prototype.clone = function () {
         return new Resolvable(this);
     };
+    Resolvable.fromData = function (token, data) {
+        return new Resolvable(token, function () { return data; }, null, null, data);
+    };
     return Resolvable;
 }());
-Resolvable.fromData = function (token, data) {
-    return new Resolvable(token, function () { return data; }, null, null, data);
-};
 exports.Resolvable = Resolvable;
 
 },{"../common/common":3,"../common/coreservices":4,"../common/predicates":8,"../common/strings":10,"../common/trace":11}],36:[function(require,module,exports){
@@ -5254,12 +5203,14 @@ var trace_1 = require("../common/trace");
 var coreservices_1 = require("../common/coreservices");
 var interface_1 = require("./interface");
 var resolvable_1 = require("./resolvable");
-var pathFactory_1 = require("../path/pathFactory");
+var pathUtils_1 = require("../path/pathUtils");
 var strings_1 = require("../common/strings");
-var when = interface_1.resolvePolicies.when;
-var ALL_WHENS = [when.EAGER, when.LAZY];
-var EAGER_WHENS = [when.EAGER];
-exports.NATIVE_INJECTOR_TOKEN = "Native Injector";
+var common_2 = require("../common");
+var whens = interface_1.resolvePolicies.when;
+var ALL_WHENS = [whens.EAGER, whens.LAZY];
+var EAGER_WHENS = [whens.EAGER];
+// tslint:disable-next-line:no-inferrable-types
+exports.NATIVE_INJECTOR_TOKEN = 'Native Injector';
 /**
  * Encapsulates Dependency Injection for a path of nodes
  *
@@ -5270,7 +5221,7 @@ exports.NATIVE_INJECTOR_TOKEN = "Native Injector";
  *
  * The ResolveContext closes over the [[PathNode]]s, and provides DI for the last node in the path.
  */
-var ResolveContext = (function () {
+var ResolveContext = /** @class */ (function () {
     function ResolveContext(_path) {
         this._path = _path;
     }
@@ -5319,7 +5270,7 @@ var ResolveContext = (function () {
      * `let AB = ABCD.subcontext(a)`
      */
     ResolveContext.prototype.subContext = function (state) {
-        return new ResolveContext(pathFactory_1.PathUtils.subPath(this._path, function (node) { return node.state === state; }));
+        return new ResolveContext(pathUtils_1.PathUtils.subPath(this._path, function (node) { return node.state === state; }));
     };
     /**
      * Adds Resolvables to the node that matches the state
@@ -5350,9 +5301,9 @@ var ResolveContext = (function () {
      */
     ResolveContext.prototype.resolvePath = function (when, trans) {
         var _this = this;
-        if (when === void 0) { when = "LAZY"; }
+        if (when === void 0) { when = 'LAZY'; }
         // This option determines which 'when' policy Resolvables we are about to fetch.
-        var whenOption = common_1.inArray(ALL_WHENS, when) ? when : "LAZY";
+        var whenOption = common_1.inArray(ALL_WHENS, when) ? when : 'LAZY';
         // If the caller specified EAGER, only the EAGER Resolvables are fetched.
         // if the caller specified LAZY, both EAGER and LAZY Resolvables are fetched.`
         var matchedWhens = whenOption === interface_1.resolvePolicies.when.EAGER ? EAGER_WHENS : ALL_WHENS;
@@ -5395,17 +5346,17 @@ var ResolveContext = (function () {
         var node = this.findNode(resolvable);
         // Find which other resolvables are "visible" to the `resolvable` argument
         // subpath stopping at resolvable's node, or the whole path (if the resolvable isn't in the path)
-        var subPath = pathFactory_1.PathUtils.subPath(this._path, function (x) { return x === node; }) || this._path;
+        var subPath = pathUtils_1.PathUtils.subPath(this._path, function (x) { return x === node; }) || this._path;
         var availableResolvables = subPath
-            .reduce(function (acc, node) { return acc.concat(node.resolvables); }, []) //all of subpath's resolvables
+            .reduce(function (acc, _node) { return acc.concat(_node.resolvables); }, []) // all of subpath's resolvables
             .filter(function (res) { return res !== resolvable; }); // filter out the `resolvable` argument
         var getDependency = function (token) {
             var matching = availableResolvables.filter(function (r) { return r.token === token; });
             if (matching.length)
                 return common_1.tail(matching);
             var fromInjector = _this.injector().getNative(token);
-            if (!fromInjector) {
-                throw new Error("Could not find Dependency Injection token: " + strings_1.stringify(token));
+            if (common_2.isUndefined(fromInjector)) {
+                throw new Error('Could not find Dependency Injection token: ' + strings_1.stringify(token));
             }
             return new resolvable_1.Resolvable(token, function () { return fromInjector; }, [], fromInjector);
         };
@@ -5414,7 +5365,7 @@ var ResolveContext = (function () {
     return ResolveContext;
 }());
 exports.ResolveContext = ResolveContext;
-var UIInjectorImpl = (function () {
+var UIInjectorImpl = /** @class */ (function () {
     function UIInjectorImpl(context) {
         this.context = context;
         this.native = this.get(exports.NATIVE_INJECTOR_TOKEN) || coreservices_1.services.$injector;
@@ -5426,11 +5377,11 @@ var UIInjectorImpl = (function () {
                 return resolvable.get(this.context);
             }
             if (!resolvable.resolved) {
-                throw new Error("Resolvable async .get() not complete:" + strings_1.stringify(resolvable.token));
+                throw new Error('Resolvable async .get() not complete:' + strings_1.stringify(resolvable.token));
             }
             return resolvable.data;
         }
-        return this.native && this.native.get(token);
+        return this.getNative(token);
     };
     UIInjectorImpl.prototype.getAsync = function (token) {
         var resolvable = this.context.getResolvable(token);
@@ -5444,7 +5395,7 @@ var UIInjectorImpl = (function () {
     return UIInjectorImpl;
 }());
 
-},{"../common/common":3,"../common/coreservices":4,"../common/hof":6,"../common/strings":10,"../common/trace":11,"../path/pathFactory":31,"./interface":34,"./resolvable":35}],37:[function(require,module,exports){
+},{"../common":7,"../common/common":3,"../common/coreservices":4,"../common/hof":6,"../common/strings":10,"../common/trace":11,"../path/pathUtils":32,"./interface":34,"./resolvable":35}],37:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -5479,7 +5430,7 @@ var _routerInstance = 0;
  * If you are bootstrapping UIRouter manually, tell it to monitor the URL by calling
  * [[UrlService.listen]] then [[UrlService.sync]].
  */
-var UIRouter = (function () {
+var UIRouter = /** @class */ (function () {
     /**
      * Creates a new `UIRouter` object
      *
@@ -5519,7 +5470,7 @@ var UIRouter = (function () {
         this.stateService = new stateService_1.StateService(this);
         /** Provides services related to the URL */
         this.urlService = new urlService_1.UrlService(this);
-        /** @hidden */
+        /** @hidden plugin instances are registered here */
         this._plugins = {};
         this.viewService._pluginapi._rootViewContext(this.stateRegistry.root());
         this.globals.$current = this.stateRegistry.root();
@@ -5618,7 +5569,7 @@ var UIRouter = (function () {
         if (options === void 0) { options = {}; }
         var pluginInstance = new plugin(this, options);
         if (!pluginInstance.name)
-            throw new Error("Required property `name` missing on plugin: " + pluginInstance);
+            throw new Error('Required property `name` missing on plugin: ' + pluginInstance);
         this._disposables.push(pluginInstance);
         return this._plugins[pluginInstance.name] = pluginInstance;
     };
@@ -5678,7 +5629,7 @@ var getUrlBuilder = function ($urlMatcherFactoryProvider, root) {
         // For future states, i.e., states whose name ends with `.**`,
         // match anything that starts with the url prefix
         if (stateDec && stateDec.url && stateDec.name && stateDec.name.match(/\.\*\*$/)) {
-            stateDec.url += "{remainder:any}"; // match any path (.*)
+            stateDec.url += '{remainder:any}'; // match any path (.*)
         }
         var parsed = parseUrl(stateDec.url), parent = state.parent;
         var url = !parsed ? stateDec.url : $urlMatcherFactoryProvider.compile(parsed.val, {
@@ -5687,7 +5638,7 @@ var getUrlBuilder = function ($urlMatcherFactoryProvider, root) {
                 if (stateDec.reloadOnSearch === false && isSearch)
                     paramConfig = common_1.extend(paramConfig || {}, { dynamic: true });
                 return paramConfig;
-            }
+            },
         });
         if (!url)
             return null;
@@ -5710,7 +5661,7 @@ var getParamsBuilder = function (paramFactory) {
     };
 };
 function pathBuilder(state) {
-    return state.parent ? state.parent.path.concat(state) : [state];
+    return state.parent ? state.parent.path.concat(state) : /*root*/ [state];
 }
 function includesBuilder(state) {
     var includes = state.parent ? common_1.extend({}, state.parent.includes) : {};
@@ -5769,7 +5720,7 @@ function resolvablesBuilder(state) {
         // ng1 doesn't have an $injector until runtime.
         // If the $injector doesn't exist, use "deferred" literal as a
         // marker indicating they should be annotated when runtime starts
-        return fn['$inject'] || ($injector && $injector.annotate(fn, $injector.strictDi)) || "deferred";
+        return fn['$inject'] || ($injector && $injector.annotate(fn, $injector.strictDi)) || 'deferred';
     };
     /** true if the object has both `token` and `resolveFn`, and is probably a [[ResolveLiteral]] */
     var isResolveLiteral = function (obj) { return !!(obj.token && obj.resolveFn); };
@@ -5778,26 +5729,26 @@ function resolvablesBuilder(state) {
     /** true if the object looks like a tuple from obj2Tuples */
     var isTupleFromObj = function (obj) { return !!(obj && obj.val && (predicates_1.isString(obj.val) || predicates_1.isArray(obj.val) || predicates_1.isFunction(obj.val))); };
     /** extracts the token from a Provider or provide literal */
-    var token = function (p) { return p.provide || p.token; };
+    var getToken = function (p) { return p.provide || p.token; };
     /** Given a literal resolve or provider object, returns a Resolvable */
     var literal2Resolvable = hof_1.pattern([
-        [hof_1.prop('resolveFn'), function (p) { return new resolvable_1.Resolvable(token(p), p.resolveFn, p.deps, p.policy); }],
-        [hof_1.prop('useFactory'), function (p) { return new resolvable_1.Resolvable(token(p), p.useFactory, (p.deps || p.dependencies), p.policy); }],
-        [hof_1.prop('useClass'), function (p) { return new resolvable_1.Resolvable(token(p), function () { return new p.useClass(); }, [], p.policy); }],
-        [hof_1.prop('useValue'), function (p) { return new resolvable_1.Resolvable(token(p), function () { return p.useValue; }, [], p.policy, p.useValue); }],
-        [hof_1.prop('useExisting'), function (p) { return new resolvable_1.Resolvable(token(p), common_1.identity, [p.useExisting], p.policy); }],
+        [hof_1.prop('resolveFn'), function (p) { return new resolvable_1.Resolvable(getToken(p), p.resolveFn, p.deps, p.policy); }],
+        [hof_1.prop('useFactory'), function (p) { return new resolvable_1.Resolvable(getToken(p), p.useFactory, (p.deps || p.dependencies), p.policy); }],
+        [hof_1.prop('useClass'), function (p) { return new resolvable_1.Resolvable(getToken(p), function () { return new p.useClass(); }, [], p.policy); }],
+        [hof_1.prop('useValue'), function (p) { return new resolvable_1.Resolvable(getToken(p), function () { return p.useValue; }, [], p.policy, p.useValue); }],
+        [hof_1.prop('useExisting'), function (p) { return new resolvable_1.Resolvable(getToken(p), common_1.identity, [p.useExisting], p.policy); }],
     ]);
     var tuple2Resolvable = hof_1.pattern([
-        [hof_1.pipe(hof_1.prop("val"), predicates_1.isString), function (tuple) { return new resolvable_1.Resolvable(tuple.token, common_1.identity, [tuple.val], tuple.policy); }],
-        [hof_1.pipe(hof_1.prop("val"), predicates_1.isArray), function (tuple) { return new resolvable_1.Resolvable(tuple.token, common_1.tail(tuple.val), tuple.val.slice(0, -1), tuple.policy); }],
-        [hof_1.pipe(hof_1.prop("val"), predicates_1.isFunction), function (tuple) { return new resolvable_1.Resolvable(tuple.token, tuple.val, annotate(tuple.val), tuple.policy); }],
+        [hof_1.pipe(hof_1.prop('val'), predicates_1.isString), function (tuple) { return new resolvable_1.Resolvable(tuple.token, common_1.identity, [tuple.val], tuple.policy); }],
+        [hof_1.pipe(hof_1.prop('val'), predicates_1.isArray), function (tuple) { return new resolvable_1.Resolvable(tuple.token, common_1.tail(tuple.val), tuple.val.slice(0, -1), tuple.policy); }],
+        [hof_1.pipe(hof_1.prop('val'), predicates_1.isFunction), function (tuple) { return new resolvable_1.Resolvable(tuple.token, tuple.val, annotate(tuple.val), tuple.policy); }],
     ]);
     var item2Resolvable = hof_1.pattern([
         [hof_1.is(resolvable_1.Resolvable), function (r) { return r; }],
         [isResolveLiteral, literal2Resolvable],
         [isLikeNg2Provider, literal2Resolvable],
         [isTupleFromObj, tuple2Resolvable],
-        [hof_1.val(true), function (obj) { throw new Error("Invalid resolve value: " + strings_1.stringify(obj)); }]
+        [hof_1.val(true), function (obj) { throw new Error('Invalid resolve value: ' + strings_1.stringify(obj)); }],
     ]);
     // If resolveBlock is already an array, use it as-is.
     // Otherwise, assume it's an object and convert to an Array of tuples
@@ -5818,12 +5769,12 @@ exports.resolvablesBuilder = resolvablesBuilder;
  * Custom properties or API may be added to the internal [[StateObject]] object by registering a decorator function
  * using the [[builder]] method.
  */
-var StateBuilder = (function () {
+var StateBuilder = /** @class */ (function () {
     function StateBuilder(matcher, urlMatcherFactory) {
         this.matcher = matcher;
         var self = this;
-        var root = function () { return matcher.find(""); };
-        var isRoot = function (state) { return state.name === ""; };
+        var root = function () { return matcher.find(''); };
+        var isRoot = function (state) { return state.name === ''; };
         function parentBuilder(state) {
             if (isRoot(state))
                 return null;
@@ -5846,7 +5797,7 @@ var StateBuilder = (function () {
             path: [pathBuilder],
             // Speed up $state.includes() as it's used a lot
             includes: [includesBuilder],
-            resolvables: [resolvablesBuilder]
+            resolvables: [resolvablesBuilder],
         };
     }
     /**
@@ -5893,19 +5844,24 @@ var StateBuilder = (function () {
         return state;
     };
     StateBuilder.prototype.parentName = function (state) {
-        var name = state.name || "";
+        // name = 'foo.bar.baz.**'
+        var name = state.name || '';
+        // segments = ['foo', 'bar', 'baz', '.**']
         var segments = name.split('.');
-        if (segments.length > 1) {
+        // segments = ['foo', 'bar', 'baz']
+        var lastSegment = segments.pop();
+        // segments = ['foo', 'bar'] (ignore .** segment for future states)
+        if (lastSegment === '**')
+            segments.pop();
+        if (segments.length) {
             if (state.parent) {
                 throw new Error("States that specify the 'parent:' property should not have a '.' in their name (" + name + ")");
             }
-            var lastSegment = segments.pop();
-            if (lastSegment === '**')
-                segments.pop();
-            return segments.join(".");
+            // 'foo.bar'
+            return segments.join('.');
         }
         if (!state.parent)
-            return "";
+            return '';
         return predicates_1.isString(state.parent) ? state.parent : state.parent.name;
     };
     StateBuilder.prototype.name = function (state) {
@@ -5913,7 +5869,7 @@ var StateBuilder = (function () {
         if (name.indexOf('.') !== -1 || !state.parent)
             return name;
         var parentName = predicates_1.isString(state.parent) ? state.parent : state.parent.name;
-        return parentName ? parentName + "." + name : name;
+        return parentName ? parentName + '.' + name : name;
     };
     return StateBuilder;
 }());
@@ -5925,17 +5881,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /** @module state */ /** for typedoc */
 var predicates_1 = require("../common/predicates");
 var common_1 = require("../common/common");
-var StateMatcher = (function () {
+var StateMatcher = /** @class */ (function () {
     function StateMatcher(_states) {
         this._states = _states;
     }
     StateMatcher.prototype.isRelative = function (stateName) {
-        stateName = stateName || "";
-        return stateName.indexOf(".") === 0 || stateName.indexOf("^") === 0;
+        stateName = stateName || '';
+        return stateName.indexOf('.') === 0 || stateName.indexOf('^') === 0;
     };
     StateMatcher.prototype.find = function (stateOrName, base, matchGlob) {
         if (matchGlob === void 0) { matchGlob = true; }
-        if (!stateOrName && stateOrName !== "")
+        if (!stateOrName && stateOrName !== '')
             return undefined;
         var isStr = predicates_1.isString(stateOrName);
         var name = isStr ? stateOrName : stateOrName.name;
@@ -5947,11 +5903,12 @@ var StateMatcher = (function () {
         }
         else if (isStr && matchGlob) {
             var _states = common_1.values(this._states);
-            var matches = _states.filter(function (state) {
-                return state.__stateObjectCache.nameGlob &&
-                    state.__stateObjectCache.nameGlob.matches(name);
+            var matches = _states.filter(function (_state) {
+                return _state.__stateObjectCache.nameGlob &&
+                    _state.__stateObjectCache.nameGlob.matches(name);
             });
             if (matches.length > 1) {
+                // tslint:disable-next-line:no-console
                 console.log("stateMatcher.find: Found multiple matches for " + name + " using glob: ", matches.map(function (match) { return match.name; }));
             }
             return matches[0];
@@ -5962,13 +5919,15 @@ var StateMatcher = (function () {
         if (!base)
             throw new Error("No reference point given for path '" + name + "'");
         var baseState = this.find(base);
-        var splitName = name.split("."), i = 0, pathLength = splitName.length, current = baseState;
+        var splitName = name.split('.');
+        var pathLength = splitName.length;
+        var i = 0, current = baseState;
         for (; i < pathLength; i++) {
-            if (splitName[i] === "" && i === 0) {
+            if (splitName[i] === '' && i === 0) {
                 current = baseState;
                 continue;
             }
-            if (splitName[i] === "^") {
+            if (splitName[i] === '^') {
                 if (!current.parent)
                     throw new Error("Path '" + name + "' not valid for state '" + baseState.name + "'");
                 current = current.parent;
@@ -5976,8 +5935,8 @@ var StateMatcher = (function () {
             }
             break;
         }
-        var relName = splitName.slice(i).join(".");
-        return current.name + (current.name && relName ? "." : "") + relName;
+        var relName = splitName.slice(i).join('.');
+        return current.name + (current.name && relName ? '.' : '') + relName;
     };
     return StateMatcher;
 }());
@@ -6000,7 +5959,7 @@ var predicates_1 = require("../common/predicates");
  * This class prototypally inherits from the corresponding [[StateDeclaration]].
  * Each of its own properties (i.e., `hasOwnProperty`) are built using builders from the [[StateBuilder]].
  */
-var StateObject = (function () {
+var StateObject = /** @class */ (function () {
     /** @deprecated use State.create() */
     function StateObject(config) {
         return StateObject.create(config || {});
@@ -6019,7 +5978,7 @@ var StateObject = (function () {
         stateDecl.$$state = function () { return state; };
         state.self = stateDecl;
         state.__stateObjectCache = {
-            nameGlob: glob_1.Glob.fromString(state.name) // might return null
+            nameGlob: glob_1.Glob.fromString(state.name),
         };
         return state;
     };
@@ -6045,7 +6004,7 @@ var StateObject = (function () {
         if (!this.parent || !(this.parent instanceof this.constructor))
             return this.name;
         var name = this.parent.fqn();
-        return name ? name + "." + this.name : this.name;
+        return name ? name + '.' + this.name : this.name;
     };
     /**
      * Returns the root node of this state's tree.
@@ -6086,16 +6045,16 @@ var StateObject = (function () {
     StateObject.prototype.toString = function () {
         return this.fqn();
     };
+    /** Predicate which returns true if the object is an class with @State() decorator */
+    StateObject.isStateClass = function (stateDecl) {
+        return predicates_1.isFunction(stateDecl) && stateDecl['__uiRouterState'] === true;
+    };
+    /** Predicate which returns true if the object is an internal [[StateObject]] object */
+    StateObject.isState = function (obj) {
+        return predicates_1.isObject(obj['__stateObjectCache']);
+    };
     return StateObject;
 }());
-/** Predicate which returns true if the object is an class with @State() decorator */
-StateObject.isStateClass = function (stateDecl) {
-    return predicates_1.isFunction(stateDecl) && stateDecl['__uiRouterState'] === true;
-};
-/** Predicate which returns true if the object is an internal [[StateObject]] object */
-StateObject.isState = function (obj) {
-    return predicates_1.isObject(obj['__stateObjectCache']);
-};
 exports.StateObject = StateObject;
 
 },{"../common/common":3,"../common/glob":5,"../common/hof":6,"../common/predicates":8}],42:[function(require,module,exports){
@@ -6107,7 +6066,7 @@ var predicates_1 = require("../common/predicates");
 var stateObject_1 = require("./stateObject");
 var hof_1 = require("../common/hof");
 /** @internalapi */
-var StateQueueManager = (function () {
+var StateQueueManager = /** @class */ (function () {
     function StateQueueManager($registry, $urlRouter, states, builder, listeners) {
         this.$registry = $registry;
         this.$urlRouter = $urlRouter;
@@ -6126,7 +6085,7 @@ var StateQueueManager = (function () {
         var state = stateObject_1.StateObject.create(stateDecl);
         var name = state.name;
         if (!predicates_1.isString(name))
-            throw new Error("State must have a valid name");
+            throw new Error('State must have a valid name');
         if (this.states.hasOwnProperty(name) || common_1.inArray(queue.map(hof_1.prop('name')), name))
             throw new Error("State '" + name + "' is already defined");
         queue.push(state);
@@ -6152,7 +6111,7 @@ var StateQueueManager = (function () {
                 if (existingState && existingState.name === name_1) {
                     throw new Error("State '" + name_1 + "' is already defined");
                 }
-                var existingFutureState = getState(name_1 + ".**");
+                var existingFutureState = getState(name_1 + '.**');
                 if (existingFutureState) {
                     // Remove future state of the same name
                     this.$registry.deregister(existingFutureState);
@@ -6178,7 +6137,7 @@ var StateQueueManager = (function () {
             queue.push(state);
         }
         if (registered.length) {
-            this.listeners.forEach(function (listener) { return listener("registered", registered.map(function (s) { return s.self; })); });
+            this.listeners.forEach(function (listener) { return listener('registered', registered.map(function (s) { return s.self; })); });
         }
         return states;
     };
@@ -6203,7 +6162,7 @@ var stateBuilder_1 = require("./stateBuilder");
 var stateQueueManager_1 = require("./stateQueueManager");
 var common_1 = require("../common/common");
 var hof_1 = require("../common/hof");
-var StateRegistry = (function () {
+var StateRegistry = /** @class */ (function () {
     /** @internalapi */
     function StateRegistry(_router) {
         this._router = _router;
@@ -6221,9 +6180,9 @@ var StateRegistry = (function () {
             url: '^',
             views: null,
             params: {
-                '#': { value: null, type: 'hash', dynamic: true }
+                '#': { value: null, type: 'hash', dynamic: true },
             },
-            abstract: true
+            abstract: true,
         };
         var _root = this._root = this.stateQueue.register(rootStateDef);
         _root.navigable = null;
@@ -6303,17 +6262,17 @@ var StateRegistry = (function () {
         var _this = this;
         var all = this.get().map(function (s) { return s.$$state(); });
         var getChildren = function (states) {
-            var children = all.filter(function (s) { return states.indexOf(s.parent) !== -1; });
-            return children.length === 0 ? children : children.concat(getChildren(children));
+            var _children = all.filter(function (s) { return states.indexOf(s.parent) !== -1; });
+            return _children.length === 0 ? _children : _children.concat(getChildren(_children));
         };
         var children = getChildren([state]);
         var deregistered = [state].concat(children).reverse();
-        deregistered.forEach(function (state) {
+        deregistered.forEach(function (_state) {
             var $ur = _this._router.urlRouter;
             // Remove URL rule
-            $ur.rules().filter(hof_1.propEq("state", state)).forEach($ur.removeRule.bind($ur));
+            $ur.rules().filter(hof_1.propEq('state', _state)).forEach($ur.removeRule.bind($ur));
             // Remove state from registry
-            delete _this.states[state.name];
+            delete _this.states[_state.name];
         });
         return deregistered;
     };
@@ -6331,7 +6290,7 @@ var StateRegistry = (function () {
         if (!_state)
             throw new Error("Can't deregister state; not found: " + stateOrName);
         var deregisteredStates = this._deregisterTree(_state.$$state());
-        this.listeners.forEach(function (listener) { return listener("deregistered", deregisteredStates.map(function (s) { return s.self; })); });
+        this.listeners.forEach(function (listener) { return listener('deregistered', deregisteredStates.map(function (s) { return s.self; })); });
         return deregisteredStates;
     };
     StateRegistry.prototype.get = function (stateOrName, base) {
@@ -6360,7 +6319,7 @@ var common_1 = require("../common/common");
 var predicates_1 = require("../common/predicates");
 var queue_1 = require("../common/queue");
 var coreservices_1 = require("../common/coreservices");
-var pathFactory_1 = require("../path/pathFactory");
+var pathUtils_1 = require("../path/pathUtils");
 var pathNode_1 = require("../path/pathNode");
 var transitionService_1 = require("../transition/transitionService");
 var rejectFactory_1 = require("../transition/rejectFactory");
@@ -6376,7 +6335,7 @@ var hof_1 = require("../common/hof");
  * This class provides services related to ui-router states.
  * An instance of this class is located on the global [[UIRouter]] object.
  */
-var StateService = (function () {
+var StateService = /** @class */ (function () {
     /** @internalapi */
     function StateService(router) {
         this.router = router;
@@ -6459,7 +6418,7 @@ var StateService = (function () {
      */
     StateService.prototype._handleInvalidTargetState = function (fromPath, toState) {
         var _this = this;
-        var fromState = pathFactory_1.PathUtils.makeTargetState(fromPath);
+        var fromState = pathUtils_1.PathUtils.makeTargetState(this.router.stateRegistry, fromPath);
         var globals = this.router.globals;
         var latestThing = function () { return globals.transitionHistory.peekTail(); };
         var latest = latestThing();
@@ -6570,7 +6529,6 @@ var StateService = (function () {
             notify: false,
         });
     };
-    ;
     /**
      * Transition to a different state and/or parameters
      *
@@ -6616,7 +6574,6 @@ var StateService = (function () {
         var transOpts = common_1.defaults(options, defautGoOpts, transitionService_1.defaultTransOpts);
         return this.transitionTo(to, params, transOpts);
     };
-    ;
     /**
      * Creates a [[TargetState]]
      *
@@ -6633,10 +6590,8 @@ var StateService = (function () {
         options.reloadState = options.reload === true ? reg.root() : reg.matcher.find(options.reload, options.relative);
         if (options.reload && !options.reloadState)
             throw new Error("No such reload state '" + (predicates_1.isString(options.reload) ? options.reload : options.reload.name) + "'");
-        var stateDefinition = reg.matcher.find(identifier, options.relative);
-        return new targetState_1.TargetState(identifier, stateDefinition, params, options);
+        return new targetState_1.TargetState(this.router.stateRegistry, identifier, params, options);
     };
-    ;
     StateService.prototype.getCurrentPath = function () {
         var _this = this;
         var globals = this.router.globals;
@@ -6693,9 +6648,9 @@ var StateService = (function () {
          * no error occurred.  Likewise, the transition.run() promise may be rejected because of
          * a Redirect, but the transitionTo() promise is chained to the new Transition's promise.
          */
-        var rejectedTransitionHandler = function (transition) { return function (error) {
+        var rejectedTransitionHandler = function (trans) { return function (error) {
             if (error instanceof rejectFactory_1.Rejection) {
-                var isLatest = router.globals.lastStartedTransitionId === transition.$id;
+                var isLatest = router.globals.lastStartedTransitionId === trans.$id;
                 if (error.type === rejectFactory_1.RejectType.IGNORED) {
                     isLatest && router.urlRouter.update();
                     // Consider ignored `Transition.run()` as a successful `transitionTo`
@@ -6705,7 +6660,7 @@ var StateService = (function () {
                 if (error.type === rejectFactory_1.RejectType.SUPERSEDED && error.redirected && detail instanceof targetState_1.TargetState) {
                     // If `Transition.run()` was redirected, allow the `transitionTo()` promise to resolve successfully
                     // by returning the promise for the new (redirect) `Transition.run()`.
-                    var redirect = transition.redirect(detail);
+                    var redirect = trans.redirect(detail);
                     return redirect.run().catch(rejectedTransitionHandler(redirect));
                 }
                 if (error.type === rejectFactory_1.RejectType.ABORTED) {
@@ -6723,7 +6678,6 @@ var StateService = (function () {
         // Return a promise for the transition, which also has the transition object on it.
         return common_1.extend(transitionToPromise, { transition: transition });
     };
-    ;
     /**
      * Checks if the current state *is* the provided state
      *
@@ -6767,7 +6721,6 @@ var StateService = (function () {
         var schema = state.parameters({ inherit: true, matchingKeys: params });
         return param_1.Param.equals(schema, param_1.Param.values(schema, params), this.params);
     };
-    ;
     /**
      * Checks if the current state *includes* the provided state
      *
@@ -6824,7 +6777,6 @@ var StateService = (function () {
         var schema = state.parameters({ inherit: true, matchingKeys: params });
         return param_1.Param.equals(schema, param_1.Param.values(schema, params), this.params);
     };
-    ;
     /**
      * Generates a URL for a state and parameters
      *
@@ -6863,7 +6815,6 @@ var StateService = (function () {
             absolute: options.absolute,
         });
     };
-    ;
     /**
      * Sets or gets the default [[transitionTo]] error handler.
      *
@@ -6912,9 +6863,9 @@ var StateService = (function () {
     StateService.prototype.lazyLoad = function (stateOrName, transition) {
         var state = this.get(stateOrName);
         if (!state || !state.lazyLoad)
-            throw new Error("Can not lazy load " + stateOrName);
+            throw new Error('Can not lazy load ' + stateOrName);
         var currentPath = this.getCurrentPath();
-        var target = pathFactory_1.PathUtils.makeTargetState(currentPath);
+        var target = pathUtils_1.PathUtils.makeTargetState(this.router.stateRegistry, currentPath);
         transition = transition || this.router.transitionService.create(currentPath, target);
         return lazyLoad_1.lazyLoadState(transition, state);
     };
@@ -6922,15 +6873,16 @@ var StateService = (function () {
 }());
 exports.StateService = StateService;
 
-},{"../common/common":3,"../common/coreservices":4,"../common/glob":5,"../common/hof":6,"../common/predicates":8,"../common/queue":9,"../hooks/lazyLoad":16,"../params/param":26,"../path/pathFactory":31,"../path/pathNode":32,"../resolve/resolveContext":36,"../transition/rejectFactory":50,"../transition/transitionService":54,"./targetState":45}],45:[function(require,module,exports){
+},{"../common/common":3,"../common/coreservices":4,"../common/glob":5,"../common/hof":6,"../common/predicates":8,"../common/queue":9,"../hooks/lazyLoad":16,"../params/param":26,"../path/pathNode":31,"../path/pathUtils":32,"../resolve/resolveContext":36,"../transition/rejectFactory":50,"../transition/transitionService":54,"./targetState":45}],45:[function(require,module,exports){
 "use strict";
 /**
  * @coreapi
  * @module state
  */ /** for typedoc */
 Object.defineProperty(exports, "__esModule", { value: true });
-var common_1 = require("../common/common");
 var predicates_1 = require("../common/predicates");
+var strings_1 = require("../common/strings");
+var common_1 = require("../common");
 /**
  * Encapsulate the target (destination) state/params/options of a [[Transition]].
  *
@@ -6960,27 +6912,28 @@ var predicates_1 = require("../common/predicates");
  * A `TargetState` may be valid (the state being targeted exists in the registry)
  * or invalid (the state being targeted is not registered).
  */
-var TargetState = (function () {
+var TargetState = /** @class */ (function () {
     /**
      * The TargetState constructor
      *
      * Note: Do not construct a `TargetState` manually.
      * To create a `TargetState`, use the [[StateService.target]] factory method.
      *
+     * @param _stateRegistry The StateRegistry to use to look up the _definition
      * @param _identifier An identifier for a state.
      *    Either a fully-qualified state name, or the object used to define the state.
-     * @param _definition The internal state representation, if exists.
      * @param _params Parameters for the target state
      * @param _options Transition options.
      *
      * @internalapi
      */
-    function TargetState(_identifier, _definition, _params, _options) {
-        if (_options === void 0) { _options = {}; }
+    function TargetState(_stateRegistry, _identifier, _params, _options) {
+        this._stateRegistry = _stateRegistry;
         this._identifier = _identifier;
-        this._definition = _definition;
-        this._options = _options;
-        this._params = _params || {};
+        this._identifier = _identifier;
+        this._params = common_1.extend({}, _params || {});
+        this._options = common_1.extend({}, _options || {});
+        this._definition = _stateRegistry.matcher.find(_identifier, this._options.relative);
     }
     /** The name of the state this object targets */
     TargetState.prototype.name = function () {
@@ -7027,17 +6980,50 @@ var TargetState = (function () {
             return "State '" + this.name() + "' has an invalid definition";
     };
     TargetState.prototype.toString = function () {
-        return "'" + this.name() + "'" + common_1.toJson(this.params());
+        return "'" + this.name() + "'" + strings_1.stringify(this.params());
+    };
+    /**
+     * Returns a copy of this TargetState which targets a different state.
+     * The new TargetState has the same parameter values and transition options.
+     *
+     * @param state The new state that should be targeted
+     */
+    TargetState.prototype.withState = function (state) {
+        return new TargetState(this._stateRegistry, state, this._params, this._options);
+    };
+    /**
+     * Returns a copy of this TargetState, using the specified parameter values.
+     *
+     * @param params the new parameter values to use
+     * @param replace When false (default) the new parameter values will be merged with the current values.
+     *                When true the parameter values will be used instead of the current values.
+     */
+    TargetState.prototype.withParams = function (params, replace) {
+        if (replace === void 0) { replace = false; }
+        var newParams = replace ? params : common_1.extend({}, this._params, params);
+        return new TargetState(this._stateRegistry, this._identifier, newParams, this._options);
+    };
+    /**
+     * Returns a copy of this TargetState, using the specified Transition Options.
+     *
+     * @param options the new options to use
+     * @param replace When false (default) the new options will be merged with the current options.
+     *                When true the options will be used instead of the current options.
+     */
+    TargetState.prototype.withOptions = function (options, replace) {
+        if (replace === void 0) { replace = false; }
+        var newOpts = replace ? options : common_1.extend({}, this._options, options);
+        return new TargetState(this._stateRegistry, this._identifier, this._params, newOpts);
+    };
+    /** Returns true if the object has a state property that might be a state or state name */
+    TargetState.isDef = function (obj) {
+        return obj && obj.state && (predicates_1.isString(obj.state) || predicates_1.isString(obj.state.name));
     };
     return TargetState;
 }());
-/** Returns true if the object has a state property that might be a state or state name */
-TargetState.isDef = function (obj) {
-    return obj && obj.state && (predicates_1.isString(obj.state) || predicates_1.isString(obj.state.name));
-};
 exports.TargetState = TargetState;
 
-},{"../common/common":3,"../common/predicates":8}],46:[function(require,module,exports){
+},{"../common":7,"../common/predicates":8,"../common/strings":10}],46:[function(require,module,exports){
 "use strict";
 /**
  * @coreapi
@@ -7062,7 +7048,7 @@ var transitionHook_1 = require("./transitionHook");
  * in the Transition class, so we must also provide the Transition's _treeChanges)
  *
  */
-var HookBuilder = (function () {
+var HookBuilder = /** @class */ (function () {
     function HookBuilder(transition) {
         this.transition = transition;
     }
@@ -7092,7 +7078,7 @@ var HookBuilder = (function () {
             return [];
         var baseHookOptions = {
             transition: transition,
-            current: transition.options().current
+            current: transition.options().current,
         };
         var makeTransitionHooks = function (hook) {
             // Fetch the Nodes that caused this hook to match.
@@ -7103,7 +7089,7 @@ var HookBuilder = (function () {
             return matchingNodes.map(function (node) {
                 var _options = common_1.extend({
                     bind: hook.bind,
-                    traceData: { hookType: hookType.name, context: node }
+                    traceData: { hookType: hookType.name, context: node },
                 }, baseHookOptions);
                 var state = hookType.criteriaMatchPath.scope === interface_1.TransitionHookScope.STATE ? node.state.self : null;
                 var transitionHook = new transitionHook_1.TransitionHook(transition, state, hook, _options);
@@ -7201,16 +7187,19 @@ exports.matchState = matchState;
  * @internalapi
  * The registration data for a registered transition hook
  */
-var RegisteredHook = (function () {
-    function RegisteredHook(tranSvc, eventType, callback, matchCriteria, options) {
+var RegisteredHook = /** @class */ (function () {
+    function RegisteredHook(tranSvc, eventType, callback, matchCriteria, removeHookFromRegistry, options) {
         if (options === void 0) { options = {}; }
         this.tranSvc = tranSvc;
         this.eventType = eventType;
         this.callback = callback;
         this.matchCriteria = matchCriteria;
+        this.removeHookFromRegistry = removeHookFromRegistry;
+        this.invokeCount = 0;
+        this._deregistered = false;
         this.priority = options.priority || 0;
         this.bind = options.bind || null;
-        this._deregistered = false;
+        this.invokeLimit = options.invokeLimit;
     }
     /**
      * Gets the matching [[PathNode]]s
@@ -7291,6 +7280,10 @@ var RegisteredHook = (function () {
         var allMatched = common_1.values(matches).every(common_1.identity);
         return allMatched ? matches : null;
     };
+    RegisteredHook.prototype.deregister = function () {
+        this.removeHookFromRegistry(this);
+        this._deregistered = true;
+    };
     return RegisteredHook;
 }());
 exports.RegisteredHook = RegisteredHook;
@@ -7299,16 +7292,14 @@ function makeEvent(registry, transitionService, eventType) {
     // Create the object which holds the registered transition hooks.
     var _registeredHooks = registry._registeredHooks = (registry._registeredHooks || {});
     var hooks = _registeredHooks[eventType.name] = [];
+    var removeHookFn = common_1.removeFrom(hooks);
     // Create hook registration function on the IHookRegistry for the event
     registry[eventType.name] = hookRegistrationFn;
     function hookRegistrationFn(matchObject, callback, options) {
         if (options === void 0) { options = {}; }
-        var registeredHook = new RegisteredHook(transitionService, eventType, callback, matchObject, options);
+        var registeredHook = new RegisteredHook(transitionService, eventType, callback, matchObject, removeHookFn, options);
         hooks.push(registeredHook);
-        return function deregisterEventHook() {
-            registeredHook._deregistered = true;
-            common_1.removeFrom(hooks)(registeredHook);
-        };
+        return registeredHook.deregister.bind(registeredHook);
     }
     return hookRegistrationFn;
 }
@@ -7365,7 +7356,7 @@ var TransitionHookScope;
  * @coreapi
  * @module transition
  */ /** for typedoc */
-"use strict";
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 var common_1 = require("../common/common");
 var strings_1 = require("../common/strings");
@@ -7378,32 +7369,22 @@ var RejectType;
     RejectType[RejectType["IGNORED"] = 5] = "IGNORED";
     RejectType[RejectType["ERROR"] = 6] = "ERROR";
 })(RejectType = exports.RejectType || (exports.RejectType = {}));
-/** @hidden */ var id = 0;
-var Rejection = (function () {
+/** @hidden */
+var id = 0;
+var Rejection = /** @class */ (function () {
     function Rejection(type, message, detail) {
         this.$id = id++;
         this.type = type;
         this.message = message;
         this.detail = detail;
     }
-    Rejection.prototype.toString = function () {
-        var detailString = function (d) {
-            return d && d.toString !== Object.prototype.toString ? d.toString() : strings_1.stringify(d);
-        };
-        var detail = detailString(this.detail);
-        var _a = this, $id = _a.$id, type = _a.type, message = _a.message;
-        return "Transition Rejection($id: " + $id + " type: " + type + ", message: " + message + ", detail: " + detail + ")";
-    };
-    Rejection.prototype.toPromise = function () {
-        return common_1.extend(common_1.silentRejection(this), { _transitionRejection: this });
-    };
     /** Returns true if the obj is a rejected promise created from the `asPromise` factory */
     Rejection.isRejectionPromise = function (obj) {
         return obj && (typeof obj.then === 'function') && hof_1.is(Rejection)(obj._transitionRejection);
     };
     /** Returns a Rejection due to transition superseded */
     Rejection.superseded = function (detail, options) {
-        var message = "The transition has been superseded by a different transition";
+        var message = 'The transition has been superseded by a different transition';
         var rejection = new Rejection(RejectType.SUPERSEDED, message, detail);
         if (options && options.redirected) {
             rejection.redirected = true;
@@ -7416,22 +7397,22 @@ var Rejection = (function () {
     };
     /** Returns a Rejection due to invalid transition */
     Rejection.invalid = function (detail) {
-        var message = "This transition is invalid";
+        var message = 'This transition is invalid';
         return new Rejection(RejectType.INVALID, message, detail);
     };
     /** Returns a Rejection due to ignored transition */
     Rejection.ignored = function (detail) {
-        var message = "The transition was ignored";
+        var message = 'The transition was ignored';
         return new Rejection(RejectType.IGNORED, message, detail);
     };
     /** Returns a Rejection due to aborted transition */
     Rejection.aborted = function (detail) {
-        var message = "The transition has been aborted";
+        var message = 'The transition has been aborted';
         return new Rejection(RejectType.ABORTED, message, detail);
     };
     /** Returns a Rejection due to aborted transition */
     Rejection.errored = function (detail) {
-        var message = "The transition errored";
+        var message = 'The transition errored';
         return new Rejection(RejectType.ERROR, message, detail);
     };
     /**
@@ -7445,6 +7426,17 @@ var Rejection = (function () {
      */
     Rejection.normalize = function (detail) {
         return hof_1.is(Rejection)(detail) ? detail : Rejection.errored(detail);
+    };
+    Rejection.prototype.toString = function () {
+        var detailString = function (d) {
+            return d && d.toString !== Object.prototype.toString ? d.toString() : strings_1.stringify(d);
+        };
+        var detail = detailString(this.detail);
+        var _a = this, $id = _a.$id, type = _a.type, message = _a.message;
+        return "Transition Rejection($id: " + $id + " type: " + type + ", message: " + message + ", detail: " + detail + ")";
+    };
+    Rejection.prototype.toPromise = function () {
+        return common_1.extend(common_1.silentRejection(this), { _transitionRejection: this });
     };
     return Rejection;
 }());
@@ -7460,6 +7452,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /** for typedoc */
 var trace_1 = require("../common/trace");
 var coreservices_1 = require("../common/coreservices");
+var strings_1 = require("../common/strings");
 var common_1 = require("../common/common");
 var predicates_1 = require("../common/predicates");
 var hof_1 = require("../common/hof");
@@ -7467,13 +7460,12 @@ var interface_1 = require("./interface"); // has or is using
 var transitionHook_1 = require("./transitionHook");
 var hookRegistry_1 = require("./hookRegistry");
 var hookBuilder_1 = require("./hookBuilder");
-var pathFactory_1 = require("../path/pathFactory");
-var targetState_1 = require("../state/targetState");
+var pathUtils_1 = require("../path/pathUtils");
 var param_1 = require("../params/param");
 var resolvable_1 = require("../resolve/resolvable");
 var resolveContext_1 = require("../resolve/resolveContext");
 /** @hidden */
-var stateSelf = hof_1.prop("self");
+var stateSelf = hof_1.prop('self');
 /**
  * Represents a transition between two states.
  *
@@ -7482,7 +7474,7 @@ var stateSelf = hof_1.prop("self");
  * This object contains all contextual information about the to/from states, parameters, resolves.
  * It has information about all states being entered and exited as a result of the transition.
  */
-var Transition = (function () {
+var Transition = /** @class */ (function () {
     /**
      * Creates a new Transition object.
      *
@@ -7522,8 +7514,8 @@ var Transition = (function () {
         // current() is assumed to come from targetState.options, but provide a naive implementation otherwise.
         this._options = common_1.extend({ current: hof_1.val(this) }, targetState.options());
         this.$id = router.transitionService._transitionCount++;
-        var toPath = pathFactory_1.PathUtils.buildToPath(fromPath, targetState);
-        this._treeChanges = pathFactory_1.PathUtils.treeChanges(fromPath, toPath, this._options.reloadState);
+        var toPath = pathUtils_1.PathUtils.buildToPath(fromPath, targetState);
+        this._treeChanges = pathUtils_1.PathUtils.treeChanges(fromPath, toPath, this._options.reloadState);
         this.createTransitionHookRegFns();
         var onCreateHooks = this._hookBuilder.buildHooksForPhase(interface_1.TransitionHookPhase.CREATE);
         transitionHook_1.TransitionHook.invokeHooks(onCreateHooks, function () { return null; });
@@ -7561,7 +7553,7 @@ var Transition = (function () {
     };
     Transition.prototype.applyViewConfigs = function (router) {
         var enteringStates = this._treeChanges.entering.map(function (node) { return node.state; });
-        pathFactory_1.PathUtils.applyViewConfigs(router.transitionService.$view, this._treeChanges.to, enteringStates);
+        pathUtils_1.PathUtils.applyViewConfigs(router.transitionService.$view, this._treeChanges.to, enteringStates);
     };
     /**
      * @internalapi
@@ -7622,8 +7614,8 @@ var Transition = (function () {
             (compare.from && !hookRegistry_1.matchState(this.$from(), compare.from)));
     };
     Transition.prototype.params = function (pathname) {
-        if (pathname === void 0) { pathname = "to"; }
-        return Object.freeze(this._treeChanges[pathname].map(hof_1.prop("paramValues")).reduce(common_1.mergeR, {}));
+        if (pathname === void 0) { pathname = 'to'; }
+        return Object.freeze(this._treeChanges[pathname].map(hof_1.prop('paramValues')).reduce(common_1.mergeR, {}));
     };
     /**
      * Creates a [[UIInjector]] Dependency Injector
@@ -7658,9 +7650,9 @@ var Transition = (function () {
      * #### Example:
      * ```js
      * .onEnter({ to: 'foo.bar' }, trans => {
-     *   // returns result of `foo` state's `data` resolve
-     *   // even though `foo.bar` also has a `data` resolve
-     *   var fooData = trans.injector('foo').get('data');
+     *   // returns result of `foo` state's `myResolve` resolve
+     *   // even though `foo.bar` also has a `myResolve` resolve
+     *   var fooData = trans.injector('foo').get('myResolve');
      * });
      * ```
      *
@@ -7669,8 +7661,8 @@ var Transition = (function () {
      * #### Example:
      * ```js
      * .onExit({ exiting: 'foo.bar' }, trans => {
-     *   // Gets the resolve value of `data` from the exiting state.
-     *   var fooData = trans.injector(null, 'foo.bar').get('data');
+     *   // Gets the resolve value of `myResolve` from the state being exited
+     *   var fooData = trans.injector(null, 'from').get('myResolve');
      * });
      * ```
      *
@@ -7681,10 +7673,10 @@ var Transition = (function () {
      * @returns a [[UIInjector]]
      */
     Transition.prototype.injector = function (state, pathName) {
-        if (pathName === void 0) { pathName = "to"; }
+        if (pathName === void 0) { pathName = 'to'; }
         var path = this._treeChanges[pathName];
         if (state)
-            path = pathFactory_1.PathUtils.subPath(path, function (node) { return node.state === state || node.state.name === state; });
+            path = pathUtils_1.PathUtils.subPath(path, function (node) { return node.state === state || node.state.name === state; });
         return new resolveContext_1.ResolveContext(path).injector();
     };
     /**
@@ -7720,11 +7712,23 @@ var Transition = (function () {
      * @returns an array of resolve tokens (keys)
      */
     Transition.prototype.getResolveTokens = function (pathname) {
-        if (pathname === void 0) { pathname = "to"; }
+        if (pathname === void 0) { pathname = 'to'; }
         return new resolveContext_1.ResolveContext(this._treeChanges[pathname]).getTokens();
     };
     /**
      * Dynamically adds a new [[Resolvable]] (i.e., [[StateDeclaration.resolve]]) to this transition.
+     *
+     * Allows a transition hook to dynamically add a Resolvable to this Transition.
+     *
+     * Use the [[Transition.injector]] to retrieve the resolved data in subsequent hooks ([[UIInjector.get]]).
+     *
+     * If a `state` argument is provided, the Resolvable is processed when that state is being entered.
+     * If no `state` is provided then the root state is used.
+     * If the given `state` has already been entered, the Resolvable is processed when any child state is entered.
+     * If no child states will be entered, the Resolvable is processed during the `onFinish` phase of the Transition.
+     *
+     * The `state` argument also scopes the resolved data.
+     * The resolved data is available from the injector for that `state` and any children states.
      *
      * #### Example:
      * ```js
@@ -7741,9 +7745,9 @@ var Transition = (function () {
      * @param state the state in the "to path" which should receive the new resolve (otherwise, the root state)
      */
     Transition.prototype.addResolvable = function (resolvable, state) {
-        if (state === void 0) { state = ""; }
+        if (state === void 0) { state = ''; }
         resolvable = hof_1.is(resolvable_1.Resolvable)(resolvable) ? resolvable : new resolvable_1.Resolvable(resolvable);
-        var stateName = (typeof state === "string") ? state : state.name;
+        var stateName = (typeof state === 'string') ? state : state.name;
         var topath = this._treeChanges.to;
         var targetNode = common_1.find(topath, function (node) { return node.state.name === stateName; });
         var resolveContext = new resolveContext_1.ResolveContext(topath);
@@ -7845,10 +7849,10 @@ var Transition = (function () {
      * @returns a list of ViewConfig objects for the given path.
      */
     Transition.prototype.views = function (pathname, state) {
-        if (pathname === void 0) { pathname = "entering"; }
+        if (pathname === void 0) { pathname = 'entering'; }
         var path = this._treeChanges[pathname];
         path = !state ? path : path.filter(hof_1.propEq('state', state));
-        return path.map(hof_1.prop("views")).filter(common_1.identity).reduce(common_1.unnestR, []);
+        return path.map(hof_1.prop('views')).filter(common_1.identity).reduce(common_1.unnestR, []);
     };
     Transition.prototype.treeChanges = function (pathname) {
         return pathname ? this._treeChanges[pathname] : this._treeChanges;
@@ -7865,11 +7869,12 @@ var Transition = (function () {
      */
     Transition.prototype.redirect = function (targetState) {
         var redirects = 1, trans = this;
+        // tslint:disable-next-line:no-conditional-assignment
         while ((trans = trans.redirectedFrom()) != null) {
             if (++redirects > 20)
                 throw new Error("Too many consecutive Transition redirects (20+)");
         }
-        var redirectOpts = { redirectedFrom: this, source: "redirect" };
+        var redirectOpts = { redirectedFrom: this, source: 'redirect' };
         // If the original transition was caused by URL sync, then use { location: 'replace' }
         // on the new transition (unless the target state explicitly specifies location: false).
         // This causes the original url to be replaced with the url for the redirect target
@@ -7878,7 +7883,7 @@ var Transition = (function () {
             redirectOpts.location = 'replace';
         }
         var newOptions = common_1.extend({}, this.options(), targetState.options(), redirectOpts);
-        targetState = new targetState_1.TargetState(targetState.identifier(), targetState.$state(), targetState.params(), newOptions);
+        targetState = targetState.withOptions(newOptions, true);
         var newTransition = this.router.transitionService.create(this._treeChanges.from, targetState);
         var originalEnteringNodes = this._treeChanges.entering;
         var redirectEnteringNodes = newTransition._treeChanges.entering;
@@ -7895,7 +7900,7 @@ var Transition = (function () {
             return reloadState && node.state.includes[reloadState.name];
         }; };
         // Find any "entering" nodes in the redirect path that match the original path and aren't being reloaded
-        var matchingEnteringNodes = pathFactory_1.PathUtils.matching(redirectEnteringNodes, originalEnteringNodes, pathFactory_1.PathUtils.nonDynamicParams)
+        var matchingEnteringNodes = pathUtils_1.PathUtils.matching(redirectEnteringNodes, originalEnteringNodes, pathUtils_1.PathUtils.nonDynamicParams)
             .filter(hof_1.not(nodeIsReloading(targetState.options().reloadState)));
         // Use the existing (possibly pre-resolved) resolvables for the matching entering nodes.
         matchingEnteringNodes.forEach(function (node, idx) {
@@ -7959,15 +7964,15 @@ var Transition = (function () {
         var same = function (pathA, pathB) {
             if (pathA.length !== pathB.length)
                 return false;
-            var matching = pathFactory_1.PathUtils.matching(pathA, pathB);
+            var matching = pathUtils_1.PathUtils.matching(pathA, pathB);
             return pathA.length === matching.filter(function (node) { return !reloadState || !node.state.includes[reloadState.name]; }).length;
         };
         var newTC = this.treeChanges();
         var pendTC = pending && pending.treeChanges();
         if (pendTC && same(pendTC.to, newTC.to) && same(pendTC.exiting, newTC.exiting))
-            return "SameAsPending";
+            return 'SameAsPending';
         if (newTC.exiting.length === 0 && newTC.entering.length === 0 && same(newTC.from, newTC.to))
-            return "SameAsCurrent";
+            return 'SameAsCurrent';
     };
     /**
      * Runs the transition
@@ -8052,8 +8057,11 @@ var Transition = (function () {
         var state = this.$to();
         if (state.self.abstract)
             return "Cannot transition to abstract state '" + state.name + "'";
-        if (!param_1.Param.validates(state.parameters(), this.params()))
-            return "Param values not valid for state '" + state.name + "'";
+        var paramDefs = state.parameters(), values = this.params();
+        var invalidParams = paramDefs.filter(function (param) { return !param.validates(values[param.id]); });
+        if (invalidParams.length) {
+            return "Param values not valid for state '" + state.name + "'. Invalid params: [ " + invalidParams.map(function (param) { return param.id; }).join(', ') + " ]";
+        }
         if (this.success === false)
             return this._error;
     };
@@ -8066,19 +8074,19 @@ var Transition = (function () {
         var fromStateOrName = this.from();
         var toStateOrName = this.to();
         var avoidEmptyHash = function (params) {
-            return (params["#"] !== null && params["#"] !== undefined) ? params : common_1.omit(params, ["#"]);
+            return (params['#'] !== null && params['#'] !== undefined) ? params : common_1.omit(params, ['#']);
         };
         // (X) means the to state is invalid.
-        var id = this.$id, from = predicates_1.isObject(fromStateOrName) ? fromStateOrName.name : fromStateOrName, fromParams = common_1.toJson(avoidEmptyHash(this._treeChanges.from.map(hof_1.prop('paramValues')).reduce(common_1.mergeR, {}))), toValid = this.valid() ? "" : "(X) ", to = predicates_1.isObject(toStateOrName) ? toStateOrName.name : toStateOrName, toParams = common_1.toJson(avoidEmptyHash(this.params()));
+        var id = this.$id, from = predicates_1.isObject(fromStateOrName) ? fromStateOrName.name : fromStateOrName, fromParams = strings_1.stringify(avoidEmptyHash(this._treeChanges.from.map(hof_1.prop('paramValues')).reduce(common_1.mergeR, {}))), toValid = this.valid() ? '' : '(X) ', to = predicates_1.isObject(toStateOrName) ? toStateOrName.name : toStateOrName, toParams = strings_1.stringify(avoidEmptyHash(this.params()));
         return "Transition#" + id + "( '" + from + "'" + fromParams + " -> " + toValid + "'" + to + "'" + toParams + " )";
     };
+    /** @hidden */
+    Transition.diToken = Transition;
     return Transition;
 }());
-/** @hidden */
-Transition.diToken = Transition;
 exports.Transition = Transition;
 
-},{"../common/common":3,"../common/coreservices":4,"../common/hof":6,"../common/predicates":8,"../common/trace":11,"../params/param":26,"../path/pathFactory":31,"../resolve/resolvable":35,"../resolve/resolveContext":36,"../state/targetState":45,"./hookBuilder":46,"./hookRegistry":47,"./interface":49,"./transitionHook":53}],52:[function(require,module,exports){
+},{"../common/common":3,"../common/coreservices":4,"../common/hof":6,"../common/predicates":8,"../common/strings":10,"../common/trace":11,"../params/param":26,"../path/pathUtils":32,"../resolve/resolvable":35,"../resolve/resolveContext":36,"./hookBuilder":46,"./hookRegistry":47,"./interface":49,"./transitionHook":53}],52:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var transitionHook_1 = require("./transitionHook");
@@ -8088,7 +8096,8 @@ var transitionHook_1 = require("./transitionHook");
  *
  * @interalapi
  */
-var TransitionEventType = (function () {
+var TransitionEventType = /** @class */ (function () {
+    /* tslint:disable:no-inferrable-types */
     function TransitionEventType(name, hookPhase, hookOrder, criteriaMatchPath, reverseSort, getResultHandler, getErrorHandler, synchronous) {
         if (reverseSort === void 0) { reverseSort = false; }
         if (getResultHandler === void 0) { getResultHandler = transitionHook_1.TransitionHook.HANDLE_RESULT; }
@@ -8131,7 +8140,7 @@ var defaultOptions = {
     bind: null,
 };
 /** @hidden */
-var TransitionHook = (function () {
+var TransitionHook = /** @class */ (function () {
     function TransitionHook(transition, stateContext, registeredHook, options) {
         var _this = this;
         this.transition = transition;
@@ -8144,103 +8153,6 @@ var TransitionHook = (function () {
         this.options = common_1.defaults(options, defaultOptions);
         this.type = registeredHook.eventType;
     }
-    TransitionHook.prototype.logError = function (err) {
-        this.transition.router.stateService.defaultErrorHandler()(err);
-    };
-    TransitionHook.prototype.invokeHook = function () {
-        var _this = this;
-        var hook = this.registeredHook;
-        if (hook._deregistered)
-            return;
-        var notCurrent = this.getNotCurrentRejection();
-        if (notCurrent)
-            return notCurrent;
-        var options = this.options;
-        trace_1.trace.traceHookInvocation(this, this.transition, options);
-        var invokeCallback = function () {
-            return hook.callback.call(options.bind, _this.transition, _this.stateContext);
-        };
-        var normalizeErr = function (err) {
-            return rejectFactory_1.Rejection.normalize(err).toPromise();
-        };
-        var handleError = function (err) {
-            return hook.eventType.getErrorHandler(_this)(err);
-        };
-        var handleResult = function (result) {
-            return hook.eventType.getResultHandler(_this)(result);
-        };
-        try {
-            var result = invokeCallback();
-            if (!this.type.synchronous && predicates_1.isPromise(result)) {
-                return result.catch(normalizeErr)
-                    .then(handleResult, handleError);
-            }
-            else {
-                return handleResult(result);
-            }
-        }
-        catch (err) {
-            // If callback throws (synchronously)
-            return handleError(rejectFactory_1.Rejection.normalize(err));
-        }
-    };
-    /**
-     * This method handles the return value of a Transition Hook.
-     *
-     * A hook can return false (cancel), a TargetState (redirect),
-     * or a promise (which may later resolve to false or a redirect)
-     *
-     * This also handles "transition superseded" -- when a new transition
-     * was started while the hook was still running
-     */
-    TransitionHook.prototype.handleHookResult = function (result) {
-        var _this = this;
-        var notCurrent = this.getNotCurrentRejection();
-        if (notCurrent)
-            return notCurrent;
-        // Hook returned a promise
-        if (predicates_1.isPromise(result)) {
-            // Wait for the promise, then reprocess with the resulting value
-            return result.then(function (val) { return _this.handleHookResult(val); });
-        }
-        trace_1.trace.traceHookResult(result, this.transition, this.options);
-        // Hook returned false
-        if (result === false) {
-            // Abort this Transition
-            return rejectFactory_1.Rejection.aborted("Hook aborted transition").toPromise();
-        }
-        var isTargetState = hof_1.is(targetState_1.TargetState);
-        // hook returned a TargetState
-        if (isTargetState(result)) {
-            // Halt the current Transition and redirect (a new Transition) to the TargetState.
-            return rejectFactory_1.Rejection.redirected(result).toPromise();
-        }
-    };
-    /**
-     * Return a Rejection promise if the transition is no longer current due
-     * to a stopped router (disposed), or a new transition has started and superseded this one.
-     */
-    TransitionHook.prototype.getNotCurrentRejection = function () {
-        var router = this.transition.router;
-        // The router is stopped
-        if (router._disposed) {
-            return rejectFactory_1.Rejection.aborted("UIRouter instance #" + router.$id + " has been stopped (disposed)").toPromise();
-        }
-        if (this.transition._aborted) {
-            return rejectFactory_1.Rejection.aborted().toPromise();
-        }
-        // This transition is no longer current.
-        // Another transition started while this hook was still running.
-        if (this.isSuperseded()) {
-            // Abort this transition
-            return rejectFactory_1.Rejection.superseded(this.options.current()).toPromise();
-        }
-    };
-    TransitionHook.prototype.toString = function () {
-        var _a = this, options = _a.options, registeredHook = _a.registeredHook;
-        var event = hof_1.parse("traceData.hookType")(options) || "internal", context = hof_1.parse("traceData.context.state.name")(options) || hof_1.parse("traceData.context")(options) || "unknown", name = strings_1.fnToString(registeredHook.callback);
-        return event + " context: " + context + ", " + strings_1.maxLength(200, name);
-    };
     /**
      * Chains together an array of TransitionHooks.
      *
@@ -8294,38 +8206,140 @@ var TransitionHook = (function () {
     TransitionHook.runAllHooks = function (hooks) {
         hooks.forEach(function (hook) { return hook.invokeHook(); });
     };
+    TransitionHook.prototype.logError = function (err) {
+        this.transition.router.stateService.defaultErrorHandler()(err);
+    };
+    TransitionHook.prototype.invokeHook = function () {
+        var _this = this;
+        var hook = this.registeredHook;
+        if (hook._deregistered)
+            return;
+        var notCurrent = this.getNotCurrentRejection();
+        if (notCurrent)
+            return notCurrent;
+        var options = this.options;
+        trace_1.trace.traceHookInvocation(this, this.transition, options);
+        var invokeCallback = function () {
+            return hook.callback.call(options.bind, _this.transition, _this.stateContext);
+        };
+        var normalizeErr = function (err) {
+            return rejectFactory_1.Rejection.normalize(err).toPromise();
+        };
+        var handleError = function (err) {
+            return hook.eventType.getErrorHandler(_this)(err);
+        };
+        var handleResult = function (result) {
+            return hook.eventType.getResultHandler(_this)(result);
+        };
+        try {
+            var result = invokeCallback();
+            if (!this.type.synchronous && predicates_1.isPromise(result)) {
+                return result.catch(normalizeErr)
+                    .then(handleResult, handleError);
+            }
+            else {
+                return handleResult(result);
+            }
+        }
+        catch (err) {
+            // If callback throws (synchronously)
+            return handleError(rejectFactory_1.Rejection.normalize(err));
+        }
+        finally {
+            if (hook.invokeLimit && ++hook.invokeCount >= hook.invokeLimit) {
+                hook.deregister();
+            }
+        }
+    };
+    /**
+     * This method handles the return value of a Transition Hook.
+     *
+     * A hook can return false (cancel), a TargetState (redirect),
+     * or a promise (which may later resolve to false or a redirect)
+     *
+     * This also handles "transition superseded" -- when a new transition
+     * was started while the hook was still running
+     */
+    TransitionHook.prototype.handleHookResult = function (result) {
+        var _this = this;
+        var notCurrent = this.getNotCurrentRejection();
+        if (notCurrent)
+            return notCurrent;
+        // Hook returned a promise
+        if (predicates_1.isPromise(result)) {
+            // Wait for the promise, then reprocess with the resulting value
+            return result.then(function (val) { return _this.handleHookResult(val); });
+        }
+        trace_1.trace.traceHookResult(result, this.transition, this.options);
+        // Hook returned false
+        if (result === false) {
+            // Abort this Transition
+            return rejectFactory_1.Rejection.aborted('Hook aborted transition').toPromise();
+        }
+        var isTargetState = hof_1.is(targetState_1.TargetState);
+        // hook returned a TargetState
+        if (isTargetState(result)) {
+            // Halt the current Transition and redirect (a new Transition) to the TargetState.
+            return rejectFactory_1.Rejection.redirected(result).toPromise();
+        }
+    };
+    /**
+     * Return a Rejection promise if the transition is no longer current due
+     * to a stopped router (disposed), or a new transition has started and superseded this one.
+     */
+    TransitionHook.prototype.getNotCurrentRejection = function () {
+        var router = this.transition.router;
+        // The router is stopped
+        if (router._disposed) {
+            return rejectFactory_1.Rejection.aborted("UIRouter instance #" + router.$id + " has been stopped (disposed)").toPromise();
+        }
+        if (this.transition._aborted) {
+            return rejectFactory_1.Rejection.aborted().toPromise();
+        }
+        // This transition is no longer current.
+        // Another transition started while this hook was still running.
+        if (this.isSuperseded()) {
+            // Abort this transition
+            return rejectFactory_1.Rejection.superseded(this.options.current()).toPromise();
+        }
+    };
+    TransitionHook.prototype.toString = function () {
+        var _a = this, options = _a.options, registeredHook = _a.registeredHook;
+        var event = hof_1.parse('traceData.hookType')(options) || 'internal', context = hof_1.parse('traceData.context.state.name')(options) || hof_1.parse('traceData.context')(options) || 'unknown', name = strings_1.fnToString(registeredHook.callback);
+        return event + " context: " + context + ", " + strings_1.maxLength(200, name);
+    };
+    /**
+     * These GetResultHandler(s) are used by [[invokeHook]] below
+     * Each HookType chooses a GetResultHandler (See: [[TransitionService._defineCoreEvents]])
+     */
+    TransitionHook.HANDLE_RESULT = function (hook) { return function (result) {
+        return hook.handleHookResult(result);
+    }; };
+    /**
+     * If the result is a promise rejection, log it.
+     * Otherwise, ignore the result.
+     */
+    TransitionHook.LOG_REJECTED_RESULT = function (hook) { return function (result) {
+        predicates_1.isPromise(result) && result.catch(function (err) {
+            return hook.logError(rejectFactory_1.Rejection.normalize(err));
+        });
+        return undefined;
+    }; };
+    /**
+     * These GetErrorHandler(s) are used by [[invokeHook]] below
+     * Each HookType chooses a GetErrorHandler (See: [[TransitionService._defineCoreEvents]])
+     */
+    TransitionHook.LOG_ERROR = function (hook) { return function (error) {
+        return hook.logError(error);
+    }; };
+    TransitionHook.REJECT_ERROR = function (hook) { return function (error) {
+        return common_1.silentRejection(error);
+    }; };
+    TransitionHook.THROW_ERROR = function (hook) { return function (error) {
+        throw error;
+    }; };
     return TransitionHook;
 }());
-/**
- * These GetResultHandler(s) are used by [[invokeHook]] below
- * Each HookType chooses a GetResultHandler (See: [[TransitionService._defineCoreEvents]])
- */
-TransitionHook.HANDLE_RESULT = function (hook) { return function (result) {
-    return hook.handleHookResult(result);
-}; };
-/**
- * If the result is a promise rejection, log it.
- * Otherwise, ignore the result.
- */
-TransitionHook.LOG_REJECTED_RESULT = function (hook) { return function (result) {
-    predicates_1.isPromise(result) && result.catch(function (err) {
-        return hook.logError(rejectFactory_1.Rejection.normalize(err));
-    });
-    return undefined;
-}; };
-/**
- * These GetErrorHandler(s) are used by [[invokeHook]] below
- * Each HookType chooses a GetErrorHandler (See: [[TransitionService._defineCoreEvents]])
- */
-TransitionHook.LOG_ERROR = function (hook) { return function (error) {
-    return hook.logError(error);
-}; };
-TransitionHook.REJECT_ERROR = function (hook) { return function (error) {
-    return common_1.silentRejection(error);
-}; };
-TransitionHook.THROW_ERROR = function (hook) { return function (error) {
-    throw error;
-}; };
 exports.TransitionHook = TransitionHook;
 
 },{"../common/common":3,"../common/coreservices":4,"../common/hof":6,"../common/predicates":8,"../common/strings":10,"../common/trace":11,"../state/targetState":45,"./interface":49,"./rejectFactory":50}],54:[function(require,module,exports){
@@ -8369,7 +8383,7 @@ exports.defaultTransOpts = {
     reload: false,
     custom: {},
     current: function () { return null; },
-    source: "unknown"
+    source: 'unknown',
 };
 /**
  * This class provides services related to Transitions.
@@ -8380,7 +8394,7 @@ exports.defaultTransOpts = {
  *
  * At bootstrap, [[UIRouter]] creates a single instance (singleton) of this class.
  */
-var TransitionService = (function () {
+var TransitionService = /** @class */ (function () {
     /** @hidden */
     function TransitionService(_router) {
         /** @hidden */
@@ -8474,25 +8488,25 @@ var TransitionService = (function () {
         var TH = transitionHook_1.TransitionHook;
         var paths = this._criteriaPaths;
         var NORMAL_SORT = false, REVERSE_SORT = true;
-        var ASYNCHRONOUS = false, SYNCHRONOUS = true;
-        this._defineEvent("onCreate", Phase.CREATE, 0, paths.to, NORMAL_SORT, TH.LOG_REJECTED_RESULT, TH.THROW_ERROR, SYNCHRONOUS);
-        this._defineEvent("onBefore", Phase.BEFORE, 0, paths.to);
-        this._defineEvent("onStart", Phase.RUN, 0, paths.to);
-        this._defineEvent("onExit", Phase.RUN, 100, paths.exiting, REVERSE_SORT);
-        this._defineEvent("onRetain", Phase.RUN, 200, paths.retained);
-        this._defineEvent("onEnter", Phase.RUN, 300, paths.entering);
-        this._defineEvent("onFinish", Phase.RUN, 400, paths.to);
-        this._defineEvent("onSuccess", Phase.SUCCESS, 0, paths.to, NORMAL_SORT, TH.LOG_REJECTED_RESULT, TH.LOG_ERROR, SYNCHRONOUS);
-        this._defineEvent("onError", Phase.ERROR, 0, paths.to, NORMAL_SORT, TH.LOG_REJECTED_RESULT, TH.LOG_ERROR, SYNCHRONOUS);
+        var SYNCHRONOUS = true;
+        this._defineEvent('onCreate', Phase.CREATE, 0, paths.to, NORMAL_SORT, TH.LOG_REJECTED_RESULT, TH.THROW_ERROR, SYNCHRONOUS);
+        this._defineEvent('onBefore', Phase.BEFORE, 0, paths.to);
+        this._defineEvent('onStart', Phase.RUN, 0, paths.to);
+        this._defineEvent('onExit', Phase.RUN, 100, paths.exiting, REVERSE_SORT);
+        this._defineEvent('onRetain', Phase.RUN, 200, paths.retained);
+        this._defineEvent('onEnter', Phase.RUN, 300, paths.entering);
+        this._defineEvent('onFinish', Phase.RUN, 400, paths.to);
+        this._defineEvent('onSuccess', Phase.SUCCESS, 0, paths.to, NORMAL_SORT, TH.LOG_REJECTED_RESULT, TH.LOG_ERROR, SYNCHRONOUS);
+        this._defineEvent('onError', Phase.ERROR, 0, paths.to, NORMAL_SORT, TH.LOG_REJECTED_RESULT, TH.LOG_ERROR, SYNCHRONOUS);
     };
     /** @hidden */
     TransitionService.prototype._defineCorePaths = function () {
         var STATE = interface_1.TransitionHookScope.STATE, TRANSITION = interface_1.TransitionHookScope.TRANSITION;
-        this._definePathType("to", TRANSITION);
-        this._definePathType("from", TRANSITION);
-        this._definePathType("exiting", STATE);
-        this._definePathType("retained", STATE);
-        this._definePathType("entering", STATE);
+        this._definePathType('to', TRANSITION);
+        this._definePathType('from', TRANSITION);
+        this._definePathType('exiting', STATE);
+        this._definePathType('retained', STATE);
+        this._definePathType('entering', STATE);
     };
     /** @hidden */
     TransitionService.prototype._defineEvent = function (name, hookPhase, hookOrder, criteriaMatchPath, reverseSort, getResultHandler, getErrorHandler, synchronous) {
@@ -8504,8 +8518,7 @@ var TransitionService = (function () {
         this._eventTypes.push(eventType);
         hookRegistry_1.makeEvent(this, this, eventType);
     };
-    ;
-    /** @hidden */
+    /** @hidden */ // tslint:disable-next-line
     TransitionService.prototype._getEvents = function (phase) {
         var transitionHookTypes = predicates_1.isDefined(phase) ?
             this._eventTypes.filter(function (type) { return type.hookPhase === phase; }) :
@@ -8531,7 +8544,7 @@ var TransitionService = (function () {
     TransitionService.prototype._definePathType = function (name, hookScope) {
         this._criteriaPaths[name] = { name: name, scope: hookScope };
     };
-    /** * @hidden */
+    /** * @hidden */ // tslint:disable-next-line
     TransitionService.prototype._getPathTypes = function () {
         return this._criteriaPaths;
     };
@@ -8554,6 +8567,7 @@ var TransitionService = (function () {
         // Wire up Resolve hooks
         fns.eagerResolve = resolve_1.registerEagerResolvePath(this);
         fns.lazyResolve = resolve_1.registerLazyResolveState(this);
+        fns.resolveAll = resolve_1.registerResolveRemaining(this);
         // Wire up the View management hooks
         fns.loadViews = views_1.registerLoadEnteringViews(this);
         fns.activateViews = views_1.registerActivateViews(this);
@@ -8594,8 +8608,8 @@ var predicates_1 = require("../common/predicates");
 var param_1 = require("../params/param");
 var strings_1 = require("../common/strings");
 /** @hidden */
-function quoteRegExp(string, param) {
-    var surroundPattern = ['', ''], result = string.replace(/[\\\[\]\^$*+?.()|{}]/g, "\\$&");
+function quoteRegExp(str, param) {
+    var surroundPattern = ['', ''], result = str.replace(/[\\\[\]\^$*+?.()|{}]/g, '\\$&');
     if (!param)
         return result;
     switch (param.squash) {
@@ -8613,8 +8627,8 @@ function quoteRegExp(string, param) {
     return result + surroundPattern[0] + param.type.pattern.source + surroundPattern[1];
 }
 /** @hidden */
-var memoizeTo = function (obj, prop, fn) {
-    return obj[prop] = obj[prop] || fn();
+var memoizeTo = function (obj, _prop, fn) {
+    return obj[_prop] = obj[_prop] || fn();
 };
 /** @hidden */
 var splitOnSlash = strings_1.splitOnDelim('/');
@@ -8669,7 +8683,7 @@ var splitOnSlash = strings_1.splitOnDelim('/');
  *   in the built-in  `date` ParamType matches `2014-11-12`) and provides a Date object in $stateParams.start
  *
  */
-var UrlMatcher = (function () {
+var UrlMatcher = /** @class */ (function () {
     /**
      * @param pattern The pattern to compile into a matcher.
      * @param paramTypes The [[ParamTypes]] registry
@@ -8695,7 +8709,7 @@ var UrlMatcher = (function () {
             params: {},
             strict: true,
             caseInsensitive: false,
-            paramMap: common_1.identity
+            paramMap: common_1.identity,
         });
         // Find all placeholders and create a compiled pattern, using either classic or curly syntax:
         //   '*' name
@@ -8710,7 +8724,10 @@ var UrlMatcher = (function () {
         //    [^{}\\]+                       - anything other than curly braces or backslash
         //    \\.                            - a backslash escape
         //    \{(?:[^{}\\]+|\\.)*\}          - a matched set of curly braces containing other atoms
-        var placeholder = /([:*])([\w\[\]]+)|\{([\w\[\]]+)(?:\:\s*((?:[^{}\\]+|\\.|\{(?:[^{}\\]+|\\.)*\})+))?\}/g, searchPlaceholder = /([:]?)([\w\[\].-]+)|\{([\w\[\].-]+)(?:\:\s*((?:[^{}\\]+|\\.|\{(?:[^{}\\]+|\\.)*\})+))?\}/g, last = 0, m, patterns = [];
+        var placeholder = /([:*])([\w\[\]]+)|\{([\w\[\]]+)(?:\:\s*((?:[^{}\\]+|\\.|\{(?:[^{}\\]+|\\.)*\})+))?\}/g;
+        var searchPlaceholder = /([:]?)([\w\[\].-]+)|\{([\w\[\].-]+)(?:\:\s*((?:[^{}\\]+|\\.|\{(?:[^{}\\]+|\\.)*\})+))?\}/g;
+        var patterns = [];
+        var last = 0, matchArray;
         var checkParamErrors = function (id) {
             if (!UrlMatcher.nameValidator.test(id))
                 throw new Error("Invalid parameter name '" + id + "' in pattern '" + pattern + "'");
@@ -8722,21 +8739,22 @@ var UrlMatcher = (function () {
         var matchDetails = function (m, isSearch) {
             // IE[78] returns '' for unmatched groups instead of null
             var id = m[2] || m[3];
-            var regexp = isSearch ? m[4] : m[4] || (m[1] === '*' ? '.*' : null);
-            var makeRegexpType = function (regexp) { return common_1.inherit(paramTypes.type(isSearch ? "query" : "path"), {
-                pattern: new RegExp(regexp, _this.config.caseInsensitive ? 'i' : undefined)
+            var regexp = isSearch ? m[4] : m[4] || (m[1] === '*' ? '[\\s\\S]*' : null);
+            var makeRegexpType = function (str) { return common_1.inherit(paramTypes.type(isSearch ? 'query' : 'path'), {
+                pattern: new RegExp(str, _this.config.caseInsensitive ? 'i' : undefined),
             }); };
             return {
                 id: id,
                 regexp: regexp,
                 cfg: _this.config.params[id],
                 segment: pattern.substring(last, m.index),
-                type: !regexp ? null : paramTypes.type(regexp) || makeRegexpType(regexp)
+                type: !regexp ? null : paramTypes.type(regexp) || makeRegexpType(regexp),
             };
         };
         var p, segment;
-        while ((m = placeholder.exec(pattern))) {
-            p = matchDetails(m, false);
+        // tslint:disable-next-line:no-conditional-assignment
+        while ((matchArray = placeholder.exec(pattern))) {
+            p = matchDetails(matchArray, false);
             if (p.segment.indexOf('?') >= 0)
                 break; // we're into the search part
             checkParamErrors(p.id);
@@ -8753,8 +8771,9 @@ var UrlMatcher = (function () {
             segment = segment.substring(0, i);
             if (search.length > 0) {
                 last = 0;
-                while ((m = searchPlaceholder.exec(search))) {
-                    p = matchDetails(m, true);
+                // tslint:disable-next-line:no-conditional-assignment
+                while ((matchArray = searchPlaceholder.exec(search))) {
+                    p = matchDetails(matchArray, true);
                     checkParamErrors(p.id);
                     this._params.push(paramFactory.fromSearch(p.id, p.type, this.config.paramMap(p.cfg, true)));
                     last = placeholder.lastIndex;
@@ -8763,8 +8782,90 @@ var UrlMatcher = (function () {
             }
         }
         this._segments.push(segment);
-        this._compiled = patterns.map(function (pattern) { return quoteRegExp.apply(null, pattern); }).concat(quoteRegExp(segment));
+        this._compiled = patterns.map(function (_pattern) { return quoteRegExp.apply(null, _pattern); }).concat(quoteRegExp(segment));
     }
+    /** @hidden */
+    UrlMatcher.encodeDashes = function (str) {
+        return encodeURIComponent(str).replace(/-/g, function (c) { return "%5C%" + c.charCodeAt(0).toString(16).toUpperCase(); });
+    };
+    /** @hidden Given a matcher, return an array with the matcher's path segments and path params, in order */
+    UrlMatcher.pathSegmentsAndParams = function (matcher) {
+        var staticSegments = matcher._segments;
+        var pathParams = matcher._params.filter(function (p) { return p.location === param_1.DefType.PATH; });
+        return common_1.arrayTuples(staticSegments, pathParams.concat(undefined))
+            .reduce(common_1.unnestR, [])
+            .filter(function (x) { return x !== '' && predicates_1.isDefined(x); });
+    };
+    /** @hidden Given a matcher, return an array with the matcher's query params */
+    UrlMatcher.queryParams = function (matcher) {
+        return matcher._params.filter(function (p) { return p.location === param_1.DefType.SEARCH; });
+    };
+    /**
+     * Compare two UrlMatchers
+     *
+     * This comparison function converts a UrlMatcher into static and dynamic path segments.
+     * Each static path segment is a static string between a path separator (slash character).
+     * Each dynamic segment is a path parameter.
+     *
+     * The comparison function sorts static segments before dynamic ones.
+     */
+    UrlMatcher.compare = function (a, b) {
+        /**
+         * Turn a UrlMatcher and all its parent matchers into an array
+         * of slash literals '/', string literals, and Param objects
+         *
+         * This example matcher matches strings like "/foo/:param/tail":
+         * var matcher = $umf.compile("/foo").append($umf.compile("/:param")).append($umf.compile("/")).append($umf.compile("tail"));
+         * var result = segments(matcher); // [ '/', 'foo', '/', Param, '/', 'tail' ]
+         *
+         * Caches the result as `matcher._cache.segments`
+         */
+        var segments = function (matcher) {
+            return matcher._cache.segments = matcher._cache.segments ||
+                matcher._cache.path.map(UrlMatcher.pathSegmentsAndParams)
+                    .reduce(common_1.unnestR, [])
+                    .reduce(strings_1.joinNeighborsR, [])
+                    .map(function (x) { return predicates_1.isString(x) ? splitOnSlash(x) : x; })
+                    .reduce(common_1.unnestR, []);
+        };
+        /**
+         * Gets the sort weight for each segment of a UrlMatcher
+         *
+         * Caches the result as `matcher._cache.weights`
+         */
+        var weights = function (matcher) {
+            return matcher._cache.weights = matcher._cache.weights ||
+                segments(matcher).map(function (segment) {
+                    // Sort slashes first, then static strings, the Params
+                    if (segment === '/')
+                        return 1;
+                    if (predicates_1.isString(segment))
+                        return 2;
+                    if (segment instanceof param_1.Param)
+                        return 3;
+                });
+        };
+        /**
+         * Pads shorter array in-place (mutates)
+         */
+        var padArrays = function (l, r, padVal) {
+            var len = Math.max(l.length, r.length);
+            while (l.length < len)
+                l.push(padVal);
+            while (r.length < len)
+                r.push(padVal);
+        };
+        var weightsA = weights(a), weightsB = weights(b);
+        padArrays(weightsA, weightsB, 0);
+        var _pairs = common_1.arrayTuples(weightsA, weightsB);
+        var cmp, i;
+        for (i = 0; i < _pairs.length; i++) {
+            cmp = _pairs[i][0] - _pairs[i][1];
+            if (cmp !== 0)
+                return cmp;
+        }
+        return 0;
+    };
     /**
      * Creates a new concatenated UrlMatcher
      *
@@ -8824,19 +8925,19 @@ var UrlMatcher = (function () {
                 '^',
                 common_1.unnest(_this._cache.path.map(hof_1.prop('_compiled'))).join(''),
                 _this.config.strict === false ? '\/?' : '',
-                '$'
+                '$',
             ].join(''), _this.config.caseInsensitive ? 'i' : undefined);
         }).exec(path);
         if (!match)
             return null;
-        //options = defaults(options, { isolate: false });
+        // options = defaults(options, { isolate: false });
         var allParams = this.parameters(), pathParams = allParams.filter(function (param) { return !param.isSearch(); }), searchParams = allParams.filter(function (param) { return param.isSearch(); }), nPathSegments = this._cache.path.map(function (urlm) { return urlm._segments.length - 1; }).reduce(function (a, x) { return a + x; }), values = {};
         if (nPathSegments !== match.length - 1)
             throw new Error("Unbalanced capture group in route '" + this.pattern + "'");
-        function decodePathArray(string) {
-            var reverseString = function (str) { return str.split("").reverse().join(""); };
-            var unquoteDashes = function (str) { return str.replace(/\\-/g, "-"); };
-            var split = reverseString(string).split(/-(?!\\)/);
+        function decodePathArray(paramVal) {
+            var reverseString = function (str) { return str.split('').reverse().join(''); };
+            var unquoteDashes = function (str) { return str.replace(/\\-/g, '-'); };
+            var split = reverseString(paramVal).split(/-(?!\\)/);
             var allReversed = common_1.map(split, reverseString);
             return common_1.map(allReversed, unquoteDashes).reverse();
         }
@@ -8865,7 +8966,7 @@ var UrlMatcher = (function () {
             values[param.id] = param.value(value);
         });
         if (hash)
-            values["#"] = hash;
+            values['#'] = hash;
         return values;
     };
     /**
@@ -8985,13 +9086,13 @@ var UrlMatcher = (function () {
                 return acc;
             // If this parameter value is an array, encode the value using encodeDashes
             if (predicates_1.isArray(encoded))
-                return acc + common_1.map(encoded, UrlMatcher.encodeDashes).join("-");
+                return acc + common_1.map(encoded, UrlMatcher.encodeDashes).join('-');
             // If the parameter type is "raw", then do not encodeURIComponent
             if (param.raw)
                 return acc + encoded;
             // Encode the value
             return acc + encodeURIComponent(encoded);
-        }, "");
+        }, '');
         // Build the query string by applying parameter values (array or regular)
         // then mapping to key=value, then flattening and joining using "&"
         var queryString = queryParams.map(function (paramDetails) {
@@ -9005,83 +9106,14 @@ var UrlMatcher = (function () {
             if (!param.raw)
                 encoded = common_1.map(encoded, encodeURIComponent);
             return encoded.map(function (val) { return param.id + "=" + val; });
-        }).filter(common_1.identity).reduce(common_1.unnestR, []).join("&");
+        }).filter(common_1.identity).reduce(common_1.unnestR, []).join('&');
         // Concat the pathstring with the queryString (if exists) and the hashString (if exists)
-        return pathString + (queryString ? "?" + queryString : "") + (values["#"] ? "#" + values["#"] : "");
+        return pathString + (queryString ? "?" + queryString : '') + (values['#'] ? '#' + values['#'] : '');
     };
     /** @hidden */
-    UrlMatcher.encodeDashes = function (str) {
-        return encodeURIComponent(str).replace(/-/g, function (c) { return "%5C%" + c.charCodeAt(0).toString(16).toUpperCase(); });
-    };
-    /** @hidden Given a matcher, return an array with the matcher's path segments and path params, in order */
-    UrlMatcher.pathSegmentsAndParams = function (matcher) {
-        var staticSegments = matcher._segments;
-        var pathParams = matcher._params.filter(function (p) { return p.location === param_1.DefType.PATH; });
-        return common_1.arrayTuples(staticSegments, pathParams.concat(undefined))
-            .reduce(common_1.unnestR, [])
-            .filter(function (x) { return x !== "" && predicates_1.isDefined(x); });
-    };
-    /** @hidden Given a matcher, return an array with the matcher's query params */
-    UrlMatcher.queryParams = function (matcher) {
-        return matcher._params.filter(function (p) { return p.location === param_1.DefType.SEARCH; });
-    };
-    /**
-     * Compare two UrlMatchers
-     *
-     * This comparison function converts a UrlMatcher into static and dynamic path segments.
-     * Each static path segment is a static string between a path separator (slash character).
-     * Each dynamic segment is a path parameter.
-     *
-     * The comparison function sorts static segments before dynamic ones.
-     */
-    UrlMatcher.compare = function (a, b) {
-        /**
-         * Turn a UrlMatcher and all its parent matchers into an array
-         * of slash literals '/', string literals, and Param objects
-         *
-         * This example matcher matches strings like "/foo/:param/tail":
-         * var matcher = $umf.compile("/foo").append($umf.compile("/:param")).append($umf.compile("/")).append($umf.compile("tail"));
-         * var result = segments(matcher); // [ '/', 'foo', '/', Param, '/', 'tail' ]
-         *
-         * Caches the result as `matcher._cache.segments`
-         */
-        var segments = function (matcher) {
-            return matcher._cache.segments = matcher._cache.segments ||
-                matcher._cache.path.map(UrlMatcher.pathSegmentsAndParams)
-                    .reduce(common_1.unnestR, [])
-                    .reduce(strings_1.joinNeighborsR, [])
-                    .map(function (x) { return predicates_1.isString(x) ? splitOnSlash(x) : x; })
-                    .reduce(common_1.unnestR, []);
-        };
-        /**
-         * Gets the sort weight for each segment of a UrlMatcher
-         *
-         * Caches the result as `matcher._cache.weights`
-         */
-        var weights = function (matcher) {
-            return matcher._cache.weights = matcher._cache.weights ||
-                segments(matcher).map(function (segment) {
-                    // Sort slashes first, then static strings, the Params
-                    if (segment === '/')
-                        return 1;
-                    if (predicates_1.isString(segment))
-                        return 2;
-                    if (segment instanceof param_1.Param)
-                        return 3;
-                });
-        };
-        var cmp, i, pairs = common_1.arrayTuples(weights(a), weights(b));
-        for (i = 0; i < pairs.length; i++) {
-            cmp = pairs[i][0] - pairs[i][1];
-            if (cmp !== 0)
-                return cmp;
-        }
-        return 0;
-    };
+    UrlMatcher.nameValidator = /^\w+([-.]+\w+)*(?:\[\])?$/;
     return UrlMatcher;
 }());
-/** @hidden */
-UrlMatcher.nameValidator = /^\w+([-.]+\w+)*(?:\[\])?$/;
 exports.UrlMatcher = UrlMatcher;
 
 },{"../common/common":3,"../common/hof":6,"../common/predicates":8,"../common/strings":10,"../params/param":26}],57:[function(require,module,exports){
@@ -9100,19 +9132,15 @@ var paramTypes_1 = require("../params/paramTypes");
  * Factory for [[UrlMatcher]] instances.
  *
  * The factory is available to ng1 services as
- * `$urlMatcherFactor` or ng1 providers as `$urlMatcherFactoryProvider`.
+ * `$urlMatcherFactory` or ng1 providers as `$urlMatcherFactoryProvider`.
  */
-var UrlMatcherFactory = (function () {
+var UrlMatcherFactory = /** @class */ (function () {
     function UrlMatcherFactory() {
         var _this = this;
         /** @hidden */ this.paramTypes = new paramTypes_1.ParamTypes();
         /** @hidden */ this._isCaseInsensitive = false;
         /** @hidden */ this._isStrictMode = true;
         /** @hidden */ this._defaultSquashPolicy = false;
-        /** @hidden */
-        this._getConfig = function (config) {
-            return common_1.extend({ strict: _this._isStrictMode, caseInsensitive: _this._isCaseInsensitive }, config);
-        };
         /** @internalapi Creates a new [[Param]] for a given location (DefType) */
         this.paramFactory = {
             /** Creates a new [[Param]] from a CONFIG block */
@@ -9127,6 +9155,10 @@ var UrlMatcherFactory = (function () {
             fromSearch: function (id, type, config) {
                 return new param_1.Param(id, type, config, param_1.DefType.SEARCH, _this);
             },
+        };
+        /** @hidden */
+        this._getConfig = function (config) {
+            return common_1.extend({ strict: _this._isStrictMode, caseInsensitive: _this._isCaseInsensitive }, config);
         };
         common_1.extend(this, { UrlMatcher: urlMatcher_1.UrlMatcher, Param: param_1.Param });
     }
@@ -9172,7 +9204,6 @@ var UrlMatcherFactory = (function () {
         });
         return result;
     };
-    ;
     /**
      * Creates and registers a custom [[ParamType]] object
      *
@@ -9196,14 +9227,12 @@ var UrlMatcherFactory = (function () {
         var type = this.paramTypes.type(name, definition, definitionFn);
         return !predicates_1.isDefined(definition) ? type : this;
     };
-    ;
     /** @hidden */
     UrlMatcherFactory.prototype.$get = function () {
         this.paramTypes.enqueue = false;
         this.paramTypes._flushTypeQueue();
         return this;
     };
-    ;
     /** @internalapi */
     UrlMatcherFactory.prototype.dispose = function () {
         this.paramTypes.dispose();
@@ -9226,18 +9255,37 @@ var urlMatcher_1 = require("./urlMatcher");
 var hof_1 = require("../common/hof");
 var urlRule_1 = require("./urlRule");
 var targetState_1 = require("../state/targetState");
+var common_2 = require("../common");
 /** @hidden */
 function appendBasePath(url, isHtml5, absolute, baseHref) {
     if (baseHref === '/')
         return url;
     if (isHtml5)
-        return baseHref.slice(0, -1) + url;
+        return common_2.stripLastPathElement(baseHref) + url;
     if (absolute)
         return baseHref.slice(1) + url;
     return url;
 }
 /** @hidden */
-var getMatcher = hof_1.prop("urlMatcher");
+var prioritySort = function (a, b) {
+    return (b.priority || 0) - (a.priority || 0);
+};
+/** @hidden */
+var typeSort = function (a, b) {
+    var weights = { 'STATE': 4, 'URLMATCHER': 4, 'REGEXP': 3, 'RAW': 2, 'OTHER': 1 };
+    return (weights[a.type] || 0) - (weights[b.type] || 0);
+};
+/** @hidden */
+var urlMatcherSort = function (a, b) {
+    return !a.urlMatcher || !b.urlMatcher ? 0 : urlMatcher_1.UrlMatcher.compare(a.urlMatcher, b.urlMatcher);
+};
+/** @hidden */
+var idSort = function (a, b) {
+    // Identically sorted STATE and URLMATCHER best rule will be chosen by `matchPriority` after each rule matches the URL
+    var useMatchPriority = { STATE: true, URLMATCHER: true };
+    var equal = useMatchPriority[a.type] && useMatchPriority[b.type];
+    return equal ? 0 : (a.$id || 0) - (b.$id || 0);
+};
 /**
  * Default rule priority sorting function.
  *
@@ -9246,12 +9294,25 @@ var getMatcher = hof_1.prop("urlMatcher");
  * - Explicit priority (set rule priority using [[UrlRulesApi.when]])
  * - Rule type (STATE: 4, URLMATCHER: 4, REGEXP: 3, RAW: 2, OTHER: 1)
  * - `UrlMatcher` specificity ([[UrlMatcher.compare]]): works for STATE and URLMATCHER types to pick the most specific rule.
- * - Registration order (for rule types other than STATE and URLMATCHER)
+ * - Rule registration order (for rule types other than STATE and URLMATCHER)
+ *   - Equally sorted State and UrlMatcher rules will each match the URL.
+ *     Then, the *best* match is chosen based on how many parameter values were matched.
  *
  * @coreapi
  */
 var defaultRuleSortFn;
-defaultRuleSortFn = common_1.composeSort(common_1.sortBy(hof_1.pipe(hof_1.prop("priority"), function (x) { return -x; })), common_1.sortBy(hof_1.pipe(hof_1.prop("type"), function (type) { return ({ "STATE": 4, "URLMATCHER": 4, "REGEXP": 3, "RAW": 2, "OTHER": 1 })[type]; })), function (a, b) { return (getMatcher(a) && getMatcher(b)) ? urlMatcher_1.UrlMatcher.compare(getMatcher(a), getMatcher(b)) : 0; }, common_1.sortBy(hof_1.prop("$id"), common_1.inArray(["REGEXP", "RAW", "OTHER"])));
+defaultRuleSortFn = function (a, b) {
+    var cmp = prioritySort(a, b);
+    if (cmp !== 0)
+        return cmp;
+    cmp = typeSort(a, b);
+    if (cmp !== 0)
+        return cmp;
+    cmp = urlMatcherSort(a, b);
+    if (cmp !== 0)
+        return cmp;
+    return idSort(a, b);
+};
 /**
  * Updates URL and responds to URL changes
  *
@@ -9263,7 +9324,7 @@ defaultRuleSortFn = common_1.composeSort(common_1.sortBy(hof_1.pipe(hof_1.prop("
  * This class updates the URL when the state changes.
  * It also responds to changes in the URL.
  */
-var UrlRouter = (function () {
+var UrlRouter = /** @class */ (function () {
     /** @hidden */
     function UrlRouter(router) {
         /** @hidden */ this._sortFn = defaultRuleSortFn;
@@ -9283,11 +9344,21 @@ var UrlRouter = (function () {
     };
     /** @inheritdoc */
     UrlRouter.prototype.sort = function (compareFn) {
-        this._rules.sort(this._sortFn = compareFn || this._sortFn);
+        this._rules = this.stableSort(this._rules, this._sortFn = compareFn || this._sortFn);
         this._sorted = true;
     };
     UrlRouter.prototype.ensureSorted = function () {
         this._sorted || this.sort();
+    };
+    UrlRouter.prototype.stableSort = function (arr, compareFn) {
+        var arrOfWrapper = arr.map(function (elem, idx) { return ({ elem: elem, idx: idx }); });
+        arrOfWrapper.sort(function (wrapperA, wrapperB) {
+            var cmpDiff = compareFn(wrapperA.elem, wrapperB.elem);
+            return cmpDiff === 0
+                ? wrapperA.idx - wrapperB.idx
+                : cmpDiff;
+        });
+        return arrOfWrapper.map(function (wrapper) { return wrapper.elem; });
     };
     /**
      * Given a URL, check all rules and return the best [[MatchResult]]
@@ -9355,10 +9426,10 @@ var UrlRouter = (function () {
     UrlRouter.prototype.update = function (read) {
         var $url = this._router.locationService;
         if (read) {
-            this.location = $url.path();
+            this.location = $url.url();
             return;
         }
-        if ($url.path() === this.location)
+        if ($url.url() === this.location)
             return;
         $url.url(this.location, true);
     };
@@ -9403,14 +9474,15 @@ var UrlRouter = (function () {
         var cfg = this._router.urlService.config;
         var isHtml5 = cfg.html5Mode();
         if (!isHtml5 && url !== null) {
-            url = "#" + cfg.hashPrefix() + url;
+            url = '#' + cfg.hashPrefix() + url;
         }
         url = appendBasePath(url, isHtml5, options.absolute, cfg.baseHref());
         if (!options.absolute || !url) {
             return url;
         }
-        var slash = (!isHtml5 && url ? '/' : ''), port = cfg.port();
-        port = (port === 80 || port === 443 ? '' : ':' + port);
+        var slash = (!isHtml5 && url ? '/' : '');
+        var cfgPort = cfg.port();
+        var port = (cfgPort === 80 || cfgPort === 443 ? '' : ':' + cfgPort);
         return [cfg.protocol(), '://', cfg.host(), port, slash, url].join('');
     };
     /**
@@ -9428,7 +9500,7 @@ var UrlRouter = (function () {
     UrlRouter.prototype.rule = function (rule) {
         var _this = this;
         if (!urlRule_1.UrlRuleFactory.isUrlRule(rule))
-            throw new Error("invalid rule");
+            throw new Error('invalid rule');
         rule.$id = this._id++;
         rule.priority = rule.priority || 0;
         this._rules.push(rule);
@@ -9450,7 +9522,6 @@ var UrlRouter = (function () {
         this._otherwiseFn = this.urlRuleFactory.create(hof_1.val(true), handlerFn);
         this._sorted = false;
     };
-    ;
     /** @inheritdoc */
     UrlRouter.prototype.initial = function (handler) {
         var handlerFn = getHandlerFn(handler);
@@ -9459,7 +9530,6 @@ var UrlRouter = (function () {
         };
         this.rule(this.urlRuleFactory.create(matchFn, handlerFn));
     };
-    ;
     /** @inheritdoc */
     UrlRouter.prototype.when = function (matcher, handler, options) {
         var rule = this.urlRuleFactory.create(matcher, handler);
@@ -9468,14 +9538,12 @@ var UrlRouter = (function () {
         this.rule(rule);
         return rule;
     };
-    ;
     /** @inheritdoc */
     UrlRouter.prototype.deferIntercept = function (defer) {
         if (defer === undefined)
             defer = true;
         this.interceptDeferred = defer;
     };
-    ;
     return UrlRouter;
 }());
 exports.UrlRouter = UrlRouter;
@@ -9486,7 +9554,7 @@ function getHandlerFn(handler) {
     return predicates_1.isFunction(handler) ? handler : hof_1.val(handler);
 }
 
-},{"../common/common":3,"../common/hof":6,"../common/predicates":8,"../state/targetState":45,"./urlMatcher":56,"./urlRule":59}],59:[function(require,module,exports){
+},{"../common":7,"../common/common":3,"../common/hof":6,"../common/predicates":8,"../state/targetState":45,"./urlMatcher":56,"./urlRule":59}],59:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -9508,7 +9576,7 @@ var hof_1 = require("../common/hof");
  * - [[StateObject]]
  * @internalapi
  */
-var UrlRuleFactory = (function () {
+var UrlRuleFactory = /** @class */ (function () {
     function UrlRuleFactory(router) {
         this.router = router;
     }
@@ -9571,9 +9639,9 @@ var UrlRuleFactory = (function () {
             handler = this.router.urlMatcherFactory.compile(handler);
         if (hof_1.is(urlMatcher_1.UrlMatcher)(handler))
             _handler = function (match) { return handler.format(match); };
-        function match(url) {
-            var match = urlMatcher.exec(url.path, url.search, url.hash);
-            return urlMatcher.validates(match) && match;
+        function matchUrlParamters(url) {
+            var params = urlMatcher.exec(url.path, url.search, url.hash);
+            return urlMatcher.validates(params) && params;
         }
         // Prioritize URLs, lowest to highest:
         // - Some optional URL parameters, but none matched
@@ -9587,8 +9655,8 @@ var UrlRuleFactory = (function () {
             var matched = optional.filter(function (param) { return params[param.id]; });
             return matched.length / optional.length;
         }
-        var details = { urlMatcher: urlMatcher, matchPriority: matchPriority, type: "URLMATCHER" };
-        return common_1.extend(new BaseUrlRule(match, _handler), details);
+        var details = { urlMatcher: urlMatcher, matchPriority: matchPriority, type: 'URLMATCHER' };
+        return common_1.extend(new BaseUrlRule(matchUrlParamters, _handler), details);
     };
     /**
      * A UrlRule which matches a state by its url
@@ -9613,10 +9681,10 @@ var UrlRuleFactory = (function () {
             var $state = router.stateService;
             var globals = router.globals;
             if ($state.href(state, match) !== $state.href(globals.current, globals.params)) {
-                $state.transitionTo(state, match, { inherit: true, source: "url" });
+                $state.transitionTo(state, match, { inherit: true, source: 'url' });
             }
         };
-        var details = { state: state, type: "STATE" };
+        var details = { state: state, type: 'STATE' };
         return common_1.extend(this.fromUrlMatcher(state.url, handler), details);
     };
     /**
@@ -9653,7 +9721,7 @@ var UrlRuleFactory = (function () {
      */
     UrlRuleFactory.prototype.fromRegExp = function (regexp, handler) {
         if (regexp.global || regexp.sticky)
-            throw new Error("Rule RegExp must not be global or sticky");
+            throw new Error('Rule RegExp must not be global or sticky');
         /**
          * If handler is a string, the url will be replaced by the string.
          * If the string has any String.replace() style variables in it (like `$2`),
@@ -9666,17 +9734,17 @@ var UrlRuleFactory = (function () {
             });
         };
         var _handler = predicates_1.isString(handler) ? redirectUrlTo : handler;
-        var match = function (url) {
+        var matchParamsFromRegexp = function (url) {
             return regexp.exec(url.path);
         };
-        var details = { regexp: regexp, type: "REGEXP" };
-        return common_1.extend(new BaseUrlRule(match, _handler), details);
+        var details = { regexp: regexp, type: 'REGEXP' };
+        return common_1.extend(new BaseUrlRule(matchParamsFromRegexp, _handler), details);
+    };
+    UrlRuleFactory.isUrlRule = function (obj) {
+        return obj && ['type', 'match', 'handler'].every(function (key) { return predicates_1.isDefined(obj[key]); });
     };
     return UrlRuleFactory;
 }());
-UrlRuleFactory.isUrlRule = function (obj) {
-    return obj && ['type', 'match', 'handler'].every(function (key) { return predicates_1.isDefined(obj[key]); });
-};
 exports.UrlRuleFactory = UrlRuleFactory;
 /**
  * A base rule which calls `match`
@@ -9684,11 +9752,11 @@ exports.UrlRuleFactory = UrlRuleFactory;
  * The value from the `match` function is passed through to the `handler`.
  * @internalapi
  */
-var BaseUrlRule = (function () {
+var BaseUrlRule = /** @class */ (function () {
     function BaseUrlRule(match, handler) {
         var _this = this;
         this.match = match;
-        this.type = "RAW";
+        this.type = 'RAW';
         this.matchPriority = function (match) { return 0 - _this.$id; };
         this.handler = handler || common_1.identity;
     }
@@ -9709,15 +9777,17 @@ var common_1 = require("../common/common");
 var makeStub = function (keys) {
     return keys.reduce(function (acc, key) { return (acc[key] = coreservices_1.notImplemented(key), acc); }, { dispose: common_1.noop });
 };
-/** @hidden */ var locationServicesFns = ["url", "path", "search", "hash", "onChange"];
-/** @hidden */ var locationConfigFns = ["port", "protocol", "host", "baseHref", "html5Mode", "hashPrefix"];
-/** @hidden */ var umfFns = ["type", "caseInsensitive", "strictMode", "defaultSquashPolicy"];
-/** @hidden */ var rulesFns = ["sort", "when", "initial", "otherwise", "rules", "rule", "removeRule"];
-/** @hidden */ var syncFns = ["deferIntercept", "listen", "sync", "match"];
+/* tslint:disable:align */
+/** @hidden */ var locationServicesFns = ['url', 'path', 'search', 'hash', 'onChange'];
+/** @hidden */ var locationConfigFns = ['port', 'protocol', 'host', 'baseHref', 'html5Mode', 'hashPrefix'];
+/** @hidden */ var umfFns = ['type', 'caseInsensitive', 'strictMode', 'defaultSquashPolicy'];
+/** @hidden */ var rulesFns = ['sort', 'when', 'initial', 'otherwise', 'rules', 'rule', 'removeRule'];
+/** @hidden */ var syncFns = ['deferIntercept', 'listen', 'sync', 'match'];
+/* tslint:enable:align */
 /**
  * API for URL management
  */
-var UrlService = (function () {
+var UrlService = /** @class */ (function () {
     /** @hidden */
     function UrlService(router, lateBind) {
         if (lateBind === void 0) { lateBind = true; }
@@ -9736,19 +9806,14 @@ var UrlService = (function () {
         common_1.createProxyFunctions(urlRouter, this, urlRouter, syncFns);
     }
     UrlService.prototype.url = function (newurl, replace, state) { return; };
-    ;
     /** @inheritdoc */
     UrlService.prototype.path = function () { return; };
-    ;
     /** @inheritdoc */
     UrlService.prototype.search = function () { return; };
-    ;
     /** @inheritdoc */
     UrlService.prototype.hash = function () { return; };
-    ;
     /** @inheritdoc */
     UrlService.prototype.onChange = function (callback) { return; };
-    ;
     /**
      * Returns the current URL parts
      *
@@ -9764,17 +9829,16 @@ var UrlService = (function () {
     UrlService.prototype.sync = function (evt) { return; };
     /** @inheritdoc */
     UrlService.prototype.listen = function (enabled) { return; };
-    ;
     /** @inheritdoc */
     UrlService.prototype.deferIntercept = function (defer) { return; };
     /** @inheritdoc */
     UrlService.prototype.match = function (urlParts) { return; };
+    /** @hidden */
+    UrlService.locationServiceStub = makeStub(locationServicesFns);
+    /** @hidden */
+    UrlService.locationConfigStub = makeStub(locationConfigFns);
     return UrlService;
 }());
-/** @hidden */
-UrlService.locationServiceStub = makeStub(locationServicesFns);
-/** @hidden */
-UrlService.locationConfigStub = makeStub(locationConfigFns);
 exports.UrlService = UrlService;
 
 },{"../common/common":3,"../common/coreservices":4}],61:[function(require,module,exports){
@@ -9797,29 +9861,27 @@ __export(require("./vanilla/index"));
  * @module vanilla
  */ /** */
 Object.defineProperty(exports, "__esModule", { value: true });
+var common_1 = require("../common");
 var utils_1 = require("./utils");
-var predicates_1 = require("../common/predicates");
-var common_1 = require("../common/common");
 /** A base `LocationServices` */
-var BaseLocationServices = (function () {
+var BaseLocationServices = /** @class */ (function () {
     function BaseLocationServices(router, fireAfterUpdate) {
         var _this = this;
         this.fireAfterUpdate = fireAfterUpdate;
-        this._listener = function (evt) { return _this._listeners.forEach(function (cb) { return cb(evt); }); };
         this._listeners = [];
+        this._listener = function (evt) { return _this._listeners.forEach(function (cb) { return cb(evt); }); };
         this.hash = function () { return utils_1.parseUrl(_this._get()).hash; };
         this.path = function () { return utils_1.parseUrl(_this._get()).path; };
         this.search = function () { return utils_1.getParams(utils_1.parseUrl(_this._get()).search); };
-        this._location = window && window.location;
-        this._history = window && window.history;
+        this._location = common_1.root.location;
+        this._history = common_1.root.history;
     }
     BaseLocationServices.prototype.url = function (url, replace) {
         if (replace === void 0) { replace = true; }
-        if (predicates_1.isDefined(url) && url !== this._get()) {
+        if (common_1.isDefined(url) && url !== this._get()) {
             this._set(null, null, url, replace);
             if (this.fireAfterUpdate) {
-                var evt_1 = common_1.extend(new Event("locationchange"), { url: url });
-                this._listeners.forEach(function (cb) { return cb(evt_1); });
+                this._listeners.forEach(function (cb) { return cb({ url: url }); });
             }
         }
         return utils_1.buildUrl(this);
@@ -9836,7 +9898,7 @@ var BaseLocationServices = (function () {
 }());
 exports.BaseLocationServices = BaseLocationServices;
 
-},{"../common/common":3,"../common/predicates":8,"./utils":72}],63:[function(require,module,exports){
+},{"../common":7,"./utils":72}],63:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -9846,12 +9908,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /** */
 var predicates_1 = require("../common/predicates");
 /** A `LocationConfig` that delegates to the browser's `location` object */
-var BrowserLocationConfig = (function () {
+var BrowserLocationConfig = /** @class */ (function () {
     function BrowserLocationConfig(router, _isHtml5) {
         if (_isHtml5 === void 0) { _isHtml5 = false; }
         this._isHtml5 = _isHtml5;
         this._baseHref = undefined;
-        this._hashPrefix = "";
+        this._hashPrefix = '';
     }
     BrowserLocationConfig.prototype.port = function () {
         if (location.port) {
@@ -9863,7 +9925,7 @@ var BrowserLocationConfig = (function () {
         return location.protocol.replace(/:/g, '');
     };
     BrowserLocationConfig.prototype.host = function () {
-        return location.host;
+        return location.hostname;
     };
     BrowserLocationConfig.prototype.html5Mode = function () {
         return this._isHtml5;
@@ -9871,13 +9933,13 @@ var BrowserLocationConfig = (function () {
     BrowserLocationConfig.prototype.hashPrefix = function (newprefix) {
         return predicates_1.isDefined(newprefix) ? this._hashPrefix = newprefix : this._hashPrefix;
     };
-    ;
     BrowserLocationConfig.prototype.baseHref = function (href) {
-        return predicates_1.isDefined(href) ? this._baseHref = href : this._baseHref || this.applyDocumentBaseHref();
+        return predicates_1.isDefined(href) ? this._baseHref = href :
+            predicates_1.isDefined(this._baseHref) ? this._baseHref : this.applyDocumentBaseHref();
     };
     BrowserLocationConfig.prototype.applyDocumentBaseHref = function () {
-        var baseTags = document.getElementsByTagName("base");
-        return this._baseHref = baseTags.length ? baseTags[0].href.substr(location.origin.length) : "";
+        var baseTag = document.getElementsByTagName('base')[0];
+        return this._baseHref = baseTag ? baseTag.href.substr(location.origin.length) : location.pathname || '/';
     };
     BrowserLocationConfig.prototype.dispose = function () { };
     return BrowserLocationConfig;
@@ -9902,31 +9964,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @module vanilla
  */
 /** */
-var utils_1 = require("./utils");
+var common_1 = require("../common");
 var baseLocationService_1 = require("./baseLocationService");
 /** A `LocationServices` that uses the browser hash "#" to get/set the current location */
-var HashLocationService = (function (_super) {
+var HashLocationService = /** @class */ (function (_super) {
     __extends(HashLocationService, _super);
     function HashLocationService(router) {
         var _this = _super.call(this, router, false) || this;
-        window.addEventListener('hashchange', _this._listener, false);
+        common_1.root.addEventListener('hashchange', _this._listener, false);
         return _this;
     }
     HashLocationService.prototype._get = function () {
-        return utils_1.trimHashVal(this._location.hash);
+        return common_1.trimHashVal(this._location.hash);
     };
     HashLocationService.prototype._set = function (state, title, url, replace) {
         this._location.hash = url;
     };
     HashLocationService.prototype.dispose = function (router) {
         _super.prototype.dispose.call(this, router);
-        window.removeEventListener('hashchange', this._listener);
+        common_1.root.removeEventListener('hashchange', this._listener);
     };
     return HashLocationService;
 }(baseLocationService_1.BaseLocationServices));
 exports.HashLocationService = HashLocationService;
 
-},{"./baseLocationService":62,"./utils":72}],65:[function(require,module,exports){
+},{"../common":7,"./baseLocationService":62}],65:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -10041,7 +10103,7 @@ exports.$injector = {
         var fnStr = fn.toString().replace(STRIP_COMMENTS, '');
         var result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
         return result || [];
-    }
+    },
 };
 
 },{"../common/index":7}],67:[function(require,module,exports){
@@ -10050,21 +10112,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var predicates_1 = require("../common/predicates");
 var common_1 = require("../common/common");
 /** A `LocationConfig` mock that gets/sets all config from an in-memory object */
-var MemoryLocationConfig = (function () {
+var MemoryLocationConfig = /** @class */ (function () {
     function MemoryLocationConfig() {
         var _this = this;
+        this.dispose = common_1.noop;
         this._baseHref = '';
         this._port = 80;
-        this._protocol = "http";
-        this._host = "localhost";
-        this._hashPrefix = "";
+        this._protocol = 'http';
+        this._host = 'localhost';
+        this._hashPrefix = '';
         this.port = function () { return _this._port; };
         this.protocol = function () { return _this._protocol; };
         this.host = function () { return _this._host; };
         this.baseHref = function () { return _this._baseHref; };
         this.html5Mode = function () { return false; };
         this.hashPrefix = function (newval) { return predicates_1.isDefined(newval) ? _this._hashPrefix = newval : _this._hashPrefix; };
-        this.dispose = common_1.noop;
     }
     return MemoryLocationConfig;
 }());
@@ -10090,7 +10152,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /** */
 var baseLocationService_1 = require("./baseLocationService");
 /** A `LocationServices` that gets/sets the current location from an in-memory object */
-var MemoryLocationService = (function (_super) {
+var MemoryLocationService = /** @class */ (function (_super) {
     __extends(MemoryLocationService, _super);
     function MemoryLocationService(router) {
         return _super.call(this, router, true) || this;
@@ -10125,15 +10187,15 @@ var coreservices_1 = require("../common/coreservices");
 function servicesPlugin(router) {
     coreservices_1.services.$injector = injector_1.$injector;
     coreservices_1.services.$q = q_1.$q;
-    return { name: "vanilla.services", $q: q_1.$q, $injector: injector_1.$injector, dispose: function () { return null; } };
+    return { name: 'vanilla.services', $q: q_1.$q, $injector: injector_1.$injector, dispose: function () { return null; } };
 }
 exports.servicesPlugin = servicesPlugin;
 /** A `UIRouterPlugin` uses the browser hash to get/set the current location */
 exports.hashLocationPlugin = utils_1.locationPluginFactory('vanilla.hashBangLocation', false, hashLocationService_1.HashLocationService, browserLocationConfig_1.BrowserLocationConfig);
 /** A `UIRouterPlugin` that gets/sets the current location using the browser's `location` and `history` apis */
-exports.pushStateLocationPlugin = utils_1.locationPluginFactory("vanilla.pushStateLocation", true, pushStateLocationService_1.PushStateLocationService, browserLocationConfig_1.BrowserLocationConfig);
+exports.pushStateLocationPlugin = utils_1.locationPluginFactory('vanilla.pushStateLocation', true, pushStateLocationService_1.PushStateLocationService, browserLocationConfig_1.BrowserLocationConfig);
 /** A `UIRouterPlugin` that gets/sets the current location from an in-memory object */
-exports.memoryLocationPlugin = utils_1.locationPluginFactory("vanilla.memoryLocation", false, memoryLocationService_1.MemoryLocationService, memoryLocationConfig_1.MemoryLocationConfig);
+exports.memoryLocationPlugin = utils_1.locationPluginFactory('vanilla.memoryLocation', false, memoryLocationService_1.MemoryLocationService, memoryLocationConfig_1.MemoryLocationConfig);
 
 },{"../common/coreservices":4,"./browserLocationConfig":63,"./hashLocationService":64,"./injector":66,"./memoryLocationConfig":67,"./memoryLocationService":68,"./pushStateLocationService":70,"./q":71,"./utils":72}],70:[function(require,module,exports){
 "use strict";
@@ -10148,47 +10210,70 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = require("./utils");
 var baseLocationService_1 = require("./baseLocationService");
+var common_1 = require("../common");
 /**
  * A `LocationServices` that gets/sets the current location using the browser's `location` and `history` apis
  *
  * Uses `history.pushState` and `history.replaceState`
  */
-var PushStateLocationService = (function (_super) {
+var PushStateLocationService = /** @class */ (function (_super) {
     __extends(PushStateLocationService, _super);
     function PushStateLocationService(router) {
         var _this = _super.call(this, router, true) || this;
         _this._config = router.urlService.config;
-        window.addEventListener("popstate", _this._listener, false);
+        common_1.root.addEventListener('popstate', _this._listener, false);
         return _this;
     }
-    ;
+    /**
+     * Gets the base prefix without:
+     * - trailing slash
+     * - trailing filename
+     * - protocol and hostname
+     *
+     * If <base href='/base/'>, this returns '/base'.
+     * If <base href='/foo/base/'>, this returns '/foo/base'.
+     * If <base href='/base/index.html'>, this returns '/base'.
+     * If <base href='http://localhost:8080/base/index.html'>, this returns '/base'.
+     * If <base href='/base'>, this returns ''.
+     * If <base href='http://localhost:8080'>, this returns ''.
+     * If <base href='http://localhost:8080/'>, this returns ''.
+     *
+     * See: https://html.spec.whatwg.org/dev/semantics.html#the-base-element
+     */
+    PushStateLocationService.prototype._getBasePrefix = function () {
+        return common_1.stripLastPathElement(this._config.baseHref());
+    };
     PushStateLocationService.prototype._get = function () {
         var _a = this._location, pathname = _a.pathname, hash = _a.hash, search = _a.search;
-        search = utils_1.splitQuery(search)[1]; // strip ? if found
-        hash = utils_1.splitHash(hash)[1]; // strip # if found
-        return pathname + (search ? "?" + search : "") + (hash ? "$" + search : "");
+        search = common_1.splitQuery(search)[1]; // strip ? if found
+        hash = common_1.splitHash(hash)[1]; // strip # if found
+        var basePrefix = this._getBasePrefix();
+        var exactBaseHrefMatch = pathname === this._config.baseHref();
+        var startsWithBase = pathname.substr(0, basePrefix.length) === basePrefix;
+        pathname = exactBaseHrefMatch ? '/' : startsWithBase ? pathname.substring(basePrefix.length) : pathname;
+        return pathname + (search ? '?' + search : '') + (hash ? '#' + hash : '');
     };
     PushStateLocationService.prototype._set = function (state, title, url, replace) {
-        var _a = this, _config = _a._config, _history = _a._history;
-        var fullUrl = _config.baseHref() + url;
+        var basePrefix = this._getBasePrefix();
+        var slash = url && url[0] !== '/' ? '/' : '';
+        var fullUrl = (url === '' || url === '/') ? this._config.baseHref() : basePrefix + slash + url;
         if (replace) {
-            _history.replaceState(state, title, fullUrl);
+            this._history.replaceState(state, title, fullUrl);
         }
         else {
-            _history.pushState(state, title, fullUrl);
+            this._history.pushState(state, title, fullUrl);
         }
     };
     PushStateLocationService.prototype.dispose = function (router) {
         _super.prototype.dispose.call(this, router);
-        window.removeEventListener("popstate", this._listener);
+        common_1.root.removeEventListener('popstate', this._listener);
     };
     return PushStateLocationService;
 }(baseLocationService_1.BaseLocationServices));
 exports.PushStateLocationService = PushStateLocationService;
 
-},{"./baseLocationService":62,"./utils":72}],71:[function(require,module,exports){
+},{"../common":7,"./baseLocationService":62}],71:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -10241,7 +10326,7 @@ exports.$q = {
                 return values.reduce(function (acc, tuple) { acc[tuple.key] = tuple.val; return acc; }, {});
             });
         }
-    }
+    },
 };
 
 },{"../common/index":7}],72:[function(require,module,exports){
@@ -10252,26 +10337,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @module vanilla
  */
 /** */
-var index_1 = require("../common/index");
-var common_1 = require("../common/common");
-var beforeAfterSubstr = function (char) { return function (str) {
-    if (!str)
-        return ["", ""];
-    var idx = str.indexOf(char);
-    if (idx === -1)
-        return [str, ""];
-    return [str.substr(0, idx), str.substr(idx + 1)];
-}; };
-exports.splitHash = beforeAfterSubstr("#");
-exports.splitQuery = beforeAfterSubstr("?");
-exports.splitEqual = beforeAfterSubstr("=");
-exports.trimHashVal = function (str) { return str ? str.replace(/^#/, "") : ""; };
+var common_1 = require("../common");
 exports.keyValsToObjectR = function (accum, _a) {
     var key = _a[0], val = _a[1];
     if (!accum.hasOwnProperty(key)) {
         accum[key] = val;
     }
-    else if (index_1.isArray(accum[key])) {
+    else if (common_1.isArray(accum[key])) {
         accum[key].push(val);
     }
     else {
@@ -10280,12 +10352,12 @@ exports.keyValsToObjectR = function (accum, _a) {
     return accum;
 };
 exports.getParams = function (queryString) {
-    return queryString.split("&").filter(common_1.identity).map(exports.splitEqual).reduce(exports.keyValsToObjectR, {});
+    return queryString.split('&').filter(common_1.identity).map(common_1.splitEqual).reduce(exports.keyValsToObjectR, {});
 };
 function parseUrl(url) {
-    var orEmptyString = function (x) { return x || ""; };
-    var _a = exports.splitHash(url).map(orEmptyString), beforehash = _a[0], hash = _a[1];
-    var _b = exports.splitQuery(beforehash).map(orEmptyString), path = _b[0], search = _b[1];
+    var orEmptyString = function (x) { return x || ''; };
+    var _a = common_1.splitHash(url).map(orEmptyString), beforehash = _a[0], hash = _a[1];
+    var _b = common_1.splitQuery(beforehash).map(orEmptyString), path = _b[0], search = _b[1];
     return { path: path, search: search, hash: hash, url: url };
 }
 exports.parseUrl = parseUrl;
@@ -10295,15 +10367,15 @@ exports.buildUrl = function (loc) {
     var hash = loc.hash();
     var search = Object.keys(searchObject).map(function (key) {
         var param = searchObject[key];
-        var vals = index_1.isArray(param) ? param : [param];
-        return vals.map(function (val) { return key + "=" + val; });
-    }).reduce(common_1.unnestR, []).join("&");
-    return path + (search ? "?" + search : "") + (hash ? "#" + hash : "");
+        var vals = common_1.isArray(param) ? param : [param];
+        return vals.map(function (val) { return key + '=' + val; });
+    }).reduce(common_1.unnestR, []).join('&');
+    return path + (search ? '?' + search : '') + (hash ? '#' + hash : '');
 };
 function locationPluginFactory(name, isHtml5, serviceClass, configurationClass) {
-    return function (router) {
-        var service = router.locationService = new serviceClass(router);
-        var configuration = router.locationConfig = new configurationClass(router, isHtml5);
+    return function (uiRouter) {
+        var service = uiRouter.locationService = new serviceClass(uiRouter);
+        var configuration = uiRouter.locationConfig = new configurationClass(uiRouter, isHtml5);
         function dispose(router) {
             router.dispose(service);
             router.dispose(configuration);
@@ -10313,7 +10385,7 @@ function locationPluginFactory(name, isHtml5, serviceClass, configurationClass) 
 }
 exports.locationPluginFactory = locationPluginFactory;
 
-},{"../common/common":3,"../common/index":7}],73:[function(require,module,exports){
+},{"../common":7}],73:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -10348,30 +10420,77 @@ var trace_1 = require("../common/trace");
  * are configured with the matching [[ViewConfig]](s)
  *
  */
-var ViewService = (function () {
+var ViewService = /** @class */ (function () {
     function ViewService() {
         var _this = this;
         this._uiViews = [];
         this._viewConfigs = [];
         this._viewConfigFactories = {};
+        this._listeners = [];
         this._pluginapi = {
             _rootViewContext: this._rootViewContext.bind(this),
             _viewConfigFactory: this._viewConfigFactory.bind(this),
             _registeredUIViews: function () { return _this._uiViews; },
             _activeViewConfigs: function () { return _this._viewConfigs; },
+            _onSync: function (listener) {
+                _this._listeners.push(listener);
+                return function () { return common_1.removeFrom(_this._listeners, listener); };
+            },
         };
     }
+    /**
+     * Normalizes a view's name from a state.views configuration block.
+     *
+     * This should be used by a framework implementation to calculate the values for
+     * [[_ViewDeclaration.$uiViewName]] and [[_ViewDeclaration.$uiViewContextAnchor]].
+     *
+     * @param context the context object (state declaration) that the view belongs to
+     * @param rawViewName the name of the view, as declared in the [[StateDeclaration.views]]
+     *
+     * @returns the normalized uiViewName and uiViewContextAnchor that the view targets
+     */
+    ViewService.normalizeUIViewTarget = function (context, rawViewName) {
+        if (rawViewName === void 0) { rawViewName = ''; }
+        // TODO: Validate incoming view name with a regexp to allow:
+        // ex: "view.name@foo.bar" , "^.^.view.name" , "view.name@^.^" , "" ,
+        // "@" , "$default@^" , "!$default.$default" , "!foo.bar"
+        var viewAtContext = rawViewName.split('@');
+        var uiViewName = viewAtContext[0] || '$default'; // default to unnamed view
+        var uiViewContextAnchor = predicates_1.isString(viewAtContext[1]) ? viewAtContext[1] : '^'; // default to parent context
+        // Handle relative view-name sugar syntax.
+        // Matches rawViewName "^.^.^.foo.bar" into array: ["^.^.^.foo.bar", "^.^.^", "foo.bar"],
+        var relativeViewNameSugar = /^(\^(?:\.\^)*)\.(.*$)/.exec(uiViewName);
+        if (relativeViewNameSugar) {
+            // Clobbers existing contextAnchor (rawViewName validation will fix this)
+            uiViewContextAnchor = relativeViewNameSugar[1]; // set anchor to "^.^.^"
+            uiViewName = relativeViewNameSugar[2]; // set view-name to "foo.bar"
+        }
+        if (uiViewName.charAt(0) === '!') {
+            uiViewName = uiViewName.substr(1);
+            uiViewContextAnchor = ''; // target absolutely from root
+        }
+        // handle parent relative targeting "^.^.^"
+        var relativeMatch = /^(\^(?:\.\^)*)$/;
+        if (relativeMatch.exec(uiViewContextAnchor)) {
+            var anchorState = uiViewContextAnchor.split('.')
+                .reduce((function (anchor, x) { return anchor.parent; }), context);
+            uiViewContextAnchor = anchorState.name;
+        }
+        else if (uiViewContextAnchor === '.') {
+            uiViewContextAnchor = context.name;
+        }
+        return { uiViewName: uiViewName, uiViewContextAnchor: uiViewContextAnchor };
+    };
     ViewService.prototype._rootViewContext = function (context) {
         return this._rootContext = context || this._rootContext;
     };
-    ;
     ViewService.prototype._viewConfigFactory = function (viewType, factory) {
         this._viewConfigFactories[viewType] = factory;
     };
     ViewService.prototype.createViewConfig = function (path, decl) {
         var cfgFactory = this._viewConfigFactories[decl.$type];
         if (!cfgFactory)
-            throw new Error("ViewService: No view config factory registered for type " + decl.$type);
+            throw new Error('ViewService: No view config factory registered for type ' + decl.$type);
         var cfgs = cfgFactory(path, decl);
         return predicates_1.isArray(cfgs) ? cfgs : [cfgs];
     };
@@ -10384,11 +10503,11 @@ var ViewService = (function () {
      * @param viewConfig The ViewConfig view to deregister.
      */
     ViewService.prototype.deactivateViewConfig = function (viewConfig) {
-        trace_1.trace.traceViewServiceEvent("<- Removing", viewConfig);
+        trace_1.trace.traceViewServiceEvent('<- Removing', viewConfig);
         common_1.removeFrom(this._viewConfigs, viewConfig);
     };
     ViewService.prototype.activateViewConfig = function (viewConfig) {
-        trace_1.trace.traceViewServiceEvent("-> Registering", viewConfig);
+        trace_1.trace.traceViewServiceEvent('-> Registering', viewConfig);
         this._viewConfigs.push(viewConfig);
     };
     ViewService.prototype.sync = function () {
@@ -10401,7 +10520,7 @@ var ViewService = (function () {
             var stateDepth = function (context) {
                 return context && context.parent ? stateDepth(context.parent) + 1 : 1;
             };
-            return (uiView.fqn.split(".").length * 10000) + stateDepth(uiView.creationContext);
+            return (uiView.fqn.split('.').length * 10000) + stateDepth(uiView.creationContext);
         }
         // Return the ViewConfig's context's depth in the context tree.
         function viewConfigDepth(config) {
@@ -10420,19 +10539,25 @@ var ViewService = (function () {
                 // console.log(`Multiple matching view configs for ${uiView.fqn}`, matchingConfigs);
                 matchingConfigs.sort(depthCompare(viewConfigDepth, -1)); // descending
             }
-            return [uiView, matchingConfigs[0]];
+            return { uiView: uiView, viewConfig: matchingConfigs[0] };
         };
-        var configureUIView = function (_a) {
-            var uiView = _a[0], viewConfig = _a[1];
+        var configureUIView = function (tuple) {
             // If a parent ui-view is reconfigured, it could destroy child ui-views.
             // Before configuring a child ui-view, make sure it's still in the active uiViews array.
-            if (_this._uiViews.indexOf(uiView) !== -1)
-                uiView.configUpdated(viewConfig);
+            if (_this._uiViews.indexOf(tuple.uiView) !== -1)
+                tuple.uiView.configUpdated(tuple.viewConfig);
         };
         // Sort views by FQN and state depth. Process uiviews nearest the root first.
-        this._uiViews.sort(depthCompare(uiViewDepth, 1)).map(matchingConfigPair).forEach(configureUIView);
+        var uiViewTuples = this._uiViews.sort(depthCompare(uiViewDepth, 1)).map(matchingConfigPair);
+        var matchedViewConfigs = uiViewTuples.map(function (tuple) { return tuple.viewConfig; });
+        var unmatchedConfigTuples = this._viewConfigs
+            .filter(function (config) { return !common_1.inArray(matchedViewConfigs, config); })
+            .map(function (viewConfig) { return ({ uiView: undefined, viewConfig: viewConfig }); });
+        uiViewTuples.forEach(configureUIView);
+        var allTuples = uiViewTuples.concat(unmatchedConfigTuples);
+        this._listeners.forEach(function (cb) { return cb(allTuples); });
+        trace_1.trace.traceViewSync(allTuples);
     };
-    ;
     /**
      * Registers a `ui-view` component
      *
@@ -10449,31 +10574,30 @@ var ViewService = (function () {
      * @return a de-registration function used when the view is destroyed.
      */
     ViewService.prototype.registerUIView = function (uiView) {
-        trace_1.trace.traceViewServiceUIViewEvent("-> Registering", uiView);
+        trace_1.trace.traceViewServiceUIViewEvent('-> Registering', uiView);
         var uiViews = this._uiViews;
-        var fqnMatches = function (uiv) { return uiv.fqn === uiView.fqn; };
-        if (uiViews.filter(fqnMatches).length)
-            trace_1.trace.traceViewServiceUIViewEvent("!!!! duplicate uiView named:", uiView);
+        var fqnAndTypeMatches = function (uiv) { return uiv.fqn === uiView.fqn && uiv.$type === uiView.$type; };
+        if (uiViews.filter(fqnAndTypeMatches).length)
+            trace_1.trace.traceViewServiceUIViewEvent('!!!! duplicate uiView named:', uiView);
         uiViews.push(uiView);
         this.sync();
         return function () {
             var idx = uiViews.indexOf(uiView);
             if (idx === -1) {
-                trace_1.trace.traceViewServiceUIViewEvent("Tried removing non-registered uiView", uiView);
+                trace_1.trace.traceViewServiceUIViewEvent('Tried removing non-registered uiView', uiView);
                 return;
             }
-            trace_1.trace.traceViewServiceUIViewEvent("<- Deregistering", uiView);
+            trace_1.trace.traceViewServiceUIViewEvent('<- Deregistering', uiView);
             common_1.removeFrom(uiViews)(uiView);
         };
     };
-    ;
     /**
      * Returns the list of views currently available on the page, by fully-qualified name.
      *
      * @return {Array} Returns an array of fully-qualified view names.
      */
     ViewService.prototype.available = function () {
-        return this._uiViews.map(hof_1.prop("fqn"));
+        return this._uiViews.map(hof_1.prop('fqn'));
     };
     /**
      * Returns the list of views on the page containing loaded content.
@@ -10481,134 +10605,92 @@ var ViewService = (function () {
      * @return {Array} Returns an array of fully-qualified view names.
      */
     ViewService.prototype.active = function () {
-        return this._uiViews.filter(hof_1.prop("$config")).map(hof_1.prop("name"));
+        return this._uiViews.filter(hof_1.prop('$config')).map(hof_1.prop('name'));
     };
     /**
-     * Normalizes a view's name from a state.views configuration block.
+     * Given a ui-view and a ViewConfig, determines if they "match".
      *
-     * This should be used by a framework implementation to calculate the values for
-     * [[_ViewDeclaration.$uiViewName]] and [[_ViewDeclaration.$uiViewContextAnchor]].
+     * A ui-view has a fully qualified name (fqn) and a context object.  The fqn is built from its overall location in
+     * the DOM, describing its nesting relationship to any parent ui-view tags it is nested inside of.
      *
-     * @param context the context object (state declaration) that the view belongs to
-     * @param rawViewName the name of the view, as declared in the [[StateDeclaration.views]]
+     * A ViewConfig has a target ui-view name and a context anchor.  The ui-view name can be a simple name, or
+     * can be a segmented ui-view path, describing a portion of a ui-view fqn.
      *
-     * @returns the normalized uiViewName and uiViewContextAnchor that the view targets
+     * In order for a ui-view to match ViewConfig, ui-view's $type must match the ViewConfig's $type
+     *
+     * If the ViewConfig's target ui-view name is a simple name (no dots), then a ui-view matches if:
+     * - the ui-view's name matches the ViewConfig's target name
+     * - the ui-view's context matches the ViewConfig's anchor
+     *
+     * If the ViewConfig's target ui-view name is a segmented name (with dots), then a ui-view matches if:
+     * - There exists a parent ui-view where:
+     *    - the parent ui-view's name matches the first segment (index 0) of the ViewConfig's target name
+     *    - the parent ui-view's context matches the ViewConfig's anchor
+     * - And the remaining segments (index 1..n) of the ViewConfig's target name match the tail of the ui-view's fqn
+     *
+     * Example:
+     *
+     * DOM:
+     * <ui-view>                        <!-- created in the root context (name: "") -->
+     *   <ui-view name="foo">                <!-- created in the context named: "A"      -->
+     *     <ui-view>                    <!-- created in the context named: "A.B"    -->
+     *       <ui-view name="bar">            <!-- created in the context named: "A.B.C"  -->
+     *       </ui-view>
+     *     </ui-view>
+     *   </ui-view>
+     * </ui-view>
+     *
+     * uiViews: [
+     *  { fqn: "$default",                  creationContext: { name: "" } },
+     *  { fqn: "$default.foo",              creationContext: { name: "A" } },
+     *  { fqn: "$default.foo.$default",     creationContext: { name: "A.B" } }
+     *  { fqn: "$default.foo.$default.bar", creationContext: { name: "A.B.C" } }
+     * ]
+     *
+     * These four view configs all match the ui-view with the fqn: "$default.foo.$default.bar":
+     *
+     * - ViewConfig1: { uiViewName: "bar",                       uiViewContextAnchor: "A.B.C" }
+     * - ViewConfig2: { uiViewName: "$default.bar",              uiViewContextAnchor: "A.B" }
+     * - ViewConfig3: { uiViewName: "foo.$default.bar",          uiViewContextAnchor: "A" }
+     * - ViewConfig4: { uiViewName: "$default.foo.$default.bar", uiViewContextAnchor: "" }
+     *
+     * Using ViewConfig3 as an example, it matches the ui-view with fqn "$default.foo.$default.bar" because:
+     * - The ViewConfig's segmented target name is: [ "foo", "$default", "bar" ]
+     * - There exists a parent ui-view (which has fqn: "$default.foo") where:
+     *    - the parent ui-view's name "foo" matches the first segment "foo" of the ViewConfig's target name
+     *    - the parent ui-view's context "A" matches the ViewConfig's anchor context "A"
+     * - And the remaining segments [ "$default", "bar" ].join("."_ of the ViewConfig's target name match
+     *   the tail of the ui-view's fqn "default.bar"
+     *
+     * @internalapi
      */
-    ViewService.normalizeUIViewTarget = function (context, rawViewName) {
-        if (rawViewName === void 0) { rawViewName = ""; }
-        // TODO: Validate incoming view name with a regexp to allow:
-        // ex: "view.name@foo.bar" , "^.^.view.name" , "view.name@^.^" , "" ,
-        // "@" , "$default@^" , "!$default.$default" , "!foo.bar"
-        var viewAtContext = rawViewName.split("@");
-        var uiViewName = viewAtContext[0] || "$default"; // default to unnamed view
-        var uiViewContextAnchor = predicates_1.isString(viewAtContext[1]) ? viewAtContext[1] : "^"; // default to parent context
-        // Handle relative view-name sugar syntax.
-        // Matches rawViewName "^.^.^.foo.bar" into array: ["^.^.^.foo.bar", "^.^.^", "foo.bar"],
-        var relativeViewNameSugar = /^(\^(?:\.\^)*)\.(.*$)/.exec(uiViewName);
-        if (relativeViewNameSugar) {
-            // Clobbers existing contextAnchor (rawViewName validation will fix this)
-            uiViewContextAnchor = relativeViewNameSugar[1]; // set anchor to "^.^.^"
-            uiViewName = relativeViewNameSugar[2]; // set view-name to "foo.bar"
-        }
-        if (uiViewName.charAt(0) === '!') {
-            uiViewName = uiViewName.substr(1);
-            uiViewContextAnchor = ""; // target absolutely from root
-        }
-        // handle parent relative targeting "^.^.^"
-        var relativeMatch = /^(\^(?:\.\^)*)$/;
-        if (relativeMatch.exec(uiViewContextAnchor)) {
-            var anchor = uiViewContextAnchor.split(".").reduce((function (anchor, x) { return anchor.parent; }), context);
-            uiViewContextAnchor = anchor.name;
-        }
-        else if (uiViewContextAnchor === '.') {
-            uiViewContextAnchor = context.name;
-        }
-        return { uiViewName: uiViewName, uiViewContextAnchor: uiViewContextAnchor };
-    };
+    ViewService.matches = function (uiViewsByFqn, uiView) { return function (viewConfig) {
+        // Don't supply an ng1 ui-view with an ng2 ViewConfig, etc
+        if (uiView.$type !== viewConfig.viewDecl.$type)
+            return false;
+        // Split names apart from both viewConfig and uiView into segments
+        var vc = viewConfig.viewDecl;
+        var vcSegments = vc.$uiViewName.split('.');
+        var uivSegments = uiView.fqn.split('.');
+        // Check if the tails of the segment arrays match. ex, these arrays' tails match:
+        // vc: ["foo", "bar"], uiv fqn: ["$default", "foo", "bar"]
+        if (!common_1.equals(vcSegments, uivSegments.slice(0 - vcSegments.length)))
+            return false;
+        // Now check if the fqn ending at the first segment of the viewConfig matches the context:
+        // ["$default", "foo"].join(".") == "$default.foo", does the ui-view $default.foo context match?
+        var negOffset = (1 - vcSegments.length) || undefined;
+        var fqnToFirstSegment = uivSegments.slice(0, negOffset).join('.');
+        var uiViewContext = uiViewsByFqn[fqnToFirstSegment].creationContext;
+        return vc.$uiViewContextAnchor === (uiViewContext && uiViewContext.name);
+    }; };
     return ViewService;
 }());
-/**
- * Given a ui-view and a ViewConfig, determines if they "match".
- *
- * A ui-view has a fully qualified name (fqn) and a context object.  The fqn is built from its overall location in
- * the DOM, describing its nesting relationship to any parent ui-view tags it is nested inside of.
- *
- * A ViewConfig has a target ui-view name and a context anchor.  The ui-view name can be a simple name, or
- * can be a segmented ui-view path, describing a portion of a ui-view fqn.
- *
- * In order for a ui-view to match ViewConfig, ui-view's $type must match the ViewConfig's $type
- *
- * If the ViewConfig's target ui-view name is a simple name (no dots), then a ui-view matches if:
- * - the ui-view's name matches the ViewConfig's target name
- * - the ui-view's context matches the ViewConfig's anchor
- *
- * If the ViewConfig's target ui-view name is a segmented name (with dots), then a ui-view matches if:
- * - There exists a parent ui-view where:
- *    - the parent ui-view's name matches the first segment (index 0) of the ViewConfig's target name
- *    - the parent ui-view's context matches the ViewConfig's anchor
- * - And the remaining segments (index 1..n) of the ViewConfig's target name match the tail of the ui-view's fqn
- *
- * Example:
- *
- * DOM:
- * <ui-view>                        <!-- created in the root context (name: "") -->
- *   <ui-view name="foo">                <!-- created in the context named: "A"      -->
- *     <ui-view>                    <!-- created in the context named: "A.B"    -->
- *       <ui-view name="bar">            <!-- created in the context named: "A.B.C"  -->
- *       </ui-view>
- *     </ui-view>
- *   </ui-view>
- * </ui-view>
- *
- * uiViews: [
- *  { fqn: "$default",                  creationContext: { name: "" } },
- *  { fqn: "$default.foo",              creationContext: { name: "A" } },
- *  { fqn: "$default.foo.$default",     creationContext: { name: "A.B" } }
- *  { fqn: "$default.foo.$default.bar", creationContext: { name: "A.B.C" } }
- * ]
- *
- * These four view configs all match the ui-view with the fqn: "$default.foo.$default.bar":
- *
- * - ViewConfig1: { uiViewName: "bar",                       uiViewContextAnchor: "A.B.C" }
- * - ViewConfig2: { uiViewName: "$default.bar",              uiViewContextAnchor: "A.B" }
- * - ViewConfig3: { uiViewName: "foo.$default.bar",          uiViewContextAnchor: "A" }
- * - ViewConfig4: { uiViewName: "$default.foo.$default.bar", uiViewContextAnchor: "" }
- *
- * Using ViewConfig3 as an example, it matches the ui-view with fqn "$default.foo.$default.bar" because:
- * - The ViewConfig's segmented target name is: [ "foo", "$default", "bar" ]
- * - There exists a parent ui-view (which has fqn: "$default.foo") where:
- *    - the parent ui-view's name "foo" matches the first segment "foo" of the ViewConfig's target name
- *    - the parent ui-view's context "A" matches the ViewConfig's anchor context "A"
- * - And the remaining segments [ "$default", "bar" ].join("."_ of the ViewConfig's target name match
- *   the tail of the ui-view's fqn "default.bar"
- *
- * @internalapi
- */
-ViewService.matches = function (uiViewsByFqn, uiView) { return function (viewConfig) {
-    // Don't supply an ng1 ui-view with an ng2 ViewConfig, etc
-    if (uiView.$type !== viewConfig.viewDecl.$type)
-        return false;
-    // Split names apart from both viewConfig and uiView into segments
-    var vc = viewConfig.viewDecl;
-    var vcSegments = vc.$uiViewName.split(".");
-    var uivSegments = uiView.fqn.split(".");
-    // Check if the tails of the segment arrays match. ex, these arrays' tails match:
-    // vc: ["foo", "bar"], uiv fqn: ["$default", "foo", "bar"]
-    if (!common_1.equals(vcSegments, uivSegments.slice(0 - vcSegments.length)))
-        return false;
-    // Now check if the fqn ending at the first segment of the viewConfig matches the context:
-    // ["$default", "foo"].join(".") == "$default.foo", does the ui-view $default.foo context match?
-    var negOffset = (1 - vcSegments.length) || undefined;
-    var fqnToFirstSegment = uivSegments.slice(0, negOffset).join(".");
-    var uiViewContext = uiViewsByFqn[fqnToFirstSegment].creationContext;
-    return vc.$uiViewContextAnchor === (uiViewContext && uiViewContext.name);
-}; };
 exports.ViewService = ViewService;
 
 },{"../common/common":3,"../common/hof":6,"../common/predicates":8,"../common/trace":11}],75:[function(require,module,exports){
 /**
- * @license angular-iscroll v3.4.0, 2016-09-02T22:06:55+0200
- * (c) 2016 Martin Thorsen Ranang <mtr@ranang.org>
+ * @license angular-iscroll v3.6.1, 2018-01-21T00:22:30+0100
+ * (c) 2018 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */
 (function (root, factory) {
@@ -10729,9 +10811,8 @@ exports.ViewService = ViewService;
         return platform.name === 'Chrome Mobile';
     }
 
-    function _isAndroidBrowserWithRecentOS(platform) {
-        return platform.name === 'Android Browser' &&
-            versionCompare(platform.os.version, '4.0.4') >= 0;
+    function _isRecentOS(platform) {
+        return versionCompare(platform.os.version, '4.0.4') >= 0;
     }
 
     function _useNativeScroll(platform) {
@@ -10745,9 +10826,8 @@ exports.ViewService = ViewService;
 
         switch (platform.os.family) {
             case 'Android':
-                // In Chrome we trust.
-                return _isChromeMobile(platform) ||
-                    _isAndroidBrowserWithRecentOS(platform);
+                // In Chrome we trust, but also younger Android releases.
+                return _isChromeMobile(platform) || _isRecentOS(platform);
             case 'iOS':
                 // Buggy handling in older iOS versions.
                 return versionCompare(platform.version, '5.1') >= 0;
@@ -10836,6 +10916,7 @@ exports.ViewService = ViewService;
         this.platform = platform;
 
         this.configureDefaults = _configureDefaults;
+
         function _getDefaults() {
             return defaultOptions;
         }
@@ -10983,8 +11064,7 @@ exports.ViewService = ViewService;
 
         function _link(scope, element, attrs) {
             var options = {
-                iScroll: angular.extend({}, scope.iscroll || {},
-                    iScrollService.defaults.iScroll),
+                iScroll: angular.extend({}, iScrollService.defaults.iScroll, scope.iscroll || {}),
                 directive: angular.extend({}, iScrollService.defaults.directive)
             };
 
@@ -11039,7 +11119,7 @@ exports.ViewService = ViewService;
 
 },{"iscroll":80,"platform":83}],76:[function(require,module,exports){
 /**
- * @license AngularJS v1.6.4
+ * @license AngularJS v1.6.8
  * (c) 2010-2017 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -11065,7 +11145,7 @@ var jqLite;
  * Currently, the ngMessages module only contains the code for the `ngMessages`, `ngMessagesInclude`
  * `ngMessage` and `ngMessageExp` directives.
  *
- * # Usage
+ * ## Usage
  * The `ngMessages` directive allows keys in a key/value collection to be associated with a child element
  * (or 'message') that will show or hide based on the truthiness of that key's value in the collection. A common use
  * case for `ngMessages` is to display error messages for inputs using the `$error` object exposed by the
@@ -11312,7 +11392,7 @@ angular.module('ngMessages', [], function initAngularHelpers() {
   isString = angular.isString;
   jqLite = angular.element;
 })
-  .info({ angularVersion: '1.6.4' })
+  .info({ angularVersion: '1.6.8' })
 
   /**
    * @ngdoc directive
@@ -11637,6 +11717,7 @@ angular.module('ngMessages', [], function initAngularHelpers() {
    * @name ngMessage
    * @restrict AE
    * @scope
+   * @priority 1
    *
    * @description
    * `ngMessage` is a directive with the purpose to show and hide a particular message.
@@ -50531,7 +50612,7 @@ if ( typeof module != 'undefined' && module.exports ) {
 
 },{}],81:[function(require,module,exports){
 /*!
- * jQuery JavaScript Library v3.2.1
+ * jQuery JavaScript Library v3.3.1
  * https://jquery.com/
  *
  * Includes Sizzle.js
@@ -50541,7 +50622,7 @@ if ( typeof module != 'undefined' && module.exports ) {
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2017-03-20T18:59Z
+ * Date: 2018-01-20T17:24Z
  */
 ( function( global, factory ) {
 
@@ -50603,16 +50684,57 @@ var ObjectFunctionString = fnToString.call( Object );
 
 var support = {};
 
+var isFunction = function isFunction( obj ) {
+
+      // Support: Chrome <=57, Firefox <=52
+      // In some browsers, typeof returns "function" for HTML <object> elements
+      // (i.e., `typeof document.createElement( "object" ) === "function"`).
+      // We don't want to classify *any* DOM node as a function.
+      return typeof obj === "function" && typeof obj.nodeType !== "number";
+  };
 
 
-	function DOMEval( code, doc ) {
+var isWindow = function isWindow( obj ) {
+		return obj != null && obj === obj.window;
+	};
+
+
+
+
+	var preservedScriptAttributes = {
+		type: true,
+		src: true,
+		noModule: true
+	};
+
+	function DOMEval( code, doc, node ) {
 		doc = doc || document;
 
-		var script = doc.createElement( "script" );
+		var i,
+			script = doc.createElement( "script" );
 
 		script.text = code;
+		if ( node ) {
+			for ( i in preservedScriptAttributes ) {
+				if ( node[ i ] ) {
+					script[ i ] = node[ i ];
+				}
+			}
+		}
 		doc.head.appendChild( script ).parentNode.removeChild( script );
 	}
+
+
+function toType( obj ) {
+	if ( obj == null ) {
+		return obj + "";
+	}
+
+	// Support: Android <=2.3 only (functionish RegExp)
+	return typeof obj === "object" || typeof obj === "function" ?
+		class2type[ toString.call( obj ) ] || "object" :
+		typeof obj;
+}
 /* global Symbol */
 // Defining this global in .eslintrc.json would create a danger of using the global
 // unguarded in another place, it seems safer to define global only for this module
@@ -50620,7 +50742,7 @@ var support = {};
 
 
 var
-	version = "3.2.1",
+	version = "3.3.1",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -50632,16 +50754,7 @@ var
 
 	// Support: Android <=4.0 only
 	// Make sure we trim BOM and NBSP
-	rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
-
-	// Matches dashed string for camelizing
-	rmsPrefix = /^-ms-/,
-	rdashAlpha = /-([a-z])/g,
-
-	// Used by jQuery.camelCase as callback to replace()
-	fcamelCase = function( all, letter ) {
-		return letter.toUpperCase();
-	};
+	rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
 jQuery.fn = jQuery.prototype = {
 
@@ -50741,7 +50854,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 	}
 
 	// Handle case when target is a string or something (possible in deep copy)
-	if ( typeof target !== "object" && !jQuery.isFunction( target ) ) {
+	if ( typeof target !== "object" && !isFunction( target ) ) {
 		target = {};
 	}
 
@@ -50807,28 +50920,6 @@ jQuery.extend( {
 
 	noop: function() {},
 
-	isFunction: function( obj ) {
-		return jQuery.type( obj ) === "function";
-	},
-
-	isWindow: function( obj ) {
-		return obj != null && obj === obj.window;
-	},
-
-	isNumeric: function( obj ) {
-
-		// As of jQuery 3.0, isNumeric is limited to
-		// strings and numbers (primitives or objects)
-		// that can be coerced to finite numbers (gh-2662)
-		var type = jQuery.type( obj );
-		return ( type === "number" || type === "string" ) &&
-
-			// parseFloat NaNs numeric-cast false positives ("")
-			// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
-			// subtraction forces infinities to NaN
-			!isNaN( obj - parseFloat( obj ) );
-	},
-
 	isPlainObject: function( obj ) {
 		var proto, Ctor;
 
@@ -50862,27 +50953,9 @@ jQuery.extend( {
 		return true;
 	},
 
-	type: function( obj ) {
-		if ( obj == null ) {
-			return obj + "";
-		}
-
-		// Support: Android <=2.3 only (functionish RegExp)
-		return typeof obj === "object" || typeof obj === "function" ?
-			class2type[ toString.call( obj ) ] || "object" :
-			typeof obj;
-	},
-
 	// Evaluates a script in a global context
 	globalEval: function( code ) {
 		DOMEval( code );
-	},
-
-	// Convert dashed to camelCase; used by the css and data modules
-	// Support: IE <=9 - 11, Edge 12 - 13
-	// Microsoft forgot to hump their vendor prefix (#9572)
-	camelCase: function( string ) {
-		return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
 	},
 
 	each: function( obj, callback ) {
@@ -51005,37 +51078,6 @@ jQuery.extend( {
 	// A global GUID counter for objects
 	guid: 1,
 
-	// Bind a function to a context, optionally partially applying any
-	// arguments.
-	proxy: function( fn, context ) {
-		var tmp, args, proxy;
-
-		if ( typeof context === "string" ) {
-			tmp = fn[ context ];
-			context = fn;
-			fn = tmp;
-		}
-
-		// Quick check to determine if target is callable, in the spec
-		// this throws a TypeError, but we will just return undefined.
-		if ( !jQuery.isFunction( fn ) ) {
-			return undefined;
-		}
-
-		// Simulated bind
-		args = slice.call( arguments, 2 );
-		proxy = function() {
-			return fn.apply( context || this, args.concat( slice.call( arguments ) ) );
-		};
-
-		// Set the guid of unique handler to the same of original handler, so it can be removed
-		proxy.guid = fn.guid = fn.guid || jQuery.guid++;
-
-		return proxy;
-	},
-
-	now: Date.now,
-
 	// jQuery.support is not used in Core but other projects attach their
 	// properties to it so it needs to exist.
 	support: support
@@ -51058,9 +51100,9 @@ function isArrayLike( obj ) {
 	// hasOwn isn't used here due to false negatives
 	// regarding Nodelist length in IE
 	var length = !!obj && "length" in obj && obj.length,
-		type = jQuery.type( obj );
+		type = toType( obj );
 
-	if ( type === "function" || jQuery.isWindow( obj ) ) {
+	if ( isFunction( obj ) || isWindow( obj ) ) {
 		return false;
 	}
 
@@ -53380,11 +53422,9 @@ var rsingleTag = ( /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|
 
 
 
-var risSimple = /^.[^:#\[\.,]*$/;
-
 // Implement the identical functionality for filter and not
 function winnow( elements, qualifier, not ) {
-	if ( jQuery.isFunction( qualifier ) ) {
+	if ( isFunction( qualifier ) ) {
 		return jQuery.grep( elements, function( elem, i ) {
 			return !!qualifier.call( elem, i, elem ) !== not;
 		} );
@@ -53404,16 +53444,8 @@ function winnow( elements, qualifier, not ) {
 		} );
 	}
 
-	// Simple selector that can be filtered directly, removing non-Elements
-	if ( risSimple.test( qualifier ) ) {
-		return jQuery.filter( qualifier, elements, not );
-	}
-
-	// Complex selector, compare the two sets, removing non-Elements
-	qualifier = jQuery.filter( qualifier, elements );
-	return jQuery.grep( elements, function( elem ) {
-		return ( indexOf.call( qualifier, elem ) > -1 ) !== not && elem.nodeType === 1;
-	} );
+	// Filtered directly for both simple and complex selectors
+	return jQuery.filter( qualifier, elements, not );
 }
 
 jQuery.filter = function( expr, elems, not ) {
@@ -53534,7 +53566,7 @@ var rootjQuery,
 						for ( match in context ) {
 
 							// Properties of context are called as methods if possible
-							if ( jQuery.isFunction( this[ match ] ) ) {
+							if ( isFunction( this[ match ] ) ) {
 								this[ match ]( context[ match ] );
 
 							// ...and otherwise set as attributes
@@ -53577,7 +53609,7 @@ var rootjQuery,
 
 		// HANDLE: $(function)
 		// Shortcut for document ready
-		} else if ( jQuery.isFunction( selector ) ) {
+		} else if ( isFunction( selector ) ) {
 			return root.ready !== undefined ?
 				root.ready( selector ) :
 
@@ -53892,11 +53924,11 @@ jQuery.Callbacks = function( options ) {
 
 					( function add( args ) {
 						jQuery.each( args, function( _, arg ) {
-							if ( jQuery.isFunction( arg ) ) {
+							if ( isFunction( arg ) ) {
 								if ( !options.unique || !self.has( arg ) ) {
 									list.push( arg );
 								}
-							} else if ( arg && arg.length && jQuery.type( arg ) !== "string" ) {
+							} else if ( arg && arg.length && toType( arg ) !== "string" ) {
 
 								// Inspect recursively
 								add( arg );
@@ -54011,11 +54043,11 @@ function adoptValue( value, resolve, reject, noValue ) {
 	try {
 
 		// Check for promise aspect first to privilege synchronous behavior
-		if ( value && jQuery.isFunction( ( method = value.promise ) ) ) {
+		if ( value && isFunction( ( method = value.promise ) ) ) {
 			method.call( value ).done( resolve ).fail( reject );
 
 		// Other thenables
-		} else if ( value && jQuery.isFunction( ( method = value.then ) ) ) {
+		} else if ( value && isFunction( ( method = value.then ) ) ) {
 			method.call( value, resolve, reject );
 
 		// Other non-thenables
@@ -54073,14 +54105,14 @@ jQuery.extend( {
 						jQuery.each( tuples, function( i, tuple ) {
 
 							// Map tuples (progress, done, fail) to arguments (done, fail, progress)
-							var fn = jQuery.isFunction( fns[ tuple[ 4 ] ] ) && fns[ tuple[ 4 ] ];
+							var fn = isFunction( fns[ tuple[ 4 ] ] ) && fns[ tuple[ 4 ] ];
 
 							// deferred.progress(function() { bind to newDefer or newDefer.notify })
 							// deferred.done(function() { bind to newDefer or newDefer.resolve })
 							// deferred.fail(function() { bind to newDefer or newDefer.reject })
 							deferred[ tuple[ 1 ] ]( function() {
 								var returned = fn && fn.apply( this, arguments );
-								if ( returned && jQuery.isFunction( returned.promise ) ) {
+								if ( returned && isFunction( returned.promise ) ) {
 									returned.promise()
 										.progress( newDefer.notify )
 										.done( newDefer.resolve )
@@ -54134,7 +54166,7 @@ jQuery.extend( {
 										returned.then;
 
 									// Handle a returned thenable
-									if ( jQuery.isFunction( then ) ) {
+									if ( isFunction( then ) ) {
 
 										// Special processors (notify) just wait for resolution
 										if ( special ) {
@@ -54230,7 +54262,7 @@ jQuery.extend( {
 							resolve(
 								0,
 								newDefer,
-								jQuery.isFunction( onProgress ) ?
+								isFunction( onProgress ) ?
 									onProgress :
 									Identity,
 								newDefer.notifyWith
@@ -54242,7 +54274,7 @@ jQuery.extend( {
 							resolve(
 								0,
 								newDefer,
-								jQuery.isFunction( onFulfilled ) ?
+								isFunction( onFulfilled ) ?
 									onFulfilled :
 									Identity
 							)
@@ -54253,7 +54285,7 @@ jQuery.extend( {
 							resolve(
 								0,
 								newDefer,
-								jQuery.isFunction( onRejected ) ?
+								isFunction( onRejected ) ?
 									onRejected :
 									Thrower
 							)
@@ -54293,8 +54325,15 @@ jQuery.extend( {
 					// fulfilled_callbacks.disable
 					tuples[ 3 - i ][ 2 ].disable,
 
+					// rejected_handlers.disable
+					// fulfilled_handlers.disable
+					tuples[ 3 - i ][ 3 ].disable,
+
 					// progress_callbacks.lock
-					tuples[ 0 ][ 2 ].lock
+					tuples[ 0 ][ 2 ].lock,
+
+					// progress_handlers.lock
+					tuples[ 0 ][ 3 ].lock
 				);
 			}
 
@@ -54364,7 +54403,7 @@ jQuery.extend( {
 
 			// Use .then() to unwrap secondary thenables (cf. gh-3000)
 			if ( master.state() === "pending" ||
-				jQuery.isFunction( resolveValues[ i ] && resolveValues[ i ].then ) ) {
+				isFunction( resolveValues[ i ] && resolveValues[ i ].then ) ) {
 
 				return master.then();
 			}
@@ -54492,7 +54531,7 @@ var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
 		bulk = key == null;
 
 	// Sets many values
-	if ( jQuery.type( key ) === "object" ) {
+	if ( toType( key ) === "object" ) {
 		chainable = true;
 		for ( i in key ) {
 			access( elems, fn, i, key[ i ], true, emptyGet, raw );
@@ -54502,7 +54541,7 @@ var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
 	} else if ( value !== undefined ) {
 		chainable = true;
 
-		if ( !jQuery.isFunction( value ) ) {
+		if ( !isFunction( value ) ) {
 			raw = true;
 		}
 
@@ -54544,6 +54583,23 @@ var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
 
 	return len ? fn( elems[ 0 ], key ) : emptyGet;
 };
+
+
+// Matches dashed string for camelizing
+var rmsPrefix = /^-ms-/,
+	rdashAlpha = /-([a-z])/g;
+
+// Used by camelCase as callback to replace()
+function fcamelCase( all, letter ) {
+	return letter.toUpperCase();
+}
+
+// Convert dashed to camelCase; used by the css and data modules
+// Support: IE <=9 - 11, Edge 12 - 15
+// Microsoft forgot to hump their vendor prefix (#9572)
+function camelCase( string ) {
+	return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
+}
 var acceptData = function( owner ) {
 
 	// Accepts only:
@@ -54606,14 +54662,14 @@ Data.prototype = {
 		// Handle: [ owner, key, value ] args
 		// Always use camelCase key (gh-2257)
 		if ( typeof data === "string" ) {
-			cache[ jQuery.camelCase( data ) ] = value;
+			cache[ camelCase( data ) ] = value;
 
 		// Handle: [ owner, { properties } ] args
 		} else {
 
 			// Copy the properties one-by-one to the cache object
 			for ( prop in data ) {
-				cache[ jQuery.camelCase( prop ) ] = data[ prop ];
+				cache[ camelCase( prop ) ] = data[ prop ];
 			}
 		}
 		return cache;
@@ -54623,7 +54679,7 @@ Data.prototype = {
 			this.cache( owner ) :
 
 			// Always use camelCase key (gh-2257)
-			owner[ this.expando ] && owner[ this.expando ][ jQuery.camelCase( key ) ];
+			owner[ this.expando ] && owner[ this.expando ][ camelCase( key ) ];
 	},
 	access: function( owner, key, value ) {
 
@@ -54671,9 +54727,9 @@ Data.prototype = {
 
 				// If key is an array of keys...
 				// We always set camelCase keys, so remove that.
-				key = key.map( jQuery.camelCase );
+				key = key.map( camelCase );
 			} else {
-				key = jQuery.camelCase( key );
+				key = camelCase( key );
 
 				// If a key with the spaces exists, use it.
 				// Otherwise, create an array by matching non-whitespace
@@ -54819,7 +54875,7 @@ jQuery.fn.extend( {
 						if ( attrs[ i ] ) {
 							name = attrs[ i ].name;
 							if ( name.indexOf( "data-" ) === 0 ) {
-								name = jQuery.camelCase( name.slice( 5 ) );
+								name = camelCase( name.slice( 5 ) );
 								dataAttr( elem, name, data[ name ] );
 							}
 						}
@@ -55066,8 +55122,7 @@ var swap = function( elem, options, callback, args ) {
 
 
 function adjustCSS( elem, prop, valueParts, tween ) {
-	var adjusted,
-		scale = 1,
+	var adjusted, scale,
 		maxIterations = 20,
 		currentValue = tween ?
 			function() {
@@ -55085,30 +55140,33 @@ function adjustCSS( elem, prop, valueParts, tween ) {
 
 	if ( initialInUnit && initialInUnit[ 3 ] !== unit ) {
 
+		// Support: Firefox <=54
+		// Halve the iteration target value to prevent interference from CSS upper bounds (gh-2144)
+		initial = initial / 2;
+
 		// Trust units reported by jQuery.css
 		unit = unit || initialInUnit[ 3 ];
-
-		// Make sure we update the tween properties later on
-		valueParts = valueParts || [];
 
 		// Iteratively approximate from a nonzero starting point
 		initialInUnit = +initial || 1;
 
-		do {
+		while ( maxIterations-- ) {
 
-			// If previous iteration zeroed out, double until we get *something*.
-			// Use string for doubling so we don't accidentally see scale as unchanged below
-			scale = scale || ".5";
-
-			// Adjust and apply
-			initialInUnit = initialInUnit / scale;
+			// Evaluate and update our best guess (doubling guesses that zero out).
+			// Finish if the scale equals or crosses 1 (making the old*new product non-positive).
 			jQuery.style( elem, prop, initialInUnit + unit );
+			if ( ( 1 - scale ) * ( 1 - ( scale = currentValue() / initial || 0.5 ) ) <= 0 ) {
+				maxIterations = 0;
+			}
+			initialInUnit = initialInUnit / scale;
 
-		// Update scale, tolerating zero or NaN from tween.cur()
-		// Break the loop if scale is unchanged or perfect, or if we've just had enough.
-		} while (
-			scale !== ( scale = currentValue() / initial ) && scale !== 1 && --maxIterations
-		);
+		}
+
+		initialInUnit = initialInUnit * 2;
+		jQuery.style( elem, prop, initialInUnit + unit );
+
+		// Make sure we update the tween properties later on
+		valueParts = valueParts || [];
 	}
 
 	if ( valueParts ) {
@@ -55226,7 +55284,7 @@ var rcheckableType = ( /^(?:checkbox|radio)$/i );
 
 var rtagName = ( /<([a-z][^\/\0>\x20\t\r\n\f]+)/i );
 
-var rscriptType = ( /^$|\/(?:java|ecma)script/i );
+var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 
 
 
@@ -55308,7 +55366,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 		if ( elem || elem === 0 ) {
 
 			// Add nodes directly
-			if ( jQuery.type( elem ) === "object" ) {
+			if ( toType( elem ) === "object" ) {
 
 				// Support: Android <=4.0 only, PhantomJS 1 only
 				// push.apply(_, arraylike) throws on ancient WebKit
@@ -55818,7 +55876,7 @@ jQuery.event = {
 			enumerable: true,
 			configurable: true,
 
-			get: jQuery.isFunction( hook ) ?
+			get: isFunction( hook ) ?
 				function() {
 					if ( this.originalEvent ) {
 							return hook( this.originalEvent );
@@ -55953,7 +56011,7 @@ jQuery.Event = function( src, props ) {
 	}
 
 	// Create a timestamp if incoming event doesn't have one
-	this.timeStamp = src && src.timeStamp || jQuery.now();
+	this.timeStamp = src && src.timeStamp || Date.now();
 
 	// Mark it as fixed
 	this[ jQuery.expando ] = true;
@@ -56152,14 +56210,13 @@ var
 
 	/* eslint-enable */
 
-	// Support: IE <=10 - 11, Edge 12 - 13
+	// Support: IE <=10 - 11, Edge 12 - 13 only
 	// In IE/Edge using regex groups here causes severe slowdowns.
 	// See https://connect.microsoft.com/IE/feedback/details/1736512/
 	rnoInnerhtml = /<script|<style|<link/i,
 
 	// checked="checked" or checked
 	rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i,
-	rscriptTypeMasked = /^true\/(.*)/,
 	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
 
 // Prefer a tbody over its parent table for containing new rows
@@ -56167,7 +56224,7 @@ function manipulationTarget( elem, content ) {
 	if ( nodeName( elem, "table" ) &&
 		nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ) {
 
-		return jQuery( ">tbody", elem )[ 0 ] || elem;
+		return jQuery( elem ).children( "tbody" )[ 0 ] || elem;
 	}
 
 	return elem;
@@ -56179,10 +56236,8 @@ function disableScript( elem ) {
 	return elem;
 }
 function restoreScript( elem ) {
-	var match = rscriptTypeMasked.exec( elem.type );
-
-	if ( match ) {
-		elem.type = match[ 1 ];
+	if ( ( elem.type || "" ).slice( 0, 5 ) === "true/" ) {
+		elem.type = elem.type.slice( 5 );
 	} else {
 		elem.removeAttribute( "type" );
 	}
@@ -56248,15 +56303,15 @@ function domManip( collection, args, callback, ignored ) {
 		l = collection.length,
 		iNoClone = l - 1,
 		value = args[ 0 ],
-		isFunction = jQuery.isFunction( value );
+		valueIsFunction = isFunction( value );
 
 	// We can't cloneNode fragments that contain checked, in WebKit
-	if ( isFunction ||
+	if ( valueIsFunction ||
 			( l > 1 && typeof value === "string" &&
 				!support.checkClone && rchecked.test( value ) ) ) {
 		return collection.each( function( index ) {
 			var self = collection.eq( index );
-			if ( isFunction ) {
+			if ( valueIsFunction ) {
 				args[ 0 ] = value.call( this, index, self.html() );
 			}
 			domManip( self, args, callback, ignored );
@@ -56310,14 +56365,14 @@ function domManip( collection, args, callback, ignored ) {
 						!dataPriv.access( node, "globalEval" ) &&
 						jQuery.contains( doc, node ) ) {
 
-						if ( node.src ) {
+						if ( node.src && ( node.type || "" ).toLowerCase()  !== "module" ) {
 
 							// Optional AJAX dependency, but won't run scripts if not present
 							if ( jQuery._evalUrl ) {
 								jQuery._evalUrl( node.src );
 							}
 						} else {
-							DOMEval( node.textContent.replace( rcleanScript, "" ), doc );
+							DOMEval( node.textContent.replace( rcleanScript, "" ), doc, node );
 						}
 					}
 				}
@@ -56597,8 +56652,6 @@ jQuery.each( {
 		return this.pushStack( ret );
 	};
 } );
-var rmargin = ( /^margin/ );
-
 var rnumnonpx = new RegExp( "^(" + pnum + ")(?!px)[a-z%]+$", "i" );
 
 var getStyles = function( elem ) {
@@ -56615,6 +56668,8 @@ var getStyles = function( elem ) {
 		return view.getComputedStyle( elem );
 	};
 
+var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
+
 
 
 ( function() {
@@ -56628,25 +56683,33 @@ var getStyles = function( elem ) {
 			return;
 		}
 
+		container.style.cssText = "position:absolute;left:-11111px;width:60px;" +
+			"margin-top:1px;padding:0;border:0";
 		div.style.cssText =
-			"box-sizing:border-box;" +
-			"position:relative;display:block;" +
+			"position:relative;display:block;box-sizing:border-box;overflow:scroll;" +
 			"margin:auto;border:1px;padding:1px;" +
-			"top:1%;width:50%";
-		div.innerHTML = "";
-		documentElement.appendChild( container );
+			"width:60%;top:1%";
+		documentElement.appendChild( container ).appendChild( div );
 
 		var divStyle = window.getComputedStyle( div );
 		pixelPositionVal = divStyle.top !== "1%";
 
 		// Support: Android 4.0 - 4.3 only, Firefox <=3 - 44
-		reliableMarginLeftVal = divStyle.marginLeft === "2px";
-		boxSizingReliableVal = divStyle.width === "4px";
+		reliableMarginLeftVal = roundPixelMeasures( divStyle.marginLeft ) === 12;
 
-		// Support: Android 4.0 - 4.3 only
+		// Support: Android 4.0 - 4.3 only, Safari <=9.1 - 10.1, iOS <=7.0 - 9.3
 		// Some styles come back with percentage values, even though they shouldn't
-		div.style.marginRight = "50%";
-		pixelMarginRightVal = divStyle.marginRight === "4px";
+		div.style.right = "60%";
+		pixelBoxStylesVal = roundPixelMeasures( divStyle.right ) === 36;
+
+		// Support: IE 9 - 11 only
+		// Detect misreporting of content dimensions for box-sizing:border-box elements
+		boxSizingReliableVal = roundPixelMeasures( divStyle.width ) === 36;
+
+		// Support: IE 9 only
+		// Detect overflow:scroll screwiness (gh-3699)
+		div.style.position = "absolute";
+		scrollboxSizeVal = div.offsetWidth === 36 || "absolute";
 
 		documentElement.removeChild( container );
 
@@ -56655,7 +56718,12 @@ var getStyles = function( elem ) {
 		div = null;
 	}
 
-	var pixelPositionVal, boxSizingReliableVal, pixelMarginRightVal, reliableMarginLeftVal,
+	function roundPixelMeasures( measure ) {
+		return Math.round( parseFloat( measure ) );
+	}
+
+	var pixelPositionVal, boxSizingReliableVal, scrollboxSizeVal, pixelBoxStylesVal,
+		reliableMarginLeftVal,
 		container = document.createElement( "div" ),
 		div = document.createElement( "div" );
 
@@ -56670,26 +56738,26 @@ var getStyles = function( elem ) {
 	div.cloneNode( true ).style.backgroundClip = "";
 	support.clearCloneStyle = div.style.backgroundClip === "content-box";
 
-	container.style.cssText = "border:0;width:8px;height:0;top:0;left:-9999px;" +
-		"padding:0;margin-top:1px;position:absolute";
-	container.appendChild( div );
-
 	jQuery.extend( support, {
-		pixelPosition: function() {
-			computeStyleTests();
-			return pixelPositionVal;
-		},
 		boxSizingReliable: function() {
 			computeStyleTests();
 			return boxSizingReliableVal;
 		},
-		pixelMarginRight: function() {
+		pixelBoxStyles: function() {
 			computeStyleTests();
-			return pixelMarginRightVal;
+			return pixelBoxStylesVal;
+		},
+		pixelPosition: function() {
+			computeStyleTests();
+			return pixelPositionVal;
 		},
 		reliableMarginLeft: function() {
 			computeStyleTests();
 			return reliableMarginLeftVal;
+		},
+		scrollboxSize: function() {
+			computeStyleTests();
+			return scrollboxSizeVal;
 		}
 	} );
 } )();
@@ -56721,7 +56789,7 @@ function curCSS( elem, name, computed ) {
 		// but width seems to be reliably pixels.
 		// This is against the CSSOM draft spec:
 		// https://drafts.csswg.org/cssom/#resolved-values
-		if ( !support.pixelMarginRight() && rnumnonpx.test( ret ) && rmargin.test( name ) ) {
+		if ( !support.pixelBoxStyles() && rnumnonpx.test( ret ) && rboxStyle.test( name ) ) {
 
 			// Remember the original values
 			width = style.width;
@@ -56826,87 +56894,120 @@ function setPositiveNumber( elem, value, subtract ) {
 		value;
 }
 
-function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
-	var i,
-		val = 0;
+function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computedVal ) {
+	var i = dimension === "width" ? 1 : 0,
+		extra = 0,
+		delta = 0;
 
-	// If we already have the right measurement, avoid augmentation
-	if ( extra === ( isBorderBox ? "border" : "content" ) ) {
-		i = 4;
-
-	// Otherwise initialize for horizontal or vertical properties
-	} else {
-		i = name === "width" ? 1 : 0;
+	// Adjustment may not be necessary
+	if ( box === ( isBorderBox ? "border" : "content" ) ) {
+		return 0;
 	}
 
 	for ( ; i < 4; i += 2 ) {
 
-		// Both box models exclude margin, so add it if we want it
-		if ( extra === "margin" ) {
-			val += jQuery.css( elem, extra + cssExpand[ i ], true, styles );
+		// Both box models exclude margin
+		if ( box === "margin" ) {
+			delta += jQuery.css( elem, box + cssExpand[ i ], true, styles );
 		}
 
-		if ( isBorderBox ) {
+		// If we get here with a content-box, we're seeking "padding" or "border" or "margin"
+		if ( !isBorderBox ) {
 
-			// border-box includes padding, so remove it if we want content
-			if ( extra === "content" ) {
-				val -= jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
+			// Add padding
+			delta += jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
+
+			// For "border" or "margin", add border
+			if ( box !== "padding" ) {
+				delta += jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
+
+			// But still keep track of it otherwise
+			} else {
+				extra += jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
 			}
 
-			// At this point, extra isn't border nor margin, so remove border
-			if ( extra !== "margin" ) {
-				val -= jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
-			}
+		// If we get here with a border-box (content + padding + border), we're seeking "content" or
+		// "padding" or "margin"
 		} else {
 
-			// At this point, extra isn't content, so add padding
-			val += jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
+			// For "content", subtract padding
+			if ( box === "content" ) {
+				delta -= jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
+			}
 
-			// At this point, extra isn't content nor padding, so add border
-			if ( extra !== "padding" ) {
-				val += jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
+			// For "content" or "padding", subtract border
+			if ( box !== "margin" ) {
+				delta -= jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
 			}
 		}
 	}
 
-	return val;
+	// Account for positive content-box scroll gutter when requested by providing computedVal
+	if ( !isBorderBox && computedVal >= 0 ) {
+
+		// offsetWidth/offsetHeight is a rounded sum of content, padding, scroll gutter, and border
+		// Assuming integer scroll gutter, subtract the rest and round down
+		delta += Math.max( 0, Math.ceil(
+			elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ] -
+			computedVal -
+			delta -
+			extra -
+			0.5
+		) );
+	}
+
+	return delta;
 }
 
-function getWidthOrHeight( elem, name, extra ) {
+function getWidthOrHeight( elem, dimension, extra ) {
 
 	// Start with computed style
-	var valueIsBorderBox,
-		styles = getStyles( elem ),
-		val = curCSS( elem, name, styles ),
-		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+	var styles = getStyles( elem ),
+		val = curCSS( elem, dimension, styles ),
+		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+		valueIsBorderBox = isBorderBox;
 
-	// Computed unit is not pixels. Stop here and return.
+	// Support: Firefox <=54
+	// Return a confounding non-pixel value or feign ignorance, as appropriate.
 	if ( rnumnonpx.test( val ) ) {
-		return val;
+		if ( !extra ) {
+			return val;
+		}
+		val = "auto";
 	}
 
 	// Check for style in case a browser which returns unreliable values
 	// for getComputedStyle silently falls back to the reliable elem.style
-	valueIsBorderBox = isBorderBox &&
-		( support.boxSizingReliable() || val === elem.style[ name ] );
+	valueIsBorderBox = valueIsBorderBox &&
+		( support.boxSizingReliable() || val === elem.style[ dimension ] );
 
-	// Fall back to offsetWidth/Height when value is "auto"
+	// Fall back to offsetWidth/offsetHeight when value is "auto"
 	// This happens for inline elements with no explicit setting (gh-3571)
-	if ( val === "auto" ) {
-		val = elem[ "offset" + name[ 0 ].toUpperCase() + name.slice( 1 ) ];
+	// Support: Android <=4.1 - 4.3 only
+	// Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
+	if ( val === "auto" ||
+		!parseFloat( val ) && jQuery.css( elem, "display", false, styles ) === "inline" ) {
+
+		val = elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ];
+
+		// offsetWidth/offsetHeight provide border-box values
+		valueIsBorderBox = true;
 	}
 
-	// Normalize "", auto, and prepare for extra
+	// Normalize "" and auto
 	val = parseFloat( val ) || 0;
 
-	// Use the active box-sizing model to add/subtract irrelevant styles
+	// Adjust for the element's box model
 	return ( val +
-		augmentWidthOrHeight(
+		boxModelAdjustment(
 			elem,
-			name,
+			dimension,
 			extra || ( isBorderBox ? "border" : "content" ),
 			valueIsBorderBox,
-			styles
+			styles,
+
+			// Provide the current computed size to request scroll gutter calculation (gh-3589)
+			val
 		)
 	) + "px";
 }
@@ -56947,9 +57048,7 @@ jQuery.extend( {
 
 	// Add in properties whose names you wish to fix before
 	// setting or getting the value
-	cssProps: {
-		"float": "cssFloat"
-	},
+	cssProps: {},
 
 	// Get and set the style property on a DOM Node
 	style: function( elem, name, value, extra ) {
@@ -56961,7 +57060,7 @@ jQuery.extend( {
 
 		// Make sure that we're working with the right name
 		var ret, type, hooks,
-			origName = jQuery.camelCase( name ),
+			origName = camelCase( name ),
 			isCustomProp = rcustomProp.test( name ),
 			style = elem.style;
 
@@ -57029,7 +57128,7 @@ jQuery.extend( {
 
 	css: function( elem, name, extra, styles ) {
 		var val, num, hooks,
-			origName = jQuery.camelCase( name ),
+			origName = camelCase( name ),
 			isCustomProp = rcustomProp.test( name );
 
 		// Make sure that we're working with the right name. We don't
@@ -57067,8 +57166,8 @@ jQuery.extend( {
 	}
 } );
 
-jQuery.each( [ "height", "width" ], function( i, name ) {
-	jQuery.cssHooks[ name ] = {
+jQuery.each( [ "height", "width" ], function( i, dimension ) {
+	jQuery.cssHooks[ dimension ] = {
 		get: function( elem, computed, extra ) {
 			if ( computed ) {
 
@@ -57084,29 +57183,41 @@ jQuery.each( [ "height", "width" ], function( i, name ) {
 					// in IE throws an error.
 					( !elem.getClientRects().length || !elem.getBoundingClientRect().width ) ?
 						swap( elem, cssShow, function() {
-							return getWidthOrHeight( elem, name, extra );
+							return getWidthOrHeight( elem, dimension, extra );
 						} ) :
-						getWidthOrHeight( elem, name, extra );
+						getWidthOrHeight( elem, dimension, extra );
 			}
 		},
 
 		set: function( elem, value, extra ) {
 			var matches,
-				styles = extra && getStyles( elem ),
-				subtract = extra && augmentWidthOrHeight(
+				styles = getStyles( elem ),
+				isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+				subtract = extra && boxModelAdjustment(
 					elem,
-					name,
+					dimension,
 					extra,
-					jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
+					isBorderBox,
 					styles
 				);
+
+			// Account for unreliable border-box dimensions by comparing offset* to computed and
+			// faking a content-box to get border and padding (gh-3699)
+			if ( isBorderBox && support.scrollboxSize() === styles.position ) {
+				subtract -= Math.ceil(
+					elem[ "offset" + dimension[ 0 ].toUpperCase() + dimension.slice( 1 ) ] -
+					parseFloat( styles[ dimension ] ) -
+					boxModelAdjustment( elem, dimension, "border", false, styles ) -
+					0.5
+				);
+			}
 
 			// Convert to pixels if value adjustment is needed
 			if ( subtract && ( matches = rcssNum.exec( value ) ) &&
 				( matches[ 3 ] || "px" ) !== "px" ) {
 
-				elem.style[ name ] = value;
-				value = jQuery.css( elem, name );
+				elem.style[ dimension ] = value;
+				value = jQuery.css( elem, dimension );
 			}
 
 			return setPositiveNumber( elem, value, subtract );
@@ -57150,7 +57261,7 @@ jQuery.each( {
 		}
 	};
 
-	if ( !rmargin.test( prefix ) ) {
+	if ( prefix !== "margin" ) {
 		jQuery.cssHooks[ prefix + suffix ].set = setPositiveNumber;
 	}
 } );
@@ -57321,7 +57432,7 @@ function createFxNow() {
 	window.setTimeout( function() {
 		fxNow = undefined;
 	} );
-	return ( fxNow = jQuery.now() );
+	return ( fxNow = Date.now() );
 }
 
 // Generate parameters to create a standard animation
@@ -57425,9 +57536,10 @@ function defaultPrefilter( elem, props, opts ) {
 	// Restrict "overflow" and "display" styles during box animations
 	if ( isBox && elem.nodeType === 1 ) {
 
-		// Support: IE <=9 - 11, Edge 12 - 13
+		// Support: IE <=9 - 11, Edge 12 - 15
 		// Record all 3 overflow attributes because IE does not infer the shorthand
-		// from identically-valued overflowX and overflowY
+		// from identically-valued overflowX and overflowY and Edge just mirrors
+		// the overflowX value there.
 		opts.overflow = [ style.overflow, style.overflowX, style.overflowY ];
 
 		// Identify a display type, preferring old show/hide data over the CSS cascade
@@ -57535,7 +57647,7 @@ function propFilter( props, specialEasing ) {
 
 	// camelCase, specialEasing and expand cssHook pass
 	for ( index in props ) {
-		name = jQuery.camelCase( index );
+		name = camelCase( index );
 		easing = specialEasing[ name ];
 		value = props[ index ];
 		if ( Array.isArray( value ) ) {
@@ -57660,9 +57772,9 @@ function Animation( elem, properties, options ) {
 	for ( ; index < length; index++ ) {
 		result = Animation.prefilters[ index ].call( animation, elem, props, animation.opts );
 		if ( result ) {
-			if ( jQuery.isFunction( result.stop ) ) {
+			if ( isFunction( result.stop ) ) {
 				jQuery._queueHooks( animation.elem, animation.opts.queue ).stop =
-					jQuery.proxy( result.stop, result );
+					result.stop.bind( result );
 			}
 			return result;
 		}
@@ -57670,7 +57782,7 @@ function Animation( elem, properties, options ) {
 
 	jQuery.map( props, createTween, animation );
 
-	if ( jQuery.isFunction( animation.opts.start ) ) {
+	if ( isFunction( animation.opts.start ) ) {
 		animation.opts.start.call( elem, animation );
 	}
 
@@ -57703,7 +57815,7 @@ jQuery.Animation = jQuery.extend( Animation, {
 	},
 
 	tweener: function( props, callback ) {
-		if ( jQuery.isFunction( props ) ) {
+		if ( isFunction( props ) ) {
 			callback = props;
 			props = [ "*" ];
 		} else {
@@ -57735,9 +57847,9 @@ jQuery.Animation = jQuery.extend( Animation, {
 jQuery.speed = function( speed, easing, fn ) {
 	var opt = speed && typeof speed === "object" ? jQuery.extend( {}, speed ) : {
 		complete: fn || !fn && easing ||
-			jQuery.isFunction( speed ) && speed,
+			isFunction( speed ) && speed,
 		duration: speed,
-		easing: fn && easing || easing && !jQuery.isFunction( easing ) && easing
+		easing: fn && easing || easing && !isFunction( easing ) && easing
 	};
 
 	// Go to the end state if fx are off
@@ -57764,7 +57876,7 @@ jQuery.speed = function( speed, easing, fn ) {
 	opt.old = opt.complete;
 
 	opt.complete = function() {
-		if ( jQuery.isFunction( opt.old ) ) {
+		if ( isFunction( opt.old ) ) {
 			opt.old.call( this );
 		}
 
@@ -57928,7 +58040,7 @@ jQuery.fx.tick = function() {
 		i = 0,
 		timers = jQuery.timers;
 
-	fxNow = jQuery.now();
+	fxNow = Date.now();
 
 	for ( ; i < timers.length; i++ ) {
 		timer = timers[ i ];
@@ -58281,7 +58393,7 @@ jQuery.each( [
 
 
 	// Strip and collapse whitespace according to HTML spec
-	// https://html.spec.whatwg.org/multipage/infrastructure.html#strip-and-collapse-whitespace
+	// https://infra.spec.whatwg.org/#strip-and-collapse-ascii-whitespace
 	function stripAndCollapse( value ) {
 		var tokens = value.match( rnothtmlwhite ) || [];
 		return tokens.join( " " );
@@ -58292,20 +58404,30 @@ function getClass( elem ) {
 	return elem.getAttribute && elem.getAttribute( "class" ) || "";
 }
 
+function classesToArray( value ) {
+	if ( Array.isArray( value ) ) {
+		return value;
+	}
+	if ( typeof value === "string" ) {
+		return value.match( rnothtmlwhite ) || [];
+	}
+	return [];
+}
+
 jQuery.fn.extend( {
 	addClass: function( value ) {
 		var classes, elem, cur, curValue, clazz, j, finalValue,
 			i = 0;
 
-		if ( jQuery.isFunction( value ) ) {
+		if ( isFunction( value ) ) {
 			return this.each( function( j ) {
 				jQuery( this ).addClass( value.call( this, j, getClass( this ) ) );
 			} );
 		}
 
-		if ( typeof value === "string" && value ) {
-			classes = value.match( rnothtmlwhite ) || [];
+		classes = classesToArray( value );
 
+		if ( classes.length ) {
 			while ( ( elem = this[ i++ ] ) ) {
 				curValue = getClass( elem );
 				cur = elem.nodeType === 1 && ( " " + stripAndCollapse( curValue ) + " " );
@@ -58334,7 +58456,7 @@ jQuery.fn.extend( {
 		var classes, elem, cur, curValue, clazz, j, finalValue,
 			i = 0;
 
-		if ( jQuery.isFunction( value ) ) {
+		if ( isFunction( value ) ) {
 			return this.each( function( j ) {
 				jQuery( this ).removeClass( value.call( this, j, getClass( this ) ) );
 			} );
@@ -58344,9 +58466,9 @@ jQuery.fn.extend( {
 			return this.attr( "class", "" );
 		}
 
-		if ( typeof value === "string" && value ) {
-			classes = value.match( rnothtmlwhite ) || [];
+		classes = classesToArray( value );
 
+		if ( classes.length ) {
 			while ( ( elem = this[ i++ ] ) ) {
 				curValue = getClass( elem );
 
@@ -58376,13 +58498,14 @@ jQuery.fn.extend( {
 	},
 
 	toggleClass: function( value, stateVal ) {
-		var type = typeof value;
+		var type = typeof value,
+			isValidValue = type === "string" || Array.isArray( value );
 
-		if ( typeof stateVal === "boolean" && type === "string" ) {
+		if ( typeof stateVal === "boolean" && isValidValue ) {
 			return stateVal ? this.addClass( value ) : this.removeClass( value );
 		}
 
-		if ( jQuery.isFunction( value ) ) {
+		if ( isFunction( value ) ) {
 			return this.each( function( i ) {
 				jQuery( this ).toggleClass(
 					value.call( this, i, getClass( this ), stateVal ),
@@ -58394,12 +58517,12 @@ jQuery.fn.extend( {
 		return this.each( function() {
 			var className, i, self, classNames;
 
-			if ( type === "string" ) {
+			if ( isValidValue ) {
 
 				// Toggle individual class names
 				i = 0;
 				self = jQuery( this );
-				classNames = value.match( rnothtmlwhite ) || [];
+				classNames = classesToArray( value );
 
 				while ( ( className = classNames[ i++ ] ) ) {
 
@@ -58458,7 +58581,7 @@ var rreturn = /\r/g;
 
 jQuery.fn.extend( {
 	val: function( value ) {
-		var hooks, ret, isFunction,
+		var hooks, ret, valueIsFunction,
 			elem = this[ 0 ];
 
 		if ( !arguments.length ) {
@@ -58487,7 +58610,7 @@ jQuery.fn.extend( {
 			return;
 		}
 
-		isFunction = jQuery.isFunction( value );
+		valueIsFunction = isFunction( value );
 
 		return this.each( function( i ) {
 			var val;
@@ -58496,7 +58619,7 @@ jQuery.fn.extend( {
 				return;
 			}
 
-			if ( isFunction ) {
+			if ( valueIsFunction ) {
 				val = value.call( this, i, jQuery( this ).val() );
 			} else {
 				val = value;
@@ -58638,18 +58761,24 @@ jQuery.each( [ "radio", "checkbox" ], function() {
 // Return jQuery for attributes-only inclusion
 
 
-var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/;
+support.focusin = "onfocusin" in window;
+
+
+var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/,
+	stopPropagationCallback = function( e ) {
+		e.stopPropagation();
+	};
 
 jQuery.extend( jQuery.event, {
 
 	trigger: function( event, data, elem, onlyHandlers ) {
 
-		var i, cur, tmp, bubbleType, ontype, handle, special,
+		var i, cur, tmp, bubbleType, ontype, handle, special, lastElement,
 			eventPath = [ elem || document ],
 			type = hasOwn.call( event, "type" ) ? event.type : event,
 			namespaces = hasOwn.call( event, "namespace" ) ? event.namespace.split( "." ) : [];
 
-		cur = tmp = elem = elem || document;
+		cur = lastElement = tmp = elem = elem || document;
 
 		// Don't do events on text and comment nodes
 		if ( elem.nodeType === 3 || elem.nodeType === 8 ) {
@@ -58701,7 +58830,7 @@ jQuery.extend( jQuery.event, {
 
 		// Determine event propagation path in advance, per W3C events spec (#9951)
 		// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
-		if ( !onlyHandlers && !special.noBubble && !jQuery.isWindow( elem ) ) {
+		if ( !onlyHandlers && !special.noBubble && !isWindow( elem ) ) {
 
 			bubbleType = special.delegateType || type;
 			if ( !rfocusMorph.test( bubbleType + type ) ) {
@@ -58721,7 +58850,7 @@ jQuery.extend( jQuery.event, {
 		// Fire handlers on the event path
 		i = 0;
 		while ( ( cur = eventPath[ i++ ] ) && !event.isPropagationStopped() ) {
-
+			lastElement = cur;
 			event.type = i > 1 ?
 				bubbleType :
 				special.bindType || type;
@@ -58753,7 +58882,7 @@ jQuery.extend( jQuery.event, {
 
 				// Call a native DOM method on the target with the same name as the event.
 				// Don't do default actions on window, that's where global variables be (#6170)
-				if ( ontype && jQuery.isFunction( elem[ type ] ) && !jQuery.isWindow( elem ) ) {
+				if ( ontype && isFunction( elem[ type ] ) && !isWindow( elem ) ) {
 
 					// Don't re-trigger an onFOO event when we call its FOO() method
 					tmp = elem[ ontype ];
@@ -58764,7 +58893,17 @@ jQuery.extend( jQuery.event, {
 
 					// Prevent re-triggering of the same event, since we already bubbled it above
 					jQuery.event.triggered = type;
+
+					if ( event.isPropagationStopped() ) {
+						lastElement.addEventListener( type, stopPropagationCallback );
+					}
+
 					elem[ type ]();
+
+					if ( event.isPropagationStopped() ) {
+						lastElement.removeEventListener( type, stopPropagationCallback );
+					}
+
 					jQuery.event.triggered = undefined;
 
 					if ( tmp ) {
@@ -58810,31 +58949,6 @@ jQuery.fn.extend( {
 } );
 
 
-jQuery.each( ( "blur focus focusin focusout resize scroll click dblclick " +
-	"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
-	"change select submit keydown keypress keyup contextmenu" ).split( " " ),
-	function( i, name ) {
-
-	// Handle event binding
-	jQuery.fn[ name ] = function( data, fn ) {
-		return arguments.length > 0 ?
-			this.on( name, null, data, fn ) :
-			this.trigger( name );
-	};
-} );
-
-jQuery.fn.extend( {
-	hover: function( fnOver, fnOut ) {
-		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
-	}
-} );
-
-
-
-
-support.focusin = "onfocusin" in window;
-
-
 // Support: Firefox <=44
 // Firefox doesn't have focus(in | out) events
 // Related ticket - https://bugzilla.mozilla.org/show_bug.cgi?id=687787
@@ -58878,7 +58992,7 @@ if ( !support.focusin ) {
 }
 var location = window.location;
 
-var nonce = jQuery.now();
+var nonce = Date.now();
 
 var rquery = ( /\?/ );
 
@@ -58936,7 +59050,7 @@ function buildParams( prefix, obj, traditional, add ) {
 			}
 		} );
 
-	} else if ( !traditional && jQuery.type( obj ) === "object" ) {
+	} else if ( !traditional && toType( obj ) === "object" ) {
 
 		// Serialize object item.
 		for ( name in obj ) {
@@ -58958,7 +59072,7 @@ jQuery.param = function( a, traditional ) {
 		add = function( key, valueOrFunction ) {
 
 			// If value is a function, invoke it and use its return value
-			var value = jQuery.isFunction( valueOrFunction ) ?
+			var value = isFunction( valueOrFunction ) ?
 				valueOrFunction() :
 				valueOrFunction;
 
@@ -59076,7 +59190,7 @@ function addToPrefiltersOrTransports( structure ) {
 			i = 0,
 			dataTypes = dataTypeExpression.toLowerCase().match( rnothtmlwhite ) || [];
 
-		if ( jQuery.isFunction( func ) ) {
+		if ( isFunction( func ) ) {
 
 			// For each dataType in the dataTypeExpression
 			while ( ( dataType = dataTypes[ i++ ] ) ) {
@@ -59548,7 +59662,7 @@ jQuery.extend( {
 		if ( s.crossDomain == null ) {
 			urlAnchor = document.createElement( "a" );
 
-			// Support: IE <=8 - 11, Edge 12 - 13
+			// Support: IE <=8 - 11, Edge 12 - 15
 			// IE throws exception on accessing the href property if url is malformed,
 			// e.g. http://example.com:80x/
 			try {
@@ -59606,8 +59720,8 @@ jQuery.extend( {
 			// Remember the hash so we can put it back
 			uncached = s.url.slice( cacheURL.length );
 
-			// If data is available, append data to url
-			if ( s.data ) {
+			// If data is available and should be processed, append data to url
+			if ( s.data && ( s.processData || typeof s.data === "string" ) ) {
 				cacheURL += ( rquery.test( cacheURL ) ? "&" : "?" ) + s.data;
 
 				// #9682: remove data so that it's not used in an eventual retry
@@ -59844,7 +59958,7 @@ jQuery.each( [ "get", "post" ], function( i, method ) {
 	jQuery[ method ] = function( url, data, callback, type ) {
 
 		// Shift arguments if data argument was omitted
-		if ( jQuery.isFunction( data ) ) {
+		if ( isFunction( data ) ) {
 			type = type || callback;
 			callback = data;
 			data = undefined;
@@ -59882,7 +59996,7 @@ jQuery.fn.extend( {
 		var wrap;
 
 		if ( this[ 0 ] ) {
-			if ( jQuery.isFunction( html ) ) {
+			if ( isFunction( html ) ) {
 				html = html.call( this[ 0 ] );
 			}
 
@@ -59908,7 +60022,7 @@ jQuery.fn.extend( {
 	},
 
 	wrapInner: function( html ) {
-		if ( jQuery.isFunction( html ) ) {
+		if ( isFunction( html ) ) {
 			return this.each( function( i ) {
 				jQuery( this ).wrapInner( html.call( this, i ) );
 			} );
@@ -59928,10 +60042,10 @@ jQuery.fn.extend( {
 	},
 
 	wrap: function( html ) {
-		var isFunction = jQuery.isFunction( html );
+		var htmlIsFunction = isFunction( html );
 
 		return this.each( function( i ) {
-			jQuery( this ).wrapAll( isFunction ? html.call( this, i ) : html );
+			jQuery( this ).wrapAll( htmlIsFunction ? html.call( this, i ) : html );
 		} );
 	},
 
@@ -60023,7 +60137,8 @@ jQuery.ajaxTransport( function( options ) {
 					return function() {
 						if ( callback ) {
 							callback = errorCallback = xhr.onload =
-								xhr.onerror = xhr.onabort = xhr.onreadystatechange = null;
+								xhr.onerror = xhr.onabort = xhr.ontimeout =
+									xhr.onreadystatechange = null;
 
 							if ( type === "abort" ) {
 								xhr.abort();
@@ -60063,7 +60178,7 @@ jQuery.ajaxTransport( function( options ) {
 
 				// Listen to events
 				xhr.onload = callback();
-				errorCallback = xhr.onerror = callback( "error" );
+				errorCallback = xhr.onerror = xhr.ontimeout = callback( "error" );
 
 				// Support: IE 9 only
 				// Use onreadystatechange to replace onabort
@@ -60217,7 +60332,7 @@ jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 	if ( jsonProp || s.dataTypes[ 0 ] === "jsonp" ) {
 
 		// Get callback name, remembering preexisting value associated with it
-		callbackName = s.jsonpCallback = jQuery.isFunction( s.jsonpCallback ) ?
+		callbackName = s.jsonpCallback = isFunction( s.jsonpCallback ) ?
 			s.jsonpCallback() :
 			s.jsonpCallback;
 
@@ -60268,7 +60383,7 @@ jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 			}
 
 			// Call if it was a function and we have a response
-			if ( responseContainer && jQuery.isFunction( overwritten ) ) {
+			if ( responseContainer && isFunction( overwritten ) ) {
 				overwritten( responseContainer[ 0 ] );
 			}
 
@@ -60360,7 +60475,7 @@ jQuery.fn.load = function( url, params, callback ) {
 	}
 
 	// If it's a function
-	if ( jQuery.isFunction( params ) ) {
+	if ( isFunction( params ) ) {
 
 		// We assume that it's the callback
 		callback = params;
@@ -60468,7 +60583,7 @@ jQuery.offset = {
 			curLeft = parseFloat( curCSSLeft ) || 0;
 		}
 
-		if ( jQuery.isFunction( options ) ) {
+		if ( isFunction( options ) ) {
 
 			// Use jQuery.extend here to allow modification of coordinates argument (gh-1848)
 			options = options.call( elem, i, jQuery.extend( {}, curOffset ) );
@@ -60491,6 +60606,8 @@ jQuery.offset = {
 };
 
 jQuery.fn.extend( {
+
+	// offset() relates an element's border box to the document origin
 	offset: function( options ) {
 
 		// Preserve chaining for setter
@@ -60502,7 +60619,7 @@ jQuery.fn.extend( {
 				} );
 		}
 
-		var doc, docElem, rect, win,
+		var rect, win,
 			elem = this[ 0 ];
 
 		if ( !elem ) {
@@ -60517,50 +60634,52 @@ jQuery.fn.extend( {
 			return { top: 0, left: 0 };
 		}
 
+		// Get document-relative position by adding viewport scroll to viewport-relative gBCR
 		rect = elem.getBoundingClientRect();
-
-		doc = elem.ownerDocument;
-		docElem = doc.documentElement;
-		win = doc.defaultView;
-
+		win = elem.ownerDocument.defaultView;
 		return {
-			top: rect.top + win.pageYOffset - docElem.clientTop,
-			left: rect.left + win.pageXOffset - docElem.clientLeft
+			top: rect.top + win.pageYOffset,
+			left: rect.left + win.pageXOffset
 		};
 	},
 
+	// position() relates an element's margin box to its offset parent's padding box
+	// This corresponds to the behavior of CSS absolute positioning
 	position: function() {
 		if ( !this[ 0 ] ) {
 			return;
 		}
 
-		var offsetParent, offset,
+		var offsetParent, offset, doc,
 			elem = this[ 0 ],
 			parentOffset = { top: 0, left: 0 };
 
-		// Fixed elements are offset from window (parentOffset = {top:0, left: 0},
-		// because it is its only offset parent
+		// position:fixed elements are offset from the viewport, which itself always has zero offset
 		if ( jQuery.css( elem, "position" ) === "fixed" ) {
 
-			// Assume getBoundingClientRect is there when computed position is fixed
+			// Assume position:fixed implies availability of getBoundingClientRect
 			offset = elem.getBoundingClientRect();
 
 		} else {
-
-			// Get *real* offsetParent
-			offsetParent = this.offsetParent();
-
-			// Get correct offsets
 			offset = this.offset();
-			if ( !nodeName( offsetParent[ 0 ], "html" ) ) {
-				parentOffset = offsetParent.offset();
-			}
 
-			// Add offsetParent borders
-			parentOffset = {
-				top: parentOffset.top + jQuery.css( offsetParent[ 0 ], "borderTopWidth", true ),
-				left: parentOffset.left + jQuery.css( offsetParent[ 0 ], "borderLeftWidth", true )
-			};
+			// Account for the *real* offset parent, which can be the document or its root element
+			// when a statically positioned element is identified
+			doc = elem.ownerDocument;
+			offsetParent = elem.offsetParent || doc.documentElement;
+			while ( offsetParent &&
+				( offsetParent === doc.body || offsetParent === doc.documentElement ) &&
+				jQuery.css( offsetParent, "position" ) === "static" ) {
+
+				offsetParent = offsetParent.parentNode;
+			}
+			if ( offsetParent && offsetParent !== elem && offsetParent.nodeType === 1 ) {
+
+				// Incorporate borders into its offset, since they are outside its content origin
+				parentOffset = jQuery( offsetParent ).offset();
+				parentOffset.top += jQuery.css( offsetParent, "borderTopWidth", true );
+				parentOffset.left += jQuery.css( offsetParent, "borderLeftWidth", true );
+			}
 		}
 
 		// Subtract parent offsets and element margins
@@ -60602,7 +60721,7 @@ jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( 
 
 			// Coalesce documents and windows
 			var win;
-			if ( jQuery.isWindow( elem ) ) {
+			if ( isWindow( elem ) ) {
 				win = elem;
 			} else if ( elem.nodeType === 9 ) {
 				win = elem.defaultView;
@@ -60660,7 +60779,7 @@ jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
 			return access( this, function( elem, type, value ) {
 				var doc;
 
-				if ( jQuery.isWindow( elem ) ) {
+				if ( isWindow( elem ) ) {
 
 					// $( window ).outerWidth/Height return w/h including scrollbars (gh-1729)
 					return funcName.indexOf( "outer" ) === 0 ?
@@ -60694,6 +60813,28 @@ jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
 } );
 
 
+jQuery.each( ( "blur focus focusin focusout resize scroll click dblclick " +
+	"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
+	"change select submit keydown keypress keyup contextmenu" ).split( " " ),
+	function( i, name ) {
+
+	// Handle event binding
+	jQuery.fn[ name ] = function( data, fn ) {
+		return arguments.length > 0 ?
+			this.on( name, null, data, fn ) :
+			this.trigger( name );
+	};
+} );
+
+jQuery.fn.extend( {
+	hover: function( fnOver, fnOut ) {
+		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
+	}
+} );
+
+
+
+
 jQuery.fn.extend( {
 
 	bind: function( types, data, fn ) {
@@ -60715,6 +60856,37 @@ jQuery.fn.extend( {
 	}
 } );
 
+// Bind a function to a context, optionally partially applying any
+// arguments.
+// jQuery.proxy is deprecated to promote standards (specifically Function#bind)
+// However, it is not slated for removal any time soon
+jQuery.proxy = function( fn, context ) {
+	var tmp, args, proxy;
+
+	if ( typeof context === "string" ) {
+		tmp = fn[ context ];
+		context = fn;
+		fn = tmp;
+	}
+
+	// Quick check to determine if target is callable, in the spec
+	// this throws a TypeError, but we will just return undefined.
+	if ( !isFunction( fn ) ) {
+		return undefined;
+	}
+
+	// Simulated bind
+	args = slice.call( arguments, 2 );
+	proxy = function() {
+		return fn.apply( context || this, args.concat( slice.call( arguments ) ) );
+	};
+
+	// Set the guid of unique handler to the same of original handler, so it can be removed
+	proxy.guid = fn.guid = fn.guid || jQuery.guid++;
+
+	return proxy;
+};
+
 jQuery.holdReady = function( hold ) {
 	if ( hold ) {
 		jQuery.readyWait++;
@@ -60725,6 +60897,26 @@ jQuery.holdReady = function( hold ) {
 jQuery.isArray = Array.isArray;
 jQuery.parseJSON = JSON.parse;
 jQuery.nodeName = nodeName;
+jQuery.isFunction = isFunction;
+jQuery.isWindow = isWindow;
+jQuery.camelCase = camelCase;
+jQuery.type = toType;
+
+jQuery.now = Date.now;
+
+jQuery.isNumeric = function( obj ) {
+
+	// As of jQuery 3.0, isNumeric is limited to
+	// strings and numbers (primitives or objects)
+	// that can be coerced to finite numbers (gh-2662)
+	var type = jQuery.type( obj );
+	return ( type === "number" || type === "string" ) &&
+
+		// parseFloat NaNs numeric-cast false positives ("")
+		// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
+		// subtraction forces infinities to NaN
+		!isNaN( obj - parseFloat( obj ) );
+};
 
 
 
