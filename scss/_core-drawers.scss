@@ -1,0 +1,168 @@
+$cl-drawer-transition-duration: 0.2s !default;
+$cl-drawer-transition-timing-function: ease-in-out !default;
+
+$cl-left-drawer-width-xs: 270px !default;
+$cl-left-drawer-width-sm: 300px !default;
+$cl-left-drawer-width-md: 330px !default;
+$cl-left-drawer-width-lg: 360px !default;
+
+$cl-left-drawer-transition: left $cl-drawer-transition-duration $cl-drawer-transition-timing-function !default;
+$cl-left-drawer-bg-color-xs: $cl-modal-box-bg-color !default;
+$cl-left-drawer-bg-color-sm: $cl-modal-box-bg-color !default;
+$cl-left-drawer-bg-color-md: $cl-modal-box-bg-color !default;
+$cl-left-drawer-bg-color-lg: $cl-modal-box-bg-color !default;
+
+$cl-right-drawer-width-xs: $cl-left-drawer-width-xs !default;
+$cl-right-drawer-width-sm: $cl-left-drawer-width-sm !default;
+$cl-right-drawer-width-md: $cl-left-drawer-width-md !default;
+$cl-right-drawer-width-lg: $cl-left-drawer-width-lg !default;
+
+$cl-right-drawer-transition: right $cl-drawer-transition-duration $cl-drawer-transition-timing-function !default;
+$cl-right-drawer-bg-color-xs: $cl-left-drawer-bg-color-xs !default;
+$cl-right-drawer-bg-color-sm: $cl-left-drawer-bg-color-sm !default;
+$cl-right-drawer-bg-color-md: $cl-left-drawer-bg-color-md !default;
+$cl-right-drawer-bg-color-lg: $cl-left-drawer-bg-color-lg !default;
+
+#cl-left-drawer,
+#cl-right-drawer {
+  .cl-header, .cl-contents, .cl-footer {
+    z-index: $cl-drawer-z-index;
+  }
+}
+
+#cl-main {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  transition: $cl-left-drawer-transition, $cl-right-drawer-transition;
+}
+
+#cl-left-drawer,
+#cl-right-drawer {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  overflow-x: hidden;
+  .cl-contents {
+    overflow-x: hidden;
+  }
+  .cl-header, .cl-footer {
+    overflow: hidden;
+  }
+}
+
+@media (max-width: $cl-screen-xs-max) {
+  #cl-left-drawer {
+    background-color: $cl-left-drawer-bg-color-xs;
+  }
+  #cl-right-drawer {
+    background-color: $cl-right-drawer-bg-color-xs;
+  }
+
+  #cl-left-drawer {
+    width: $cl-left-drawer-width-xs;
+    left: -$cl-left-drawer-width-xs;
+    transition: $cl-left-drawer-transition;
+
+    .cl-footer, .cl-header {
+      width: $cl-left-drawer-width-xs;
+      left: -$cl-left-drawer-width-xs;
+    }
+
+  }
+  #cl-right-drawer {
+    width: $cl-right-drawer-width-xs;
+    right: -$cl-right-drawer-width-xs;
+    transition: $cl-right-drawer-transition;
+
+    .cl-footer, .cl-header {
+      width: $cl-right-drawer-width-xs;
+      right: -$cl-right-drawer-width-xs;
+    }
+  }
+
+  .cl-left-drawer-enabled.cl-left-drawer-open {
+    #cl-left-drawer {
+      left: 0 !important;
+
+      .cl-header, .cl-contents, .cl-footer {
+        left: auto;
+      }
+    }
+    #cl-main {
+      left: $cl-left-drawer-width-xs !important;
+      right: -$cl-left-drawer-width-xs !important;
+    }
+  }
+
+  .cl-right-drawer-enabled.cl-right-drawer-open {
+    #cl-right-drawer {
+      right: 0 !important;
+    }
+    #cl-main {
+      right: $cl-right-drawer-width-xs !important;
+      left: -$cl-right-drawer-width-xs !important;
+    }
+  }
+}
+
+@mixin cl-drawer($left-width, $right-width, $left-bg-color, $right-bg-color) {
+  #cl-left-drawer {
+    background-color: $left-bg-color;
+  }
+  #cl-right-drawer {
+    background-color: $right-bg-color;
+  }
+
+  .cl-left-drawer-enabled {
+    #cl-left-drawer {
+      width: $left-width;
+      left: 0 !important;
+      transition: $cl-left-drawer-transition;
+      .cl-footer, .cl-header {
+        width: $left-width;
+      }
+    }
+    #cl-main {
+      left: $left-width !important;
+      right: 0 !important;
+
+      .cl-header, .cl-contents, .cl-footer {
+        left: auto;
+      }
+    }
+  }
+  #cl-right-drawer {
+    width: $right-width;
+    right: -$right-width;
+    transition: $cl-right-drawer-transition;
+
+    .cl-footer, .cl-header {
+      width: $right-width;
+      left: auto;
+    }
+  }
+
+  .cl-right-drawer-enabled.cl-right-drawer-open {
+    #cl-right-drawer {
+      right: 0 !important;
+    }
+  }
+}
+
+@media (min-width: $cl-screen-sm-min) and (max-width: $cl-screen-sm-max) {
+  @include cl-drawer($cl-left-drawer-width-sm, $cl-right-drawer-width-sm,
+          $cl-left-drawer-bg-color-sm, $cl-right-drawer-bg-color-sm)
+}
+
+@media (min-width: $cl-screen-md-min) and (max-width: $cl-screen-md-max) {
+  @include cl-drawer($cl-left-drawer-width-md, $cl-right-drawer-width-md,
+          $cl-left-drawer-bg-color-md, $cl-right-drawer-bg-color-md)
+}
+
+@media (min-width: $cl-screen-lg-min) {
+  @include cl-drawer($cl-left-drawer-width-lg, $cl-right-drawer-width-lg,
+          $cl-left-drawer-bg-color-lg, $cl-right-drawer-bg-color-lg)
+}
