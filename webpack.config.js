@@ -5,6 +5,7 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const package = require('./package.json');
 const dateFormat = require('dateformat');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 
 const now = new Date();
 
@@ -116,7 +117,8 @@ module.exports = [{
         new webpack.ProvidePlugin({
             $: "jquery",
             jQuery: "jquery"
-        })
+        }),
+        new LodashModuleReplacementPlugin(),
     ]),
     name: 'examples',
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -126,7 +128,24 @@ module.exports = [{
         path: path.resolve(__dirname, 'dist/examples'),
         filename: '[name].[contenthash].js'
     },
-    devtool: 'inline-source-map',
+    optimization: {
+        splitChunks: {
+            //chunks: 'all',
+            cacheGroups: {
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    // cacheGroupKey here is `commons` as the key of the cacheGroup
+                    name(module, chunks, cacheGroupKey) {
+                        const moduleFileName = module.identifier().split('/').reduceRight(item => item);
+                        const allChunksNames = chunks.map((item) => item.name).join('~');
+                        return `${cacheGroupKey}-${allChunksNames}-${moduleFileName}`;
+                    },
+                    chunks: 'all'
+                }
+            }
+        },
+    },
+    devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
     devServer: {
         contentBase: './dist/examples',
     },

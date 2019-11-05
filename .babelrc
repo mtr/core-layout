@@ -9,6 +9,7 @@
     ]
   ],
   "plugins": [
+    "lodash",
     [
       "angularjs-annotate",
       {
