@@ -1,14 +1,15 @@
 'use strict';
 
-var angular = require('angular');
+import angular from 'angular';
 
 function sharedState() {
-    var _state = {};
+    const _state = {};
     return {
         state: _state
     };
 }
 
-module.exports = angular
+export default angular
     .module('myApp.home.sharedState', [])
-    .factory('sharedState', sharedState);
+    .factory('sharedState', sharedState)
+    .name;

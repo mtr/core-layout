@@ -1,6 +1,19 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
+
+import StaticListController from "./static-list/static-list.js";
+import NgRepeatListController from "./ng-repeat-list/ng-repeat-list.js";
+import MultiColumnDynamicController from "./multi-column-dynamic/multi-column-dynamic.js";
+
+import leftDrawerHeaderHtml from '../components/drawer/left-drawer.header.html';
+import leftDrawerHtml from '../components/drawer/left-drawer.html';
+import leftDrawerFooterHtml from '../components/drawer/left-drawer.footer.html';
+import rightDrawerHeaderHtml from '../components/drawer/right-drawer.header.html';
+import rightDrawerHtml from '../components/drawer/right-drawer.html';
+import rightDrawerFooterHtml from '../components/drawer/right-drawer.footer.html';
+import headerHtml from '../components/header/header.html';
+import footerHtml from '../components/footer/footer.html';
 
 /* @ngInject */
 function config($stateProvider) {
@@ -10,39 +23,40 @@ function config($stateProvider) {
         abstract: true,
         views: {
             'left-drawer-header@': {
-                templateUrl: 'components/drawer/left-drawer.header.html'
+                template: leftDrawerHeaderHtml
             },
             'left-drawer-contents@': {
-                templateUrl: 'components/drawer/left-drawer.html',
+                template: leftDrawerHtml,
                 controller: 'DrawerController'
             },
             'left-drawer-footer@': {
-                templateUrl: 'components/drawer/left-drawer.footer.html'
+                template: leftDrawerFooterHtml
             },
             'right-drawer-header@': {
-                templateUrl: 'components/drawer/right-drawer.header.html'
+                template: rightDrawerHeaderHtml
             },
             'right-drawer-contents@': {
-                templateUrl: 'components/drawer/right-drawer.html',
+                template: rightDrawerHtml,
                 controller: 'DrawerController'
             },
             'right-drawer-footer@': {
-                templateUrl: 'components/drawer/right-drawer.footer.html'
+                template: rightDrawerFooterHtml
             },
             'main-header@': {
-                templateUrl: 'components/header/header.html',
+                template: headerHtml,
                 controller: 'HeaderController'
             },
             'main-footer@': {
-                templateUrl: 'components/footer/footer.html'
+                template: footerHtml
             }
         }
     });
 }
 
-module.exports = angular.module('myApp.demos', [
-    require('./static-list/static-list.js').name,
-    require('./ng-repeat-list/ng-repeat-list.js').name,
-    require('./multi-column-dynamic/multi-column-dynamic.js').name
+export default angular.module('myApp.demos', [
+    StaticListController,
+    NgRepeatListController,
+    MultiColumnDynamicController
 ])
-    .config(config);
+    .config(config)
+    .name;

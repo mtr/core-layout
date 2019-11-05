@@ -1,10 +1,12 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
+
+import multiColumnDynamicHtml from './multi-column-dynamic.html';
 
 /* @ngInject */
 function MultiColumnDynamicController($scope, $log) {
-    var _index = {};
+    const _index = {};
 
     function _getRows(count) {
         if (! _index.hasOwnProperty(count)) {
@@ -23,8 +25,7 @@ function config($stateProvider) {
         url: '/multiColumnDynamic',
         views: {
             'main-contents@': {
-                templateUrl:
-                    'demos/multi-column-dynamic/multi-column-dynamic.html',
+                template: multiColumnDynamicHtml,
                 controller: 'MultiColumnDynamicController'
             }
         }
@@ -32,6 +33,7 @@ function config($stateProvider) {
     });
 }
 
-module.exports = angular.module('myApp.demos.multiColumnDynamic', [])
+export default angular.module('myApp.demos.multiColumnDynamic', [])
     .config(config)
-    .controller('MultiColumnDynamicController', MultiColumnDynamicController);
+    .controller('MultiColumnDynamicController', MultiColumnDynamicController)
+    .name;

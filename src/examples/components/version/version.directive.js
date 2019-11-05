@@ -1,6 +1,6 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
 
 /* @ngInject */
 function currentVersion(version, buildTimestamp) {
@@ -16,5 +16,6 @@ function currentVersion(version, buildTimestamp) {
     return directiveDefinition;
 }
 
-module.exports = angular.module('myApp.version.directive', [])
-    .directive('currentVersion', currentVersion);
+export default angular.module('myApp.version.directive', [])
+    .directive('currentVersion', currentVersion)
+    .name;

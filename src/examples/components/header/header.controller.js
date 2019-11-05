@@ -1,6 +1,6 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
 
 /* @ngInject */
 function HeaderController($scope, $window, $interval, iScrollService,
@@ -25,7 +25,7 @@ function HeaderController($scope, $window, $interval, iScrollService,
         }
     ];
 
-    var promise = $interval(function _checkBrowserSync() {
+    const promise = $interval(function _checkBrowserSync() {
         $scope.browserSync = !!$window.___browserSync___;
     }, 250);
 
@@ -34,5 +34,6 @@ function HeaderController($scope, $window, $interval, iScrollService,
     });
 }
 
-module.exports = angular.module('myApp.header.HeaderController', [])
-    .controller('HeaderController', HeaderController);
+export default angular.module('myApp.header.HeaderController', [])
+    .controller('HeaderController', HeaderController)
+    .name;

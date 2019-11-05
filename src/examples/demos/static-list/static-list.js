@@ -1,6 +1,8 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
+
+import statisListHtml from './static-list.html';
 
 /* @ngInject */
 function StaticListController($scope, $log) {
@@ -18,13 +20,14 @@ function config($stateProvider) {
         url: '/staticList',
         views: {
             'main-contents@': {
-                templateUrl: 'demos/static-list/static-list.html',
+                template: statisListHtml,
                 controller: 'StaticListController'
             }
         }
     });
 }
 
-module.exports = angular.module('myApp.demos.staticList', [])
+export default angular.module('myApp.demos.staticList', [])
     .config(config)
-    .controller('StaticListController', StaticListController);
+    .controller('StaticListController', StaticListController)
+    .name;

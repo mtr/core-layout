@@ -1,6 +1,8 @@
 // "bootstrap-sprockets" must be imported before "bootstrap" and "bootstrap/variables"
-@import 'bootstrap';
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
 @import 'iscroll';
-@import 'core';
+@import '../../lib/core';
 @import 'bootstrap-adjustments';
 @import 'multi-column';

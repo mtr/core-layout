@@ -1,6 +1,37 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
+
+import SharedStateController from "./shared-state/shared-state.controller.js";
+
+import leftDrawerHeaderHtml from '../components/drawer/left-drawer.header.html';
+import leftDrawerHtml from '../components/drawer/left-drawer.html';
+import leftDrawerFooterHtml from '../components/drawer/left-drawer.footer.html';
+import rightDrawerHeaderHtml
+    from '../components/drawer/right-drawer.header.html';
+import rightDrawerHtml from '../components/drawer/right-drawer.html';
+import rightDrawerFooterHtml
+    from '../components/drawer/right-drawer.footer.html';
+import headerHtml from '../components/header/header.html';
+
+import homeHtml from './home.html';
+import openModalFooterHtml from './open-modal.footer.html';
+
+import modalHeaderHtml from './modal.header.html';
+import modalFooterHtml from './modal.footer.html';
+
+import firstModalHtml from './first.modal.html';
+import firstModalFooterHtml from './first.modal.footer.html';
+import secondModalHtml from './second.modal.html';
+
+import smallModalHtml from './small.modal.html';
+import smallModalHeaderHtml from './small.modal.header.html';
+import smallModalFooterHtml from './small.modal.footer.html';
+
+import sharedStateHeaderHtml from './shared-state/shared-state.header.html';
+import sharedStateHtml from './shared-state/shared-state.html';
+import sharedStateFooterHtml from './shared-state/shared-state.footer.html';
+
 
 /* @ngInject */
 function HomeController($scope, $log, iScrollService, coreLayoutService) {
@@ -18,35 +49,35 @@ function config($stateProvider) {
             url: '/',
             views: {
                 'left-drawer-header@': {
-                    templateUrl: 'components/drawer/left-drawer.header.html'
+                    template: leftDrawerHeaderHtml
                 },
                 'left-drawer-contents@': {
-                    templateUrl: 'components/drawer/left-drawer.html',
+                    template: leftDrawerHtml,
                     controller: 'DrawerController'
                 },
                 'left-drawer-footer@': {
-                    templateUrl: 'components/drawer/left-drawer.footer.html'
+                    template: leftDrawerFooterHtml
                 },
                 'right-drawer-header@': {
-                    templateUrl: 'components/drawer/right-drawer.header.html'
+                    template: rightDrawerHeaderHtml
                 },
                 'right-drawer-contents@': {
-                    templateUrl: 'components/drawer/right-drawer.html',
+                    template: rightDrawerHtml,
                     controller: 'DrawerController'
                 },
                 'right-drawer-footer@': {
-                    templateUrl: 'components/drawer/right-drawer.footer.html'
+                    template: rightDrawerFooterHtml
                 },
                 'main-header@': {
-                    templateUrl: 'components/header/header.html',
+                    template: headerHtml,
                     controller: 'HeaderController'
                 },
                 'main-contents@': {
-                    templateUrl: 'home/home.html',
+                    template: homeHtml,
                     controller: 'HomeController'
                 },
                 'main-footer@': {
-                    templateUrl: 'home/open-modal.footer.html'
+                    template: openModalFooterHtml
                 }
             },
             onEnter: /* @ngInject */ function _openRightDrawer(coreLayoutService) {
@@ -62,10 +93,10 @@ function config($stateProvider) {
             abstract: true,
             views: {
                 'modal-header@': {
-                    templateUrl: 'home/modal.header.html'
+                    template: modalHeaderHtml
                 },
                 'modal-footer@': {
-                    templateUrl: 'home/modal.footer.html'
+                    template: modalFooterHtml
                 }
             },
             onEnter: /* @ngInject */ function _openModal(coreLayoutService) {
@@ -88,11 +119,11 @@ function config($stateProvider) {
             url: '/first',
             views: {
                 'modal-contents@': {
-                    templateUrl: 'home/first.modal.html',
+                    template: firstModalHtml,
                     controller: 'HomeController'
                 },
                 'modal-footer@': {
-                    templateUrl: 'home/first.modal.footer.html'
+                    template: firstModalFooterHtml
                 }
             },
             onEnter: /* @ngInject */ function _updateModal(coreLayoutService) {
@@ -106,7 +137,7 @@ function config($stateProvider) {
             url: '/second',
             views: {
                 'modal-contents@': {
-                    templateUrl: 'home/second.modal.html'
+                    template: secondModalHtml
                 }
             },
             onEnter: /* @ngInject */ function _openModal(coreLayoutService) {
@@ -126,15 +157,15 @@ function config($stateProvider) {
             views: {
                 'modal-header@': {
                     controller: 'SharedStateController',
-                    templateUrl: 'home/shared-state/shared-state.header.html'
+                    template: sharedStateHeaderHtml
                 },
                 'modal-contents@': {
                     controller: 'SharedStateController',
-                    templateUrl: 'home/shared-state/shared-state.html'
+                    template: sharedStateHtml
                 },
                 'modal-footer@': {
                     controller: 'SharedStateController',
-                    templateUrl: 'home/shared-state/shared-state.footer.html'
+                    template: sharedStateFooterHtml
                 }
             },
             onEnter: /* @ngInject */ function _updateModal(coreLayoutService) {
@@ -148,13 +179,13 @@ function config($stateProvider) {
             url: '/small',
             views: {
                 'modal-header@': {
-                    templateUrl: 'home/small.modal.header.html'
+                    template: smallModalHeaderHtml
                 },
                 'modal-contents@': {
-                    templateUrl: 'home/small.modal.html'
+                    template: smallModalHtml
                 },
                 'modal-footer@': {
-                    templateUrl: 'home/small.modal.footer.html'
+                    template: smallModalFooterHtml
                 }
             },
             onEnter: /* @ngInject */ function _updateModal(coreLayoutService) {
@@ -165,9 +196,9 @@ function config($stateProvider) {
         });
 }
 
-module.exports = angular
-    .module('myApp.home', [
-        require('./shared-state/shared-state.controller.js').name
-    ])
+export default angular.module('myApp.home', [
+    SharedStateController
+])
     .config(config)
-    .controller('HomeController', HomeController);
+    .controller('HomeController', HomeController)
+    .name;

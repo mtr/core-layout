@@ -1,19 +1,23 @@
 'use strict';
 
-var angular = require('angular-x'),
-    _ = require('lodash');
+import angular from 'angular';
+import 'bootstrap-sass';
+import uiRouter from '@uirouter/angularjs';
+import angularIscroll from 'angular-iscroll';
 
-require('bootstrap');
-require('angular-messages');
-
-var _platform;
+import coreLayout from '../../dist/lib/core-layout.js';
+import ngMessages from 'angular-messages';
+import drawer from './components/drawer/drawer.js';
+import header from './components/header/header.js';
+import version from './components/version/version.js';
+import demos from './demos/demos.js';
+import home from './home/home.js';
+import './scss/style.scss'
 
 /* @ngInject */
 function config($urlServiceProvider, iScrollServiceProvider) {
     // For any unmatched url, redirect to '/'.
     $urlServiceProvider.rules.otherwise('/');
-
-    _platform = iScrollServiceProvider.platform;
 
     iScrollServiceProvider.configureDefaults({
         iScroll: {
@@ -41,33 +45,37 @@ function config($urlServiceProvider, iScrollServiceProvider) {
      */
 }
 
+/* @ngInject */
 function MyAppController($rootScope, iScrollService, coreLayoutService) {
-    var vm = this;  // Use 'controller as' syntax.
+    const vm = this;  // Use 'controller as' syntax.
 
     vm.iScrollState = iScrollService.state;
 
-    if (angular.isDefined(_platform)) {
-        $rootScope.platform = _platform;
+    if (angular.isDefined(iScrollService.platform)) {
+        $rootScope.platform = iScrollService.platform;
     }
 
     vm.layout = coreLayoutService.state;
 }
 
-angular
-    .module('myApp', [
-        require('@uirouter/angularjs').default,
-        require('../../dist/lib/core-layout.js').name,
-        'ngMessages',
-        require('./components/drawer/drawer.js').name,
-        require('./components/header/header.js').name,
-        require('./components/version/version.js').name,
-        require('./demos/demos.js').name,
-        require('./home/home.js').name
-    ])
-    .config(config)
-    .run(function _run(/*$trace*/) {
-        // $trace.enable();
-    })
-    .controller('MyAppController', MyAppController);
+// import IScroll from 'iscroll';
+//console.log('IScroll:', IScroll);
 
-module.exports = angular.module('myApp');
+angular.module('myApp', [
+    angularIscroll,
+    uiRouter,
+    coreLayout,
+    ngMessages,
+    drawer,
+    header,
+    version,
+    demos,
+    home
+])
+    .config(config)
+    // .run(function /* @ngInject */ _run($trace) {
+    //     $trace.enable();
+    // })
+    .controller('MyAppController', MyAppController)
+    .name;
+

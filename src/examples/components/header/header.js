@@ -1,7 +1,10 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
 
-module.exports = angular.module('myApp.header', [
-    require('./header.controller.js').name
-]);
+import HeaderController from "./header.controller.js";
+
+export default angular.module('myApp.header', [
+    HeaderController
+])
+    .name;

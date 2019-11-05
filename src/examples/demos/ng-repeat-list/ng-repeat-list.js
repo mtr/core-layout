@@ -1,10 +1,12 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
+
+import ngRepeatListHtml from './ng-repeat-list.html';
 
 /* @ngInject */
 function NgRepeatListController($scope, $log) {
-    var _index = {};
+    const _index = {};
 
     function _getRows(count) {
         if (! _index.hasOwnProperty(count)) {
@@ -23,13 +25,14 @@ function config($stateProvider) {
         url: '/ngRepeatList',
         views: {
             'main-contents@': {
-                templateUrl: 'demos/ng-repeat-list/ng-repeat-list.html',
+                template: ngRepeatListHtml,
                 controller: 'NgRepeatListController'
             }
         }
     });
 }
 
-module.exports = angular.module('myApp.demos.ngRepeatList', [])
+export default angular.module('myApp.demos.ngRepeatList', [])
     .config(config)
-    .controller('NgRepeatListController', NgRepeatListController);
+    .controller('NgRepeatListController', NgRepeatListController)
+    .name;

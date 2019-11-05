@@ -1,10 +1,12 @@
 'use strict';
 
-var angular = require('angular-x');
+import angular from 'angular';
 
-module.exports = angular
-    .module('myApp.version', [
-        require('./version.directive.js').name
+import currentVersion from "./version.directive.js";
+
+export default angular.module('myApp.version', [
+        currentVersion
     ])
     .value('version', '/* @echo pkg.version */')
-    .value('buildTimestamp', '/* @echo now */');
+    .value('buildTimestamp', '/* @echo now */')
+    .name;

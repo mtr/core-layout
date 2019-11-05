@@ -32,7 +32,7 @@ var _ = require('lodash'),
     pump = require('pump'),
     remember = require('gulp-remember'),
     rename = require('gulp-rename'),
-    sass = require('gulp-ruby-sass'),
+    sass = require('gulp-sass'),
     source = require('vinyl-source-stream'),
     sourcemaps = require('gulp-sourcemaps'),
     tag_version = require('gulp-tag-version'),
@@ -110,25 +110,9 @@ var _ = require('lodash'),
         entries: paths.examples.js.src,
         debug: true
     }, watchify.args))),
-    autopreFixerConfig = {
-        browsers: [
-            'last 4 version',
-            '> 0.9%',
-            '> 0.9% in NO',
-            '> 0.9% in SE',
-            '> 0.9% in DE',
-            '> 0.9% in DK',
-            '> 0.9% in GB',
-            '> 0.9% in NL',
-            'Android 2.3',
-            'Chrome 37',
-            'IE >= 9',
-            'Firefox ESR',
-            'Firefox 15',
-            'Firefox 32',
-            'Opera 12'
-        ]
-    };
+    autopreFixerConfig = {};
+
+sass.compiler = require('node-sass');
 
 //process.env.BROWSERIFYSHIM_DIAGNOSTICS = 1;
 
@@ -160,16 +144,16 @@ gulp.task('cache-angular-templates', function (cb) {
             standalone: true,
             //moduleSystem: 'browserify',
             templateHeader: "(function (module, window) {" +
-            "'use strict'; " +
-            "module.exports = angular.module('<%= module %>'<%= standalone %>)" +
-            ".run(['$templateCache', function($templateCache) { ",
+                "'use strict'; " +
+                "module.exports = angular.module('<%= module %>'<%= standalone %>)" +
+                ".run(['$templateCache', function($templateCache) { ",
             templateFooter: "}]); })(module, window);"
         }),
         gulp.dest(paths.lib.templateCache.dest)
     ], cb);
 });
 
-gulp.task('lib', ['cache-angular-templates'], function (cb) {
+gulp.task('lib', gulp.series(['cache-angular-templates', function buildLib(cb) {
     var now = _getNow();
 
     pump([
@@ -196,7 +180,7 @@ gulp.task('lib', ['cache-angular-templates'], function (cb) {
         }),
         gulp.dest(paths.lib.dest)
     ], cb);
-});
+}]));
 
 gulp.task('watch', function () {
     var watcher = gulp.watch([paths.lib.src, paths.lib.html], ['lib']);
@@ -211,7 +195,7 @@ gulp.task('watch', function () {
     });
 });
 
-gulp.task('default', ['scss', 'cache-angular-templates', 'lib']);
+gulp.task('default', gulp.series(['scss', 'cache-angular-templates', 'lib']));
 
 
 gulp.task('browser-sync', function () {
@@ -224,7 +208,7 @@ gulp.task('browser-sync', function () {
 });
 
 gulp.task('connect', function () {
-    connect.server({
+    return connect.server({
         root: paths.examples.root,
         port: 3001,
         livereload: true
@@ -232,23 +216,24 @@ gulp.task('connect', function () {
 });
 
 gulp.task('bootstrap-assets', function () {
-    gulp.src(path.join(
+    return gulp.src(path.join(
         paths.examples.style.bootstrap.assets, '@(fonts|images)/**/*'))
         .pipe(gulp.dest(paths.examples.root));
 });
 
-gulp.task('style', ['bootstrap-assets' /*, 'wrap-vendor-css'*/], function () {
-    return sass(paths.examples.style.src, {
-        loadPath: [paths.examples.style.bootstrap.sass, './src/lib/'],
-        sourcemap: true,
-        style: 'compact'
-    })
-        .on('error', gutil.log.bind(gutil, 'Sass/Compass Error'))
-        .pipe(autoPrefixer(autopreFixerConfig))
+gulp.task('style', gulp.series(['bootstrap-assets' /*, 'wrap-vendor-css'*/, function buildStyle() {
+    return gulp.src(paths.examples.style.src)
+        .pipe(sourcemaps.init())
+        .pipe(sass.sync({
+            includePaths: [paths.examples.style.bootstrap.sass, './src/lib/'],
+            // sourcemap: true,
+            outputStyle: 'compact'
+        }).on('error', sass.logError))
+        .pipe(autoPrefixer())
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(paths.examples.style.dest))
         .pipe(browserSync.reload({stream: true}));
-});
+}]));
 
 gulp.task('demo-views', function () {
     return gulp.src(path.join(paths.examples.src, '**/*.html'))
@@ -256,7 +241,7 @@ gulp.task('demo-views', function () {
         .pipe(browserSync.reload({stream: true}));
 });
 
-gulp.task('views', ['demo-views'], function () {
+gulp.task('views', gulp.series(['demo-views', function buildViews() {
     return gulp.src(paths.examples.index.src)
     //.pipe(htmlmin({
     //    collapseWhitespace: true,
@@ -265,7 +250,7 @@ gulp.task('views', ['demo-views'], function () {
     //.pipe(htmlify())
         .pipe(gulp.dest(paths.examples.index.dest))
         .pipe(browserSync.reload({stream: true}));
-});
+}]));
 
 function decorateBundler(meta) {
     meta.bundle = function bundle() {
@@ -328,22 +313,39 @@ var libMeta = {
 decorateBundler(libMeta);
 decorateBundler(examplesMeta);
 
-gulp.task('watch-examples', function () {
-    gulp.watch(path.join(paths.lib.dest, 'core-layout.js'), ['rebundle-examples']);
-    gulp.watch(paths.examples.index.src, ['views']);
-    gulp.watch(path.join(paths.examples.src, '**/*.html'), ['demo-views']);
-    gulp.watch([paths.examples.style.src,
+gulp.task('dest:watch', function () {
+    return gulp.watch(path.join(paths.lib.dest, 'core-layout.js'), ['rebundle-examples']);
+});
+
+gulp.task('views-src:watch', function () {
+    return gulp.watch(paths.examples.index.src, ['views']);
+});
+
+gulp.task('demo-views-src:watch', function () {
+    return gulp.watch(path.join(paths.examples.src, '**/*.html'), ['demo-views']);
+});
+
+gulp.task('styles-src:watch', function () {
+    return gulp.watch([paths.examples.style.src,
         path.join(paths.examples.src, '**/*.scss'),
         'dist/scss/*.scss'], ['style']);
 });
 
-gulp.task('examples', [
-    'connect',
-    'browser-sync',
+gulp.task('watch-examples', gulp.parallel([
+    'dest:watch',
+    'views-src:watch',
+    'demo-views-src:watch',
+    'styles-src:watch'
+]));
+
+gulp.task('examples', gulp.series([
     'style',
     'views',
+    examplesMeta.bundle,
+    'connect',
+    'browser-sync',
     'watch-examples'
-], examplesMeta.bundle);
+]));
 
 
 function increaseVersion(importance) {
