@@ -1,0 +1,66 @@
+$cl-header-height-xs: 48px !default;
+$cl-footer-height-xs: $cl-header-height-xs !default;
+$cl-header-height-sm: 50px !default;
+$cl-footer-height-sm: $cl-header-height-sm !default;
+$cl-header-height-md: 60px !default;
+$cl-footer-height-md: $cl-header-height-md !default;
+$cl-header-height-lg: 70px !default;
+$cl-footer-height-lg: $cl-header-height-lg !default;
+
+$cl-header-z-index: 1000 !default;
+$cl-drawer-z-index: ($cl-header-z-index + 1) !default;
+$cl-modal-z-index: ($cl-header-z-index + 2) !default;
+$cl-modal-header-z-index: ($cl-modal-z-index + 999) !default;
+
+
+$cl-modal-overlay-color: rgba(0, 0, 0, 0.5) !default;
+$cl-modal-box-bg-color: #fff !default;
+
+$cl-modal-header-height-xs: 56px !default;
+$cl-modal-footer-height-xs: $cl-modal-header-height-xs !default;
+$cl-modal-header-height-sm: 66px !default;
+$cl-modal-footer-height-sm: $cl-modal-header-height-sm !default;
+$cl-modal-header-height-md: 76px !default;
+$cl-modal-footer-height-md: $cl-modal-header-height-md !default;
+$cl-modal-header-height-lg: 86px !default;
+$cl-modal-footer-height-lg: $cl-modal-header-height-lg !default;
+
+
+$cl-responsive-sizes: (xs, sm, md, lg);
+
+// Extra small screen / phone
+$cl-screen-xs-min: 480px !default;
+// Small screen / tablet
+$cl-screen-sm-min: 768px !default;
+// Medium screen / desktop
+$cl-screen-md-min: 992px !default;
+// Large screen / wide desktop
+$cl-screen-lg-min: 1200px !default;
+
+// To ensure that media queries don't overlap when required, provide a maximum.
+$cl-screen-xs-max: ($cl-screen-sm-min - 1) !default;
+$cl-screen-sm-max: ($cl-screen-md-min - 1) !default;
+$cl-screen-md-max: ($cl-screen-lg-min - 1) !default;
+
+$cl-modal-box-small-width-sm: 300px !default;
+$cl-modal-box-small-height-sm: $cl-modal-box-small-width-sm !default;
+$cl-modal-box-small-width-md: 350px !default;
+$cl-modal-box-small-height-md: $cl-modal-box-small-width-md !default;
+$cl-modal-box-small-width-lg: 400px !default;
+$cl-modal-box-small-height-lg: $cl-modal-box-small-width-lg !default;
+
+$cl-modal-box-medium-width-sm: 500px !default;
+$cl-modal-box-medium-height-sm: $cl-modal-box-medium-width-sm !default;
+$cl-modal-box-medium-width-md: 550px !default;
+$cl-modal-box-medium-height-md: $cl-modal-box-medium-width-md !default;
+$cl-modal-box-medium-width-lg: 600px !default;
+$cl-modal-box-medium-height-lg: $cl-modal-box-medium-width-lg !default;
+
+$cl-modal-box-large-width-sm: 700px !default;
+$cl-modal-box-large-height-sm: $cl-modal-box-large-width-sm !default;
+$cl-modal-box-large-width-md: 750px !default;
+$cl-modal-box-large-height-md: $cl-modal-box-large-width-md !default;
+$cl-modal-box-large-width-lg: 800px !default;
+$cl-modal-box-large-height-lg: $cl-modal-box-large-width-lg !default;
+
+$cl-modal-box-higher-than-window-height: 95%;
