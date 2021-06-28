@@ -1,0 +1,5 @@
+/*!
+ * @license core-layout v7.0.0, 2021-06-28T15:11:12+0200
+ * (c) 2021 Martin Thorsen Ranang <mtr@ranang.org>
+ * License: MIT
+ */
