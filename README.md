@@ -24,7 +24,7 @@ After that, you should have a `dist` directory with a subdirectory named `lib`:
 ```
 dist/
 ├── lib
-│   └── core-layout.js
+│   └── core-layout.js
 └── scss
     ├── _core-drawers.scss
     ├── _core-modal.scss
