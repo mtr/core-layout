@@ -1,5 +1,5 @@
 /*!
- * @license core-layout v7.0.2, 2021-06-28T16:09:45+0200
- * (c) 2021 Martin Thorsen Ranang <mtr@ranang.org>
+ * @license core-layout v7.0.2, 2023-11-29T15:03:11+0100
+ * (c) 2023 Martin Thorsen Ranang <mtr@ranang.org>
  * License: MIT
  */

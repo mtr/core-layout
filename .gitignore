@@ -34,3 +34,12 @@ node_modules
 # Sass cache
 .sass-cache/
 src/lib/core-layout.templates.js
+
+# Modern Yarn
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
