@@ -8,7 +8,9 @@
     "watch": "NODE_ENV=development webpack --config-name=library --watch",
     "build-examples": "NODE_ENV=production webpack --config-name=examples",
     "start": "NODE_ENV=development webpack-dev-server --config-name=examples --open",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predeploy": "yarn run build && yarn run build-examples",
+    "deploy": "gh-pages -d dist/examples"
   },
   "repository": {
     "type": "git",
@@ -31,7 +33,7 @@
   "bugs": {
     "url": "https://github.com/mtr/core-layout/issues"
   },
-  "homepage": "https://github.com/mtr/core-layout",
+  "homepage": "https://mtr.github.io/core-layout",
   "browserslist": "> 0.5%, last 3 versions, Firefox ESR, not dead",
   "dependencies": {
     "angular-iscroll": "^4.1.0"
