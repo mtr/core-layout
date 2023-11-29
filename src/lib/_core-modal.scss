@@ -78,12 +78,12 @@
     width: $width;
     @media (max-height: $height - 1) {
       height: $cl-modal-box-higher-than-window-height;
-      margin: 0 0 0 (- $width / 2);
+      margin: 0 0 0 (- $width * 0.5);
       transform: translate(0, -50%);
     }
     @media (min-height: $height) {
       height: $height;
-      margin: (- $height / 2) 0 0 (- $width / 2);
+      margin: (- $height * 0.5) 0 0 (- $width * 0.5);
     }
   }
 }
