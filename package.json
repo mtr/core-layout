@@ -41,6 +41,9 @@
     "angular": ">=1.8",
     "lodash": "*"
   },
+  "resolutions": {
+    "gift": "^0.10.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.23.5",
     "@babel/preset-env": "^7.23.5",

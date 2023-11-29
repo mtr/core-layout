@@ -5646,6 +5646,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"flex-exec@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "flex-exec@npm:1.0.0"
+  checksum: 0efe54dabd6847fd60ad6628f44f6a49f1ab7b2ef77d6de1f0598fb4febc141a58dba59cd9af4dd906f36add94b73cc97d6d4728c201f43fa7cef0c5fb985dd4
+  languageName: node
+  linkType: hard
+
 "flush-write-stream@npm:^1.0.2":
   version: 1.1.1
   resolution: "flush-write-stream@npm:1.1.1"
@@ -5933,12 +5940,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gift@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "gift@npm:0.6.1"
+"gift@npm:^0.10.2":
+  version: 0.10.2
+  resolution: "gift@npm:0.10.2"
   dependencies:
-    underscore: "npm:1.x.x"
-  checksum: 3c33679616e1abeae7c224c27161972185d2dc0da0cfa7b2ae6a07603539621081d17c1ed7fd65405c240098fa28b847942b7a1ae23e9e1c31433be697d9492b
+    flex-exec: "npm:^1.0.0"
+    underscore: "npm:^1.8.3"
+  checksum: 09474077b781564b16104fd24c1c02129fcc08d1aee332ebbb5dfe05912cdb54354c49550016a5eef572ee7002ca97bf68b78a48a9b8f9f522550f29b8f1dccb
   languageName: node
   linkType: hard
 
@@ -12413,7 +12421,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore@npm:1.x.x":
+"underscore@npm:^1.8.3":
   version: 1.13.6
   resolution: "underscore@npm:1.13.6"
   checksum: 5f57047f47273044c045fddeb8b141dafa703aa487afd84b319c2495de2e685cecd0b74abec098292320d518b267c0c4598e45aa47d4c3628d0d4020966ba521
