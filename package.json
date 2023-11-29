@@ -10,7 +10,7 @@
     "start": "NODE_ENV=development webpack-dev-server --config-name=examples --open",
     "test": "echo \"Error: no test specified\" && exit 1",
     "predeploy": "yarn run build && yarn run build-examples",
-    "deploy": "gh-pages -d dist/examples"
+    "deploy": "yarn predeploy && gh-pages -d dist/examples"
   },
   "repository": {
     "type": "git",
@@ -64,12 +64,6 @@
     "dateformat": "^5.0.3",
     "file-loader": "^6.2.0",
     "gh-pages": "^6.1.0",
-    "gulp": "^4.0.2",
-    "gulp-bump": "^3.2.0",
-    "gulp-filter": "^9.0.1",
-    "gulp-gh-pages": "^0.5.4",
-    "gulp-git": "^2.10.1",
-    "gulp-tag-version": "^1.3.1",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.3",
     "jquery": "^3.7.1",
