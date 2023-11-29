@@ -1,0 +1,11 @@
+/*!
+ * @license core-layout v7.1.0, 2023-11-29T16:07:58+0100
+ * (c) 2023 Martin Thorsen Ranang <mtr@ranang.org>
+ * License: MIT
+ */
+
+/*!
+ * Bootstrap v3.4.1 (https://getbootstrap.com/)
+ * Copyright 2011-2019 Twitter, Inc.
+ * Licensed under the MIT license
+ */

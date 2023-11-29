@@ -1,0 +1,20 @@
+<!doctype html><!--[if lt IE 7]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]--><!--[if IE 7]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]--><!--[if IE 8]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]--><!--[if gt IE 8]><!--><html lang="en" ng-app="myApp" class="no-js"><!--<![endif]--><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Core Layout: Demo App</title><meta name="description" content=""><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,target-densityDpi=device-dpi"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><script defer="defer" src="commons-main-angular.js.509575c03b98a8e8a074.js"></script><script defer="defer" src="commons-main-jquery.js.8efb938b5e3abcc7b8a5.js"></script><script defer="defer" src="commons-main-bootstrap.js.54a331d4adad6fa48c64.js"></script><script defer="defer" src="commons-main-angular-messages.js.57b57f6b501d1ef57b1e.js"></script><script defer="defer" src="commons-main-angular-iscroll.js.11deda7d964083d7d5b5.js"></script><script defer="defer" src="commons-main-urlMatcher.js.2a7b2a48dafe96406276.js"></script><script defer="defer" src="commons-main-transition.js.45f8384cbf9c5e8f68a8.js"></script><script defer="defer" src="commons-main-stateService.js.4e54b7fd2ad62fc0ac6e.js"></script><script defer="defer" src="commons-main-stateDirectives.js.023d9bd98e4134d0815e.js"></script><script defer="defer" src="main.17fcc228228f1de4cda4.js"></script><link href="main.ab5ab9758fa9bbb3a032.css" rel="stylesheet"></head><body ng-controller="MyAppController as app" ng-class="{
+      'iscroll-on': app.iScrollState.useIScroll,
+      'iscroll-off': !app.iScrollState.useIScroll,
+      'cl-left-drawer-enabled': app.layout.leftDrawer.enabled,
+      'cl-right-drawer-enabled': app.layout.rightDrawer.enabled,
+      'cl-left-drawer-open': app.layout.leftDrawer.show,
+      'cl-right-drawer-open': app.layout.rightDrawer.show
+      }" class="ng-cloak"><div id="outer-wrap"><!--[if lt IE 7]>
+  <p class="browsehappy">You are using an <strong>outdated</strong> browser.
+    Please <a href="http://browsehappy.com/">upgrade your browser</a> to
+    improve
+    your experience.</p>
+  <![endif]--><div core-layout="::{name: 'main', header: {visible: {all: true}}, footer: {visible: {xs: true}}}"></div><div core-layout="::{name: 'left-drawer', show: false, header: {visible: {all: false}}, footer: {visible: {all: false}}}"></div><div core-layout="::{name: 'right-drawer', show: false, header: {visible: {all: true}}, footer: {visible: {all: true}}}"></div><div id="cl-modal-overlay" ng-show="app.layout.modal.show"><div id="cl-modal-box" ng-class="{
+      'cl-modal-small': app.layout.modal.size === 'small',
+      'cl-modal-medium': app.layout.modal.size === 'medium',
+      'cl-modal-large': app.layout.modal.size === 'large'
+      }"><div core-layout="::{name: 'modal', show: false}"></div></div></div></div></body></html>
