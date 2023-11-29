@@ -1,18 +1,8 @@
-// Allow global 'use strict' and undefined require.
-// jshint -W097
-// jshint -W117
-// 'use strict';
-
-import bump from 'gulp-bump';
-
-import filter from 'gulp-filter';
-
-import git from 'gulp-git';
-
-import ghPages from 'gulp-gh-pages';
-
 import gulp from 'gulp';
-
+import bump from 'gulp-bump';
+import filter from 'gulp-filter';
+import ghPages from 'gulp-gh-pages';
+import git from 'gulp-git';
 import tag_version from 'gulp-tag-version';
 
 function increaseVersion(importance) {
